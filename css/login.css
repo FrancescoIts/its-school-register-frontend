@@ -5,6 +5,10 @@
     font-family: system-ui;
     border-radius: 10px;
 }
+/* Aggiungi una transizione fluida ai colori e allo sfondo */
+body, .screen, .login-title, .login__submit, .login-with-google-btn {
+    transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
 
 /* Rendi la pagina non scrollabile */
 html, body {
@@ -271,4 +275,65 @@ body {
     height: 20px;
     display: inline-block;
     margin-right: 10px;
+}
+
+/* Pulsante Tema Scuro */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    color: #333;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
+    transition: background 0.3s, color 0.3s;
+}
+
+.theme-toggle:hover {
+    background: #ddd;
+}
+
+/* Modalità Tema Scuro */
+.dark-mode {
+    background: rgb(59, 58, 58) !important;
+    color: #f1f1f1 !important;
+}
+
+.dark-mode .login-title {
+    color: #f1f1f1;
+    text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.4);
+}
+
+.dark-mode .screen {
+    background: linear-gradient(90deg, #222, #333, #444);
+    box-shadow: 0px 0px 24px #111;
+}
+
+.dark-mode .screen__background__shape1 {
+    background: #464545;
+}
+
+.dark-mode .login__submit {
+    background: #444;
+    color: #fff;
+    border-color: #666;
+}
+
+.dark-mode .login__submit:hover {
+    background: #666;
+}
+
+.dark-mode .login-with-google-btn {
+    background: #444;
+    color: #fff;
+    border-color: #666;
+}
+
+.dark-mode .login-with-google-btn:hover {
+    background: #666;
 }

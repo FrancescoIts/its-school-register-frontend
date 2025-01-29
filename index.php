@@ -14,6 +14,7 @@
     <div class="header-image">
             <img src="./img/logo.png" alt="Logo">
         </div>
+        <button id="theme-toggle" class="theme-toggle">🌙 Tema Scuro</button>
 
         <h1 class="login-title">Registro Elettronico</h1>
     <div class="container">
@@ -47,6 +48,6 @@
 		</div>		
 	</div>
 </div>
-        <script src="./js/script.js"></script>
+        <script src="./js/main.js"></script>
     </body>
 </html>
