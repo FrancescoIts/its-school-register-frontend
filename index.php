@@ -4,13 +4,18 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Registro Elettronico - ITS Smart Academy</title>
+        <title>Registro Elettronico</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./css/login.css">
-        <link rel="shortcut icon" href="./favicon.ico">
+        <link rel="shortcut icon" href="./img/favicon.ico">
     </head>
     <body>
+    <div class="header-image">
+            <img src="./img/logo.png" alt="Logo">
+        </div>
+
+        <h1 class="login-title">Registro Elettronico</h1>
     <div class="container">
 	<div class="screen">
 		<div class="screen__content">
@@ -24,7 +29,7 @@
 					<input type="password" class="login__input" placeholder="Password">
 				</div>
 				<button class="button login__submit">
-					<span class="button__text">ACCEDI</span>
+					<span >ACCEDI</span>
 					<i class="button__icon fas fa-chevron-right"></i>
 				</button>				
 			</form>
