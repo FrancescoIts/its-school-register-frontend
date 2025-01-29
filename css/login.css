@@ -5,10 +5,6 @@
     font-family: system-ui;
     border-radius: 10px;
 }
-/* Aggiungi una transizione fluida ai colori e allo sfondo */
-body, .screen, .login-title, .login__submit, .login-with-google-btn {
-    transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
-}
 
 /* Rendi la pagina non scrollabile */
 html, body {
@@ -282,8 +278,9 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: #fff;
-    color: #333;
+    background: #333;
+
+    color: #fff;
     border: none;
     padding: 10px 15px;
     font-size: 14px;
@@ -315,7 +312,7 @@ body {
 }
 
 .dark-mode .screen__background__shape1 {
-    background: #464545;
+    background: #3B3A3A;
 }
 
 .dark-mode .login__submit {
