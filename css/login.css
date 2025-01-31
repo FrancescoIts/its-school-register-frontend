@@ -39,11 +39,11 @@ body {
     text-align: center;
     font-size: 28px;
     font-weight: bold;
-    color: #fff;
+    color: #918be4;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
     /* Abbassa il titolo */
     margin-top: 10px;
-    margin-bottom: -80px; /* Spazio tra il titolo e il container */
+    margin-bottom: -100px; /* Spazio tra il titolo e il container */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -53,6 +53,7 @@ body {
     justify-content: center;
     min-height: 100vh;
     border-radius: 20px;
+    margin-top: -100px;
 }
 
 .screen {
@@ -62,6 +63,7 @@ body {
     width: 400px;
     box-shadow: 0px 0px 24px #5C5696;
     border-radius: 20px;
+
 }
 
 .screen__content {
@@ -302,8 +304,9 @@ body {
 }
 
 .dark-mode .login-title {
-    color: #f1f1f1;
+    color: #c0baba;
     text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.4);
+
 }
 
 .dark-mode .screen {

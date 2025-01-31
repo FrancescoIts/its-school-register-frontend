@@ -6,6 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Registro Elettronico</title>
         <meta name="description" content="">
+		<meta name="keywords" content="registro, its, smart academy, its smart academy">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./css/login.css">
         <link rel="shortcut icon" href="./img/favicon.ico">
@@ -16,12 +17,15 @@
         </div>
         <button id="theme-toggle" class="theme-toggle">🌙 Tema Scuro</button>
 
-        <h1 class="login-title">Registro Elettronico</h1>
     <div class="container">
 	<div class="screen">
+
 		<div class="screen__content">
+		<h1 class="login-title">Registro Elettronico</h1>
 			<form class="login">
-				<div class="login__field">
+				
+			<div class="login__field">
+				
 					<i class="login__icon fas fa-user"></i>
 					<input type="text" class="login__input" placeholder="Email Scolastica">
 				</div>
@@ -49,6 +53,6 @@
 	</div>
 </div>
         <script src="./js/main.js"></script>
-		<
+		<?php require('./footer.php')  ?>
     </body>
 </html>
