@@ -5,10 +5,10 @@ document.addEventListener("DOMContentLoaded", function () {
     
     if (localStorage.getItem("darkMode") === "enabled") {
         body.classList.add("dark-mode");
-        themeToggle.textContent = "☀️ Tema Chiaro";
+        themeToggle.textContent = "☀️";
     } else {
        
-        themeToggle.textContent = "🌙 Tema Scuro";
+        themeToggle.textContent = "🌙";
     }
 
     themeToggle.addEventListener("click", function () {
@@ -22,11 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // uso localStorage per salvare
             if (body.classList.contains("dark-mode")) {
                 localStorage.setItem("darkMode", "enabled");
-                themeToggle.textContent = "☀️ Tema Chiaro";
+                themeToggle.textContent = "☀️";
             } else {
                
                 localStorage.setItem("darkMode", "disabled");
-                themeToggle.textContent = "🌙 Tema Scuro";
+                themeToggle.textContent = "🌙";
             }
 
             // finisce la transizione
@@ -40,12 +40,24 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
     let image = document.getElementById("rotateImage");
 
-    image.addEventListener("mouseenter", function () {
-        image.style.transition = "transform 0.5s ease-in-out";
-        image.style.transform = "rotate(360deg)";
-    });
-
-    image.addEventListener("mouseleave", function () {
-        image.style.transform = "rotate(0deg)";
-    });
+    // stile css per fluttuare
+    image.style.animation = "float 2s infinite ease-in-out";
 });
+
+// lo applico 
+const style = document.createElement('style');
+style.innerHTML = `
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+`;
+document.head.appendChild(style);
+
