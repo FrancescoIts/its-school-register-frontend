@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // finisce la transizione
             setTimeout(() => {
                 body.classList.remove("theme-transition");
-            }, 500); // durata 0.5s
+            }, 500); 
         }, 10);
     });
 });
