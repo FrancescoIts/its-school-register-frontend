@@ -1,2 +1,2 @@
-## Codice Front-End per il registro elettronico
-### Francesco Ferrara
+## Codice Front-End per il registro elettronico 🖥️
+### Francesco Ferrara 🧑‍🎓
