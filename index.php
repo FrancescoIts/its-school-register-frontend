@@ -13,7 +13,7 @@
     </head>
     <body>
     <div class="header-image">
-            <img src="./img/logo.png" alt="Logo">
+            <img src="./img/logo.png" alt="Logo"  id="rotateImage">
         </div>
         <button id="theme-toggle" class="theme-toggle">🌙 Tema Scuro</button>
 

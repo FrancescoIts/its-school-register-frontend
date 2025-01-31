@@ -36,3 +36,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 10);
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    let image = document.getElementById("rotateImage");
+
+    image.addEventListener("mouseenter", function () {
+        image.style.transition = "transform 0.5s ease-in-out";
+        image.style.transform = "rotate(360deg)";
+    });
+
+    image.addEventListener("mouseleave", function () {
+        image.style.transform = "rotate(0deg)";
+    });
+});

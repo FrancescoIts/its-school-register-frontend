@@ -42,7 +42,7 @@ body {
     color: #918be4;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
     /* Abbassa il titolo */
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: -100px; /* Spazio tra il titolo e il container */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
