@@ -4,11 +4,38 @@
     padding: 0;
     overflow-x: hidden;
     font-family: system-ui;
-    border-radius: 10px;
 }
+
 .titleh3 {
-    color: #FFF ;
+    color: #FFF;
+    font-family: monospace;
+    font-size: 20px;
+    position: relative;
+    display: inline-block;
 }
+
+/* Aggiunta del cursore lampeggiante */
+.titleh3::after {
+    content: "";
+    display: inline-block;
+    width: 2px;  /* Larghezza del cursore */
+    height: 14px; /* Altezza corrispondente alla dimensione del testo */
+    margin-left: 1.5px; /* Spazio tra testo e cursore */
+    background: #FFF; /* Colore del cursore */
+    animation: blink 1s infinite;
+    border-radius: none !important; 
+}
+
+/* Definizione dell'animazione per il cursore lampeggiante */
+@keyframes blink {
+    0%, 50% {
+    opacity: 1;
+    }
+    50.01%, 100% {
+    opacity: 0;
+    }
+}
+
 body {
     background: rgb(111,64,132);
     background: linear-gradient(
@@ -113,3 +140,16 @@ body {
     background: #666;
 }
 
+/* Piccola immagine sopra il titolo */
+.header-image {
+    width: 20%;
+    text-align: center;
+
+    height: 100px;
+}
+
+.header-image img {
+    margin-top: 20px;
+    width: 100px;   /* Regola la dimensione dell'immagine a piacere */
+    height: 80px;
+}

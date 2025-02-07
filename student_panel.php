@@ -49,11 +49,14 @@
         }, { threshold: 0.2 });
 
         elements.forEach(el => observer.observe(el));
-    });
+    }); 
 </script>
 <div class="scroll-progress" id="scrollProgress"></div>
     <div class="navbar">
         <h3 class="titleh3">Benvenuto, John Doe</h3>
+        <div class="header-image">
+            <img src="./img/logo.png" alt="Logo" id="rotateImage">
+        </div>
         <div>
             <a class="logout" href="logout.php">Logout</a>
             <button class="theme-toggle" id="theme-toggle">🌙</button>
