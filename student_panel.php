@@ -50,10 +50,25 @@
 
         elements.forEach(el => observer.observe(el));
     }); 
+    document.addEventListener("DOMContentLoaded", function() {
+        const elements = document.querySelectorAll(".animated-box");
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("fade-in");
+                } else {
+                    entry.target.classList.remove("fade-in");
+                }
+            });
+        }, { threshold: 0.2 });
+
+        elements.forEach(el => observer.observe(el));
+    }); 
 </script>
 <div class="scroll-progress" id="scrollProgress"></div>
     <div class="navbar">
-        <h3 class="titleh3">Benvenuto, John Doe</h3>
+        <h3 class="titleh3" class="titleh3">Benvenuto, John Doe</h3>
         <div class="header-image">
             <img src="./img/logo.png" alt="Logo" id="rotateImage">
         </div>
@@ -64,33 +79,34 @@
     </div>
     
     <div class="dashboard">
-        <h3>Corso</h3>
+        <h3 class="animated-box">Corso</h3>
         <div class="courses">
-            <div class="course-card animated-box">I.C.T. System Developer</div>
+            <div class="course-card ">I.C.T. System Developer</div>
+            <img src="./img/courses/ict.jpg" alt="Logo" >
         </div>
     </div>
     <div class="dashboard">
-        <h3>Calendario</h3>
+        <h3 class="animated-box">Calendario</h3>
         <div class="courses">
-            <div class="course-card animated-box">Gestione Eventi</div>
+            <div class="course-card animated-box"></div>
         </div>
     </div>
     <div class="dashboard">
-        <h3>Statistiche</h3>
+        <h3 class="animated-box">Statistiche</h3>
         <div class="courses">
-            <div class="course-card animated-box">Andamento Accademico</div>
+            <div class="course-card animated-box"></div>
         </div>
     </div>
     <div class="dashboard">
-        <h3>Bacheca</h3>
+        <h3 class="animated-box">Bacheca</h3>
         <div class="courses">
-            <div class="course-card animated-box">Avvisi e Comunicazioni</div>
+            <div class="course-card animated-box"></div>
         </div>
     </div>
     <div class="dashboard">
-        <h3>Informazioni personali</h3>
+        <h3 class="animated-box">Informazioni personali</h3>
         <div class="courses">
-            <div class="course-card animated-box">Dati Studente</div>
+            <div class="course-card animated-box"></div>
         </div>
     </div>  
     <script src="./js/main.js"></script>

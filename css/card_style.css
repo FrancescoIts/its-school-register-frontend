@@ -29,6 +29,13 @@
     transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
+.dashboard img {
+    width: 50%;      /* l’immagine occuperà il 100% della larghezza del div .courses */
+    height: auto;     /* mantiene il rapporto di aspetto */
+    position: absolute;
+    left: 25%;
+}
+
 .courses {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -58,3 +65,4 @@
     opacity: 1;
     transform: translateY(0);
 }
+
