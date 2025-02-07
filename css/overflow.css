@@ -1,0 +1,24 @@
+/* Nasconde la barra di scorrimento verticale */
+::-webkit-scrollbar {
+    display: none;
+}
+
+
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 4px;
+    background-color: #5e4caf;
+    z-index: 1000;
+    transition: width 0.2s ease-out;
+  }
+
+  /* Contenuto di esempio per permettere lo scroll */
+  .content {
+    padding: 20px;
+    /* Altezza sufficiente per abilitare lo scroll della pagina */
+    height: 2000px;
+    background: linear-gradient(white, lightgray);
+  }
