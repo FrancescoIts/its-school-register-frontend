@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Studente</title>
-    <link rel="stylesheet" href="./css/student_panel.css"> 
-    <link rel="stylesheet" href="./css/card_style.css">
-    <link rel="stylesheet" href="./css/overflow.css">  
-    <link rel="shortcut icon" href="./img/favicon.ico">
+    <link rel="stylesheet" href="../assets/css/student_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/card_style.css">
+    <link rel="stylesheet" href="../assets/css/overflow.css">  
+    <link rel="shortcut icon" href="../assets/img/favicon.ico">
 
 </head>
 <body>
@@ -70,10 +70,10 @@
     <div class="navbar">
         <h3 class="titleh3" class="titleh3">Benvenuto, John Doe</h3>
         <div class="header-image">
-            <img src="./img/logo.png" alt="Logo" id="rotateImage">
+            <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
         </div>
         <div>
-            <a class="logout" href="logout.php">Logout</a>
+            <a class="logout" href="../utils/logout.php">Logout</a>
             <button class="theme-toggle" id="theme-toggle">🌙</button>
         </div>
     </div>
@@ -82,7 +82,7 @@
         <h3 class="animated-box">Corso</h3>
         <div class="courses">
             <div class="course-card ">I.C.T. System Developer</div>
-            <img src="./img/courses/ict.jpg" alt="Logo" >
+            <img src="../assets/img/courses/ict.jpg" alt="Logo" >
         </div>
     </div>
     <div class="dashboard">
@@ -109,6 +109,6 @@
             <div class="course-card animated-box"></div>
         </div>
     </div>  
-    <script src="./js/main.js"></script>
+    <script src="../assets/js/main.js"></script>
 </body>
 </html>

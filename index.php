@@ -8,8 +8,8 @@
         <meta name="description" content="">
         <meta name="keywords" content="registro, its, smart academy, its smart academy">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="./css/login.css">
-        <link rel="shortcut icon" href="./img/favicon.ico">
+        <link rel="stylesheet" href="./assets/css/login.css">
+        <link rel="shortcut icon" href="./assets/img/favicon.ico">
     </head>
     <body>
 
@@ -40,7 +40,7 @@
                 <div class="screen__content">
                     <h1 class="login-title">Registro Elettronico</h1>
 
-                    <form class="login" action="login/process_login.php" method="POST">
+                    <form class="login" action="./login/process_login.php" method="POST">
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
                             <input type="text" name="email" class="login__input" placeholder="Email Scolastica" required>
@@ -119,7 +119,7 @@
             ?>
         </script>
 
-        <script src="./js/main.js"></script>
-        <?php require('./footer.php'); ?>
+        <script src="./assets/js/main.js"></script>
+        <?php require('./utils/footer.php'); ?>
     </body>
 </html>
