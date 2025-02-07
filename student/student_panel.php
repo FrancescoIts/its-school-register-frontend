@@ -67,48 +67,56 @@
     }); 
 </script>
 <div class="scroll-progress" id="scrollProgress"></div>
-    <div class="navbar">
-        <h3 class="titleh3" class="titleh3">Benvenuto, John Doe</h3>
-        <div class="header-image">
-            <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
-        </div>
-        <div>
-            <a class="logout" href="../utils/logout.php">Logout</a>
-            <button class="theme-toggle" id="theme-toggle">🌙</button>
+<div class="navbar">
+    <h3 class="titleh3">Benvenuto, John Doe</h3>
+    <div class="header-image">
+        <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
+    </div>
+    <div>
+        <a class="logout" href="../utils/logout.php">Logout</a>
+        <button class="theme-toggle" id="theme-toggle">🌙</button>
+    </div>
+</div>
+
+<div class="dashboard">
+    <h3 class="animated-box">Corso</h3>
+    <div class="courses">
+        <div class="course-card">I.C.T. System Developer</div>
+        <img src="../assets/img/courses/" alt="Logo"> 
+        <!-- IMMAGINE CHE VIENE PRESA IN BASE AI DATI DELLA SESSIONE -->
+    </div>
+</div>
+
+<div class="dashboard">
+    <h3 class="animated-box">Calendario</h3>
+    <div class="courses">
+        <div class="course-card animated-box">
+            <?php require('../utils/calendar.php'); ?>
         </div>
     </div>
-    
-    <div class="dashboard">
-        <h3 class="animated-box">Corso</h3>
-        <div class="courses">
-            <div class="course-card ">I.C.T. System Developer</div>
-            <img src="../assets/img/courses/ict.jpg" alt="Logo" >
-        </div>
+</div>
+
+<div class="dashboard">
+    <h3 class="animated-box">Statistiche</h3>
+    <div class="courses">
+        <div class="course-card animated-box">Contenuto delle statistiche</div>
     </div>
-    <div class="dashboard">
-        <h3 class="animated-box">Calendario</h3>
-        <div class="courses">
-            <div class="course-card animated-box"></div>
-        </div>
+</div>
+
+<div class="dashboard">
+    <h3 class="animated-box">Bacheca</h3>
+    <div class="courses">
+        <div class="course-card animated-box">Contenuto della bacheca</div>
     </div>
-    <div class="dashboard">
-        <h3 class="animated-box">Statistiche</h3>
-        <div class="courses">
-            <div class="course-card animated-box"></div>
-        </div>
+</div>
+
+<div class="dashboard">
+    <h3 class="animated-box">Informazioni personali</h3>
+    <div class="courses">
+        <div class="course-card animated-box">Le mie info</div>
     </div>
-    <div class="dashboard">
-        <h3 class="animated-box">Bacheca</h3>
-        <div class="courses">
-            <div class="course-card animated-box"></div>
-        </div>
-    </div>
-    <div class="dashboard">
-        <h3 class="animated-box">Informazioni personali</h3>
-        <div class="courses">
-            <div class="course-card animated-box"></div>
-        </div>
-    </div>  
-    <script src="../assets/js/main.js"></script>
+</div>  
+
+<script src="../assets/js/main.js"></script>
 </body>
 </html>
