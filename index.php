@@ -10,6 +10,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./assets/css/login.css">
         <link rel="stylesheet" href="./assets/css/popup.css">
+        <!-- FontAwesome per le icone -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="shortcut icon" href="./assets/img/favicon.ico">  
     </head>
     <body>
@@ -54,7 +56,8 @@
                         </div>
                         <div class="login__field">
                             <i class="login__icon fas fa-lock"></i>
-                            <input type="password" name="password" class="login__input" placeholder="Password" required>
+                            <input type="password" id="password" name="password" class="login__input" placeholder="Password" required>
+                            <i class="toggle-password fas fa-eye" id="togglePassword"></i>
                             <p class="error-message"><?php echo $_SESSION['error_password'] ?? ''; ?></p>
                         </div>
                         <button type="submit" class="button login__submit">
@@ -100,8 +103,19 @@
             window.location.href = "<?php echo $_SESSION['redirect'] ?? 'index.php'; ?>";
         }, 500);
     }
-
-    <?php
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        var passwordField = document.getElementById("password");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            this.classList.remove("fa-eye");
+            this.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            this.classList.remove("fa-eye-slash");
+            this.classList.add("fa-eye");
+        }
+        });
+        <?php
     if (!empty($_SESSION['errors'])) {
         echo "showErrorPopup(`" . implode("<br>", $_SESSION['errors']) . "`);";
         unset($_SESSION['errors']);
@@ -112,8 +126,7 @@
         unset($_SESSION['success']);
     }
     ?>
-</script>
-
+    </script>
 
         <script src="./assets/js/main.js"></script>
         <?php require('./utils/footer.php'); ?>
