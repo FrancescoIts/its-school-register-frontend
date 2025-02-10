@@ -9,7 +9,7 @@
         <meta name="keywords" content="registro, its, smart academy, its smart academy">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./assets/css/login.css">
-        <link rel="shortcut icon" href="./assets/img/favicon.ico">
+        <link rel="shortcut icon" href="./assets/img/favicon.ico">  
     </head>
     <body>
 
@@ -30,7 +30,7 @@
         </div>
 
         <div class="header-image">
-            <img src="./img/logo.png" alt="Logo" id="rotateImage">
+            <img src="./assets/img/logo.png" alt="Logo" id="rotateImage">
         </div>
 
         <button id="theme-toggle" class="theme-toggle">🌙</button>

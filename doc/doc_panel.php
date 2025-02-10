@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Studente</title>
-    <link rel="stylesheet" href="../assets/css/student_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/doc_panel.css"> 
     <link rel="stylesheet" href="../assets/css/card_style.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
@@ -79,7 +79,7 @@
 </div>
 
 <div class="dashboard">
-    <h3 class="animated-box">Corso</h3>
+    <h3 class="animated-box">Corsi</h3>
     <div class="courses">
         <div class="course-card">I.C.T. System Developer</div>
         <img src="../assets/img/courses/" alt="Logo"> 
@@ -97,7 +97,7 @@
 </div>
 
 <div class="dashboard">
-    <h3 class="animated-box">Le tue statistiche</h3>
+    <h3 class="animated-box">Dati studenti</h3>
     <div class="courses">
         <div class="course-card animated-box">Contenuto delle statistiche</div>
     </div>
