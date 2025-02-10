@@ -17,7 +17,15 @@ function getCalendar($month, $year, $conn)
     $stmt->close();
 
     $calendar = '<div class="dashboard">';
-    $calendar .= '<h3 class="animated-box">Calendario di ' . date('F Y', strtotime("$year-$month-01")) . '</h3>';
+    $mesi = [
+        'January' => 'Gennaio', 'February' => 'Febbraio', 'March' => 'Marzo', 'April' => 'Aprile',
+        'May' => 'Maggio', 'June' => 'Giugno', 'July' => 'Luglio', 'August' => 'Agosto',
+        'September' => 'Settembre', 'October' => 'Ottobre', 'November' => 'Novembre', 'December' => 'Dicembre'
+    ];
+    
+    $monthName = date('F', strtotime("$year-$month-01")); 
+    $monthNameItaliano = $mesi[$monthName] ?? $monthName; 
+    $calendar .= '<h3 class="animated-box">Calendario di ' . $monthNameItaliano . ' ' . $year . '</h3>';    
     $calendar .= '<div class="courses"><div class="course-card animated-box">';
     $calendar .= '<table class="calendar-table"><thead><tr>';
 
