@@ -9,25 +9,31 @@
         <meta name="keywords" content="registro, its, smart academy, its smart academy">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./assets/css/login.css">
+        <link rel="stylesheet" href="./assets/css/popup.css">
         <link rel="shortcut icon" href="./assets/img/favicon.ico">  
     </head>
     <body>
 
-        <!-- ============= POPUP ERRORE ============= -->
+        <!-- Overlay -->
         <div class="popup-overlay" id="popupOverlayError"></div>
+
+        <!-- POPUP ERRORE -->
         <div class="popup" id="errorPopup">
-            <div class="popup-header" style="background-color: #c0392b; color: #fff;">Errore</div>
-            <div class="popup-content" id="popupContentError" style="color: #c0392b;"></div>
+            <div class="popup-header error">Errore</div>
+            <div class="popup-content" id="popupContentError"></div>
             <button class="popup-close" onclick="closeErrorPopup()">Chiudi</button>
         </div>
 
-        <!-- ============= POPUP SUCCESSO ============= -->
+        <!-- Overlay -->
         <div class="popup-overlay" id="popupOverlaySuccess"></div>
+
+        <!-- POPUP SUCCESSO -->
         <div class="popup" id="successPopup">
-            <div class="popup-header" style="background-color: #27ae60; color: #fff;">Successo</div>
-            <div class="popup-content" id="popupContentSuccess" style="color: #27ae60;"></div>
-            <button class="popup-close" onclick="closeSuccessPopup()">Chiudi</button>
+            <div class="popup-header success">Successo</div>
+            <div class="popup-content" id="popupContentSuccess"></div>
+            <button class="popup-close success" onclick="closeSuccessPopup()">Chiudi</button>
         </div>
+
 
         <div class="header-image">
             <img src="./assets/img/logo.png" alt="Logo" id="rotateImage">
@@ -73,51 +79,41 @@
         </div>
 
         <!-- Script per i pop-up -->
-        <script>
-            // Mostra pop-up di ERRORE
-            function showErrorPopup(errorMessage) {
-                document.getElementById("popupContentError").innerHTML = errorMessage;
-                document.getElementById("errorPopup").style.display = "block";
-                document.getElementById("popupOverlayError").style.display = "block";
-            }
+<script>
+    function showErrorPopup(errorMessage) {
+        document.getElementById("popupContentError").innerHTML = errorMessage;
+        document.getElementById("errorPopup").style.display = "block";
+        document.getElementById("popupOverlayError").style.display = "block";
+    }
 
-            // Chiude pop-up di ERRORE
-            function closeErrorPopup() {
-                document.getElementById("errorPopup").style.display = "none";
-                document.getElementById("popupOverlayError").style.display = "none";
-            }
+    function closeErrorPopup() {
+        document.getElementById("errorPopup").style.display = "none";
+        document.getElementById("popupOverlayError").style.display = "none";
+    }
 
-            // Mostra pop-up di SUCCESSO
-            function showSuccessPopup(successMessage) {
-                document.getElementById("popupContentSuccess").innerHTML = successMessage;
-                document.getElementById("successPopup").style.display = "block";
-                document.getElementById("popupOverlaySuccess").style.display = "block";
-            }
+    function showSuccessPopup(successMessage) {
+        document.getElementById("popupContentSuccess").innerHTML = successMessage;
+        document.getElementById("successPopup").style.display = "block";
+        document.getElementById("popupOverlaySuccess").style.display = "block";
 
-            // Chiude pop-up di SUCCESSO
-            function closeSuccessPopup() {
-                document.getElementById("successPopup").style.display = "none";
-                document.getElementById("popupOverlaySuccess").style.display = "none";
-            }
+        setTimeout(function() {
+            window.location.href = "<?php echo $_SESSION['redirect'] ?? 'index.php'; ?>";
+        }, 500);
+    }
 
-            // Se esistono errori in sessione, mostra il pop-up di errore
-            <?php
-            if (!empty($_SESSION['errors'])) {
-                $errors = implode("<br>", $_SESSION['errors']);
-                echo "showErrorPopup(`$errors`);";
-                unset($_SESSION['errors']);
-            }
-            ?>
+    <?php
+    if (!empty($_SESSION['errors'])) {
+        echo "showErrorPopup(`" . implode("<br>", $_SESSION['errors']) . "`);";
+        unset($_SESSION['errors']);
+    }
 
-            // Se esistono messaggi di successo in sessione, mostra il pop-up di successo
-            <?php
-            if (!empty($_SESSION['success'])) {
-                $successMsg = implode("<br>", $_SESSION['success']);
-                echo "showSuccessPopup(`$successMsg`);";
-                unset($_SESSION['success']);
-            }
-            ?>
-        </script>
+    if (!empty($_SESSION['success'])) {
+        echo "showSuccessPopup(`" . implode("<br>", $_SESSION['success']) . "`);";
+        unset($_SESSION['success']);
+    }
+    ?>
+</script>
+
 
         <script src="./assets/js/main.js"></script>
         <?php require('./utils/footer.php'); ?>

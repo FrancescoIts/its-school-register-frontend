@@ -1,18 +1,25 @@
 <?php
 session_start();
-require_once 'config.php'; 
+require_once '../utils/config.php'; 
+
+
+$_SESSION['errors'] = [];
+$_SESSION['success'] = [];
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-    // Verifica che l'email contenga il dominio @itssmartacademy.it
+
     if (strpos($email, '@itssmartacademy.it') === false) {
-        echo "Errore: l'indirizzo email deve appartenere al dominio @itssmartacademy.it.";
+        $_SESSION['errors'][] = "L'email non valida";
+        header("Location: ../index.php");
         exit;
     }
-    $sql = "SELECT * FROM `user` WHERE `email` = ?";
+
+
+    $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('s', $email);
     $stmt->execute();
@@ -20,9 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $result->fetch_assoc();
 
     if ($user) {
-        //bcrypt
+        // bcrypt
         if (password_verify($password, $user['psw'])) {
+
             if ($user['active'] == 1) {
+
                 $sqlRolesCourses = "
                     SELECT 
                         urc.id_role,
@@ -33,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         c.period
                     FROM user_role_courses urc
                     LEFT JOIN roles r ON r.id_role = urc.id_role
-                    LEFT JOIN course c ON c.id_course = urc.id_course
+                    LEFT JOIN courses c ON c.id_course = urc.id_course
                     WHERE urc.id_user = ?
                 ";
                 $stmt2 = $conn->prepare($sqlRolesCourses);
@@ -45,14 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $userCourses = [];
 
                 while ($row = $rolesCoursesResult->fetch_assoc()) {
-                    // Ruolo
                     if (!empty($row['role_name'])) {
-                        $userRoles[] = [
-                            'id_role' => $row['id_role'],
-                            'name'    => $row['role_name']
-                        ];
+                        $userRoles[] = strtolower($row['role_name']);
                     }
-                    // Corso
                     if (!empty($row['course_name'])) {
                         $userCourses[] = [
                             'id_course' => $row['id_course'],
@@ -63,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                // Salvo i dati dell’utente in $_SESSION
+            
                 $_SESSION['user'] = [
                     'id_user'   => $user['id_user'],
                     'lastname'  => $user['lastname'],
@@ -75,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'courses'   => $userCourses
                 ];
 
-                // Salvataggio sessione in DB (con scadenza 30 minuti)
                 $session_id = session_id();
                 $sqlSession = "
                     INSERT INTO sessions (id_user, session_id, data_creazione, data_scadenza)
@@ -85,36 +88,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtSession->bind_param('is', $user['id_user'], $session_id);
                 $stmtSession->execute();
 
-                $redirectPage = 'index.php'; 
-               
-                $roleNames = array_map(function($item) {
-                    return strtolower($item['name']); 
-                }, $userRoles);
+                
+                $_SESSION['success'][] = "Login effettuato con successo!";
 
-                if (in_array('admin', $roleNames)) {
-                    $redirectPage = '../admin/admin_panel.php';
-                } elseif (in_array('docente', $roleNames)) {
-                    $redirectPage = '../doc/doc_panel.php';
-                } elseif (in_array('studente', $roleNames)) {
-                    $redirectPage = '../student/student_panel.php';
+            
+                if (in_array('admin', $userRoles)) {
+                    $_SESSION['redirect'] = "../admin/admin_panel.php";
+                } elseif (in_array('docente', $userRoles)) {
+                    $_SESSION['redirect'] = "../doc/doc_panel.php";
+                } elseif (in_array('studente', $userRoles)) {
+                    $_SESSION['redirect'] = "../registro/student/student_panel.php";
+                } else {
+                    $_SESSION['errors'][] = "Ruolo non valido. Contatta l'amministratore.";
+                    header("Location: ../index.php");
+                    exit;
                 }
 
-                // Reindirizza alla pagina corrispondente
-                header("Location: $redirectPage");
+                header("Location: ../index.php");
                 exit;
 
             } else {
-                // Utente non attivo
-                echo "Utente non attivo. Contatta l’amministratore.";
+                $_SESSION['errors'][] = "L'account non è attivo.";
             }
         } else {
-            echo "Email o password non validi.";
+            $_SESSION['errors'][] = "Email o password errati.";
         }
     } else {
-        echo "Email o password non validi.";
+        $_SESSION['errors'][] = "Email o password errati.";
     }
 
+    header("Location: ../index.php");
+    exit;
 } else {
-    header("Location: index.php");
+    header("Location: ../index.php");
     exit;
 }

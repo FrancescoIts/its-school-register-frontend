@@ -81,9 +81,14 @@
 <div class="dashboard">
     <h3 class="animated-box">Corsi</h3>
     <div class="courses">
+    <br>
         <div class="course-card">I.C.T. System Developer</div>
+        <br>
+        <div class="course-card">Marketing Technologist</div>
+         <!--<img src="../assets/img/courses/" alt="Logo"> 
+
         <img src="../assets/img/courses/" alt="Logo"> 
-        <!-- IMMAGINE CHE VIENE PRESA IN BASE AI DATI DELLA SESSIONE -->
+        IMMAGINE CHE VIENE PRESA IN BASE AI DATI DELLA SESSIONE -->
     </div>
 </div>
 

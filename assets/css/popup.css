@@ -1,0 +1,120 @@
+/* ====== POPUP GENERALI ====== */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(3px); /* Sfocatura per effetto più elegante */
+}
+
+/* ====== STILE BASE DEI POPUP ====== */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards, slideIn 0.5s forwards;
+    z-index: 1000;
+}
+
+/* ====== ANIMAZIONI ====== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -60%);
+    }
+    to {
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* ====== HEADER DEL POPUP ====== */
+.popup-header {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+    color: white;
+}
+
+/* Popup ERRORE */
+.popup-header.error {
+    background-color: #c0392b;
+}
+
+/* Popup SUCCESSO */
+.popup-header.success {
+    background-color: #27ae60;
+}
+
+/* ====== CONTENUTO DEL POPUP ====== */
+.popup-content {
+    font-size: 16px;
+    padding: 15px;
+    color: #444;
+}
+
+/* ====== BOTTONE DI CHIUSURA ====== */
+.popup-close {
+    display: inline-block;
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+.popup-close:hover {
+    background-color: #a52a2a;
+    transform: scale(1.05);
+}
+
+/* Bottone success */
+.popup-close.success {
+    background-color: #27ae60;
+}
+
+.popup-close.success:hover {
+    background-color: #218c53;
+}
+
+/* ====== RESPONSIVE ====== */
+@media screen and (max-width: 600px) {
+    .popup {
+        width: 90%;
+        font-size: 14px;
+    }
+
+    .popup-content {
+        padding: 10px;
+    }
+
+    .popup-close {
+        padding: 6px 12px;
+    }
+}
