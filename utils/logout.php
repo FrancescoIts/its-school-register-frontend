@@ -11,7 +11,7 @@ if (isset($_SESSION['user'])) {
     $stmt->bind_param('si', $session_id, $id_user);
     $stmt->execute();
 }
-
+session_unset();
 session_destroy();
 header("Location: ../index.php");
 exit;

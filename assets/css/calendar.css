@@ -1,0 +1,99 @@
+.calendar-day {
+    position: relative;
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
+}
+
+.calendar-day.has-event {
+    font-weight: bold;
+}
+
+.event-dot {
+    width: 6px;
+    height: 6px;
+    background-color: blue;
+    border-radius: 50%;
+    margin: 4px auto;
+}
+
+.popup {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(10px);
+z-index: 9999;
+opacity: 0;
+visibility: hidden;
+transition: all 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.popup:target {
+opacity: 1;
+visibility: visible;
+}
+
+.popup__content {
+width: 90%; /* Imposta la larghezza relativa allo schermo */
+max-width: 500px; /* Imposta una larghezza massima */
+padding: 20px;
+background-color: white;
+box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.2);
+border-radius: 10px;
+text-align: center;
+overflow-y: auto; /* Per contenuti lunghi */
+color: rgb(0, 0, 0);
+}
+
+.popup__text {
+font-size: 1.2rem;
+margin-bottom: 2rem;
+word-wrap: break-word; /* Aggiunto per gestire testi lunghi */
+color: rgb(53, 44, 44);
+}
+
+.close-popup {
+display: inline-block;
+margin-top: 10px;
+text-decoration: none;
+font-size: 1.2rem;
+color: red;
+cursor: pointer;
+}
+
+
+@media (max-width: 600px) {
+.popup__content {
+    width: 95%; 
+    padding: 15px;
+}
+
+.popup__text {
+    font-size: 1rem;
+}
+
+.close-popup {
+    font-size: 1rem;
+}
+}
+.calendar-table {
+width: 100%;
+border-collapse: collapse;
+text-align: center;
+background: rgba(203, 108, 247, 0.3);
+}
+
+.calendar-table th,
+.calendar-table td {
+padding: 10px;
+border: 1px solid #ddd;
+min-width: 50px;
+vertical-align: top;
+color: #FFF;
+}

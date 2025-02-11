@@ -25,7 +25,7 @@ function getCalendar($month, $year, $conn)
     
     $monthName = date('F', strtotime("$year-$month-01")); 
     $monthNameItaliano = $mesi[$monthName] ?? $monthName; 
-    $calendar .= '<h3 class="animated-box">Calendario di ' . $monthNameItaliano . ' ' . $year . '</h3>';    
+    $calendar .= '<h3 class="animated-box">Lezioni di ' . $monthNameItaliano . ' ' . $year . '</h3>';    
     $calendar .= '<div class="courses"><div class="course-card animated-box">';
     $calendar .= '<table class="calendar-table"><thead><tr>';
 
@@ -76,93 +76,6 @@ function getCalendar($month, $year, $conn)
 echo getCalendar(date('m'), date('Y'), $conn);
 ?>
 
-<style>
-    .calendar-day {
-        position: relative;
-        cursor: pointer;
-        padding: 10px;
-        text-align: center;
-    }
-
-    .calendar-day.has-event {
-        font-weight: bold;
-    }
-
-    .event-dot {
-        width: 6px;
-        height: 6px;
-        background-color: blue;
-        border-radius: 50%;
-        margin: 4px auto;
-    }
-
-    .popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    z-index: 9999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.popup:target {
-    opacity: 1;
-    visibility: visible;
-}
-
-.popup__content {
-    width: 90%; /* Imposta la larghezza relativa allo schermo */
-    max-width: 500px; /* Imposta una larghezza massima */
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    text-align: center;
-    overflow-y: auto; /* Per contenuti lunghi */
-    color: rgb(0, 0, 0);
-}
-
-.popup__text {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    word-wrap: break-word; /* Aggiunto per gestire testi lunghi */
-    color: rgb(53, 44, 44);
-}
-
-.close-popup {
-    display: inline-block;
-    margin-top: 10px;
-    text-decoration: none;
-    font-size: 1.2rem;
-    color: red;
-    cursor: pointer;
-}
-
-/* Media Query per dispositivi molto piccoli */
-@media (max-width: 600px) {
-    .popup__content {
-        width: 95%; /* Riduci la larghezza su schermi più piccoli */
-        padding: 15px;
-    }
-
-    .popup__text {
-        font-size: 1rem;
-    }
-
-    .close-popup {
-        font-size: 1rem;
-    }
-}
-
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -175,6 +88,7 @@ echo getCalendar(date('m'), date('Y'), $conn);
             });
         });
         document.querySelector('.close-popup').addEventListener('click', function () {
+            event.preventDefault();
             document.getElementById('popup').style.opacity = '0';
             document.getElementById('popup').style.visibility = 'hidden';
         });
