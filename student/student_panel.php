@@ -1,33 +1,29 @@
 <?php 
-require_once './check_session.php'; 
+require_once '../utils/check_session.php'; 
+require_once '../utils/course_image_map.php';
+checkSession();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 $user = $_SESSION['user'];
 
-
 $nome_completo = $user['firstname'] . " " . $user['lastname'];
-
-
 $corsi = $user['courses'] ?? [];
 
-
 if (count($corsi) > 0) {
-    $corso     = $corsi[0]['name'];
-
-    $file_img  = strtolower(str_replace(' ', '_', $corso)) . ".jpg";
+    $corso = $corsi[0]['name'];
+    $file_img = getCourseImage($corso);
     $corso_img = "../assets/img/courses/" . $file_img;
 } else {
-    $corso     = "Nessun corso assegnato";
+    $corso = "Nessun corso assegnato";
     $corso_img = "../assets/img/courses/default.jpg";
 }
 
 if (!file_exists($corso_img)) {
     $corso_img = "../assets/img/courses/default.jpg";
 }   
-
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -36,7 +32,6 @@ if (!file_exists($corso_img)) {
     <title>Dashboard Studente</title>
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
-    <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
@@ -92,11 +87,12 @@ if (!file_exists($corso_img)) {
 <div class="dashboard">
     <h3 class="">Le tue statistiche</h3>
     <div class="courses">
-        <div class="course-card">
-            Contenuto delle statistiche
+        <div class="">
+            <?php include '../utils/stats.php'; ?>
         </div>
     </div>
 </div>
+
 
 <!-- Sezione Bacheca -->
 <div class="dashboard">
@@ -110,7 +106,7 @@ if (!file_exists($corso_img)) {
 <div class="dashboard">
     <h3 class="">Le tue informazioni</h3>
     <div class="courses">
-        <div class="course-card">
+        <div class="course-card info">
             <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
             <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
             <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
@@ -118,6 +114,15 @@ if (!file_exists($corso_img)) {
         </div>
     </div>
 </div>  
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".course-card.info p").forEach(function (element) {
+        element.addEventListener("click", function () {
+            this.classList.toggle("visible");
+        });
+    });
+});
+</script>
 
 <script src="../assets/js/main.js"></script>
 </body>

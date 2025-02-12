@@ -57,7 +57,7 @@
                         <div class="login__field">
                             <i class="login__icon fas fa-lock"></i>
                             <input type="password" id="password" name="password" class="login__input" placeholder="Password" required>
-                            <i class="toggle-password fas fa-eye" id="togglePassword"></i>
+                            <i class="pss fas fa-eye" id="togglePassword"></i>
                             <p class="error-message"><?php echo $_SESSION['error_password'] ?? ''; ?></p>
                         </div>
                         <button type="submit" class="button login__submit">
