@@ -94,6 +94,114 @@ if (!file_exists($corso_img)) {
 </div>
 
 
+<!-- Sezione Statistiche -->
+<div class="dashboard">
+    <h3 class="">Le tue statistiche</h3>
+    <div class="courses">
+        <div class="course-card">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <!-- Grafico Percentuale Assenze -->
+            <div class="chart-container">
+                <h3>Percentuale di Assenza</h3>
+                <div class="chart-wrapper">
+                    <canvas id="absenceChart"></canvas>
+                </div> <div class="absence-percentage" id="percent"></div>
+               
+            </div>
+
+            <br>
+            <br>
+
+            <!-- Grafico Giorni della Settimana con più Assenze -->
+            <div class="chart-container">
+                <h3>Assenze per giorno della settimana</h3>
+                <div class="chart-wrapper">
+                    <canvas id="weekAbsencesChart"></canvas>
+                </div>
+            </div>  
+
+            <!-- Script per caricare i dati -->
+            <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch("../utils/stats.php")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error(data.error);
+                            return;
+                        }
+
+                        const totalAbsences = data.total_absences;
+                        const totalMaxHours = data.total_max_hours;
+                        const weekLabels = Object.keys(data.week_absences);
+                        const weekData = Object.values(data.week_absences);
+                        
+                        // Percentuale di assenza
+                        const absencePercentage = ((totalAbsences / totalMaxHours) * 100).toFixed(1);
+                        const attendancePercentage = (100 - absencePercentage).toFixed(1);
+                        document.querySelector('.absence-percentage').innerHTML = 
+                            `<p><strong>Assenze: ${absencePercentage}%</strong> `;
+
+                        // Grafico a torta
+                        const ctx = document.getElementById('absenceChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Ore di Assenza', 'Ore Frequentate'],
+                                datasets: [{
+                                    data: [totalAbsences, totalMaxHours - totalAbsences],
+                                    backgroundColor: ['#FF4B5C', '#4CAF50'],
+                                    hoverOffset: 10
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(tooltipItem) {
+                                                return tooltipItem.raw + " ore";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        // Grafico a barre
+                        if (weekLabels.length > 0) {
+                            const ctx2 = document.getElementById('weekAbsencesChart').getContext('2d');
+                            new Chart(ctx2, {
+                                type: 'bar',
+                                data: {
+                                    labels: weekLabels,
+                                    datasets: [{
+                                        label: 'Ore di assenza per giorno',
+                                        data: weekData,
+                                        backgroundColor: '#FFA500'
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Errore nel caricamento delle statistiche:', error));
+            });
+            </script>
+        </div>
+    </div>
+</div>
+
 
 
 
