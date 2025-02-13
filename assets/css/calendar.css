@@ -1,50 +1,42 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;800&display=swap");
-body {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  font-family: "Poppins", serif;
-  background: rgb(238, 174, 202);
-  background: radial-gradient(circle, rgb(238, 174, 202) 0%, rgb(148, 187, 233) 100%);
+.calendar-day {
+    position: relative;
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
 }
 
-h1 {
-  font-weight: 800;
-  margin: 1rem 0 0;
+.calendar-day.has-event {
+    font-weight: bold;
 }
 
-ul {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  flex-wrap: wrap;
-  list-style: none;
+.event-dot {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(255, 17, 0, 0.986);
+    border-radius: 50%;
+    margin: 4px auto;
 }
-ul li {
-  display: flex;
-  width: 10rem;
-  height: 10rem;
-  margin: 0.25rem;
-  flex-flow: column;
-  border-radius: 0.2rem;
-  padding: 1rem;
-  font-weight: 300;
-  font-size: 0.8rem;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+
+.calendar-table {
+width: 100%;
+border-collapse: collapse;
+text-align: center;
+border-radius: 20px;
 }
-ul li time {
-  font-size: 2rem;
-  margin: 0 0 1rem 0;
-  font-weight: 500;
+
+.calendar-table td {
+padding: 10px;
+border: 1px solid #ffffff;
+min-width: 50px;
+vertical-align: top;
+color: #FFF;
+background: #38A5DD;
 }
-ul .today {
-  background: rgba(255, 255, 255, 0.4392156863);
-}
-ul .today time {
-  font-weight: 800;
+.calendar-table th {
+padding: 10px;
+border: 1px solid #ffffff;
+background: rgb(173, 25, 241);
+min-width: 50px;
+vertical-align: top;
+color: #FFF;
 }

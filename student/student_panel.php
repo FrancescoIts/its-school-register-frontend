@@ -1,6 +1,7 @@
 <?php 
 require_once '../utils/check_session.php'; 
 require_once '../utils/course_image_map.php';
+
 checkSession();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -32,11 +33,12 @@ if (!file_exists($corso_img)) {
     <title>Dashboard Studente</title>
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
+    <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
-
+<script src="../assets/js/main.js"></script>
 <script>
     // Barra di progresso in base allo scroll
     document.addEventListener("scroll", function() {
@@ -45,6 +47,14 @@ if (!file_exists($corso_img)) {
         const scrollPercent = (scrollTop / scrollHeight) * 100;
         document.getElementById("scrollProgress").style.width = scrollPercent + "%";
     });
+    // Dati personali blurati
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".course-card.info p").forEach(function (element) {
+        element.addEventListener("click", function () {
+            this.classList.toggle("visible");
+        });
+    });
+});
 
 </script>
 
@@ -71,24 +81,30 @@ if (!file_exists($corso_img)) {
     </div>
 </div>
 
-<!-- Sezione Calendario -->
+<!-- Sezione Calendario con Eventi -->
 <div class="dashboard">
-    <h3 class="">Calendario</h3>
+    <h3 class="">Calendario Eventi (Lezioni)</h3>
     <div class="courses">
         <div class="course-card">
-            <?php 
-                require('../utils/calendar.php'); 
-            ?>
+        <?php
+            require('../utils/calendar.php');
+        ?>
         </div>
     </div>
 </div>
 
-<!-- Sezione Statistiche -->
+
+
+
+
+<!-- Sezione Calendario con Assenze -->
 <div class="dashboard">
-    <h3 class="">Le tue statistiche</h3>
+    <h3 class="">Calendario Assenze</h3>
     <div class="courses">
-        <div class="">
-            <?php include '../utils/stats.php'; ?>
+        <div class="course-card" id="calendar-absences">
+        <?php
+            require('../utils/calendar_absences.php');
+        ?>
         </div>
     </div>
 </div>
@@ -114,16 +130,5 @@ if (!file_exists($corso_img)) {
         </div>
     </div>
 </div>  
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".course-card.info p").forEach(function (element) {
-        element.addEventListener("click", function () {
-            this.classList.toggle("visible");
-        });
-    });
-});
-</script>
-
-<script src="../assets/js/main.js"></script>
 </body>
 </html>
