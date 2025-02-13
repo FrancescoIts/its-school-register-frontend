@@ -93,9 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             
                 if (in_array('admin', $userRoles)) {
-                    $_SESSION['redirect'] = "../admin/admin_panel.php";
+                    $_SESSION['redirect'] = "../registro/admin/admin_panel.php";
                 } elseif (in_array('docente', $userRoles)) {
-                    $_SESSION['redirect'] = "../doc/doc_panel.php";
+                    $_SESSION['redirect'] = "../registro/doc/doc_panel.php";
                 } elseif (in_array('studente', $userRoles)) {
                     $_SESSION['redirect'] = "../registro/student/student_panel.php";
                 } else {

@@ -55,6 +55,28 @@ if (!file_exists($corso_img)) {
         });
     });
 });
+document.addEventListener("DOMContentLoaded", function() {
+    const userName = "Ciao <?php echo htmlspecialchars($user['firstname']); ?>"; // Nome utente
+    const dynamicSpan = document.getElementById("dynamicText");
+    const cursorSpan = document.getElementById("cursor");
+
+    let i = 0;
+
+    function typeEffect() {
+        if (i < userName.length) {
+            dynamicSpan.innerHTML += userName.charAt(i);
+            i++;
+            setTimeout(typeEffect, 100); // Velocità di scrittura
+        } else {
+            cursorSpan.style.display = "inline-block"; // Mantiene il cursore
+        }
+    }
+
+    if (dynamicSpan) {
+        typeEffect();
+    }
+});
+
 
 </script>
 
@@ -62,15 +84,19 @@ if (!file_exists($corso_img)) {
 
 <!-- Navbar -->
 <div class="navbar">
-    <div class="logo"><a href="https://www.itssmart.it/">
-        <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
+    <div class="logo">
+        <a href="https://www.itssmart.it/">
+            <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
         </a>
     </div>
-    <div>
-        <a class="logout" href="../utils/logout.php">Logout</a>
-        <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <div class="navbar-title">
+        <a class="type1">ITS@Registro</a>:<a class="type2">~</a>$ 
+        <span id="dynamicText"></span><span id="cursor">|</span>
     </div>
+    <a class="logout" href="../utils/logout.php">Logout</a>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
 </div>
+
 
 <!-- Sezione Corso -->
 <div class="dashboard">
@@ -201,8 +227,6 @@ if (!file_exists($corso_img)) {
         </div>
     </div>
 </div>
-
-
 
 
 <!-- Sezione Calendario con Assenze -->
