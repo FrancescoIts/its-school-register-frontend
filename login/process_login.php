@@ -2,23 +2,21 @@
 session_start();
 require_once '../utils/config.php'; 
 
-
 $_SESSION['errors'] = [];
 $_SESSION['success'] = [];
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-
+    // Controllo che l'email contenga '@itssmartacademy.it'
     if (strpos($email, '@itssmartacademy.it') === false) {
-        $_SESSION['errors'][] = "L'email non valida";
+        $_SESSION['errors'][] = "L'email non è valida (deve contenere @itssmartacademy.it).";
         header("Location: ../index.php");
         exit;
     }
 
-
+    // 1) Recupero l'utente dal DB
     $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('s', $email);
@@ -26,12 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
+    // 2) Se l'utente esiste, verifico password
     if ($user) {
-        // bcrypt
         if (password_verify($password, $user['psw'])) {
 
+            // 3) Verifico se l'account è attivo
             if ($user['active'] == 1) {
 
+                // 4) Prelevo dal DB ruoli e corsi associati a quest’utente
                 $sqlRolesCourses = "
                     SELECT 
                         urc.id_role,
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-            
+                // 5) Preparo un array user con tutte le info da tenere in sessione
                 $_SESSION['user'] = [
                     'id_user'   => $user['id_user'],
                     'lastname'  => $user['lastname'],
@@ -79,19 +79,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'courses'   => $userCourses
                 ];
 
+                // 6) Salvo anche sul database (tabella `sessions`) i dati JSON
                 $session_id = session_id();
+                $sessionDataJson = json_encode($_SESSION['user']);  // Trasforma l’array in JSON
+               
                 $sqlSession = "
-                    INSERT INTO sessions (id_user, session_id, data_creazione, data_scadenza)
-                    VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE))
+                    INSERT INTO sessions (id_user, session_id, data_creazione, data_scadenza, session_data)
+                    VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE), ?)
+                    ON DUPLICATE KEY UPDATE
+                        data_scadenza = VALUES(data_scadenza),
+                        session_data  = VALUES(session_data)
                 ";
                 $stmtSession = $conn->prepare($sqlSession);
-                $stmtSession->bind_param('is', $user['id_user'], $session_id);
+                $stmtSession->bind_param('iss', $user['id_user'], $session_id, $sessionDataJson);
                 $stmtSession->execute();
 
-                
+                // 7) In base ai ruoli, preparo il redirect
                 $_SESSION['success'][] = "Login effettuato con successo!";
 
-            
                 if (in_array('admin', $userRoles)) {
                     $_SESSION['redirect'] = "../registro/admin/admin_panel.php";
                 } elseif (in_array('docente', $userRoles)) {
@@ -104,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
 
+              
                 header("Location: ../index.php");
                 exit;
 

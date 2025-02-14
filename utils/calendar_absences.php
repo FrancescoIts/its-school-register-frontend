@@ -54,40 +54,6 @@ $stmtE->close();
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
 
-    .navigation { text-align:center; margin-top:10px; }
-    .month-nav {
-      background-color: #3498db;
-      color: #ffffff;
-      border: none;
-      padding: 8px 12px;
-      margin: 0 5px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.3s ease;
-    }
-    .month-nav:hover {
-      background-color: #2980b9;
-    }
-    .month-nav:active {
-      background-color: #1f6390;
-    }
-
-    /* Dot per assenze (rosso) */
-    .absence-dot {
-      display: block;
-      margin: 4px auto;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: red; /* rosso */
-    }
-
-    /* Giorno che ha un'assenza */
-    .absence-day {
-      background-color: #ffe5e5; /* leggero rosino */
-    }
-
   </style>
 </head>
 <body>
@@ -104,12 +70,12 @@ let currentMonth = new Date().getMonth() + 1; // 1..12 (oggi)
 
 function renderCalendar(month, year) {
     // Calcola quanti giorni nel mese e che giorno della settimana è il 1°
-    const firstDayJS   = new Date(year, month - 1, 1).getDay(); // 0=Dom,1=Lun,...
-    const daysInMonth  = new Date(year, month, 0).getDate();    // es. 30,31,...
+    const firstDayJS   = new Date(year, month - 1, 1).getDay(); 
+    const daysInMonth  = new Date(year, month, 0).getDate();    
 
-    // Label giorni
+
     const daysOfWeek = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
-    // Label mesi
+
     const monthsIta = [
       'Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
       'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'
@@ -162,13 +128,17 @@ function renderCalendar(month, year) {
     }
 
     html += '</tr></tbody></table>';
-
+    const monthNames = [
+        "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+        "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
+      ];
     // Pulsanti next/prev
     let prevM = (month === 1)? 12 : (month-1);
     let nextM = (month === 12)? 1  : (month+1);
+    
     html += `<div class="navigation">
-               <button class="month-nav" data-month="${prevM}">⬅</button>
-               <button class="month-nav" data-month="${nextM}">➡</button>
+               <button class="month-nav" data-month="${prevM}"> ${monthNames[prevM - 1]}</button>
+               <button class="month-nav" data-month="${nextM}"> ${monthNames[nextM - 1]}</button>
              </div>`;
 
     html += '</div>'; // fine container

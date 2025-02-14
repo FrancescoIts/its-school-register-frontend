@@ -201,3 +201,19 @@ body {
     text-align: left;
     font-size: 2.2em;
 }
+
+.navigation { text-align:center; margin-top:10px; }
+
+
+.absence-dot {
+  display: block;
+  margin: 4px auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: red;
+}
+
+.absence-day {
+  background-color: #ffe5e5; 
+}

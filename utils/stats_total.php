@@ -1,123 +1,36 @@
 <?php
 require_once 'config.php';
 require_once 'check_session.php';
-
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Se la richiesta è POST, significa che stiamo chiedendo i dati via AJAX
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Impostiamo l'header a JSON così da evitare l'errore di parsing in JavaScript
-    header('Content-Type: application/json; charset=utf-8');
+$user = checkSession(true, ['docente','admin','sadmin']);
 
-    // Assicuriamoci che l'utente sia loggato
-    if (!isset($_SESSION['user']['id_user'])) {
-        echo json_encode(["error" => "Utente non autenticato."]);
-        exit;
-    }
-
-    $id_user = $_SESSION['user']['id_user'];
-    $user_role = $_SESSION['user']['role'];
-
-    // Consentiamo l'accesso solo a docente (2), admin (3) e superadmin (4)
-    $allowed_roles = [2, 3, 4];
-    if (!in_array($user_role, $allowed_roles)) {
-        echo json_encode(["error" => "Accesso negato."]);
-        exit;
-    }
-
-    // Controlliamo che ci sia l'id_user dello studente
-    if (!isset($_POST['id_user']) || empty($_POST['id_user'])) {
-        echo json_encode(["error" => "ID studente mancante."]);
-        exit;
-    }
-    $student_id = (int) $_POST['id_user'];
-
-    // 1. Query totale assenze / ore massime
-    $queryTotal = "
-        SELECT 
-            SUM(absence_hours) AS total_absences, 
-            (COUNT(DISTINCT date) * 8) AS total_max_hours
-        FROM attendance
-        WHERE id_user = ?
-    ";
-    $stmt = $conn->prepare($queryTotal);
-    $stmt->bind_param("i", $student_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $total_absences = $row['total_absences'] ?? 0;
-    $total_max_hours = $row['total_max_hours'] ?? 1; // Evitiamo /0
-    $stmt->close();
-
-    // 2. Query assenze per giorno della settimana
-    $queryWeekDays = "
-        SELECT 
-            DAYOFWEEK(date) AS weekday, 
-            SUM(absence_hours) AS total_absences
-        FROM attendance
-        WHERE id_user = ?
-        GROUP BY DAYOFWEEK(date)
-        ORDER BY weekday
-    ";
-    $stmt = $conn->prepare($queryWeekDays);
-    $stmt->bind_param("i", $student_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Mappa DAYS: Domenica=1 ... Sabato=7
-    $weekdaysMap = [
-        1 => "Domenica",
-        2 => "Lunedì",
-        3 => "Martedì",
-        4 => "Mercoledì",
-        5 => "Giovedì",
-        6 => "Venerdì",
-        7 => "Sabato"
-    ];
-    $week_absences = array_fill_keys(array_values($weekdaysMap), 0);
-
-    while ($row = $result->fetch_assoc()) {
-        $dayName = $weekdaysMap[$row['weekday']];
-        $week_absences[$dayName] = (float) $row['total_absences'];
-    }
-    $stmt->close();
-
-    // Ritorniamo il JSON
-    echo json_encode([
-        "total_absences" => (float) $total_absences,
-        "total_max_hours" => (int) $total_max_hours,
-        "week_absences" => $week_absences
-    ]);
-    exit;
-}
-
-// Se invece la richiesta è GET (normalmente quando navighiamo la pagina),
-// mostriamo l'HTML con l'elenco studenti + JS per la chiamata AJAX.
-
-// Verifichiamo ancora il ruolo (solo docenti, admin, superadmin)
-if (!isset($_SESSION['user']['role']) || !in_array($_SESSION['user']['role'], [2, 3, 4])) {
-    die("Accesso negato");
-}
-
-// A questo punto recuperiamo la lista studenti
-// Nei tuoi dump non esiste un campo "full_name". Possiamo farlo concatenando firstname e lastname.
-$queryStudents = "
+$queryStats = "
     SELECT 
-      u.id_user, 
-      CONCAT(u.firstname, ' ', u.lastname) AS full_name
+        u.id_user, 
+        CONCAT(u.firstname, ' ', u.lastname) AS full_name,
+        SUM(a.absence_hours) AS total_absences,
+        (COUNT(DISTINCT a.date) * 8) AS total_max_hours
     FROM users u
+    LEFT JOIN attendance a ON u.id_user = a.id_user
     INNER JOIN user_role_courses urc ON u.id_user = urc.id_user
-    WHERE urc.id_role = 1 -- Ruolo studente
+    WHERE urc.id_role = 1 -- Solo studenti
     GROUP BY u.id_user
     ORDER BY full_name
 ";
-$stmt = $conn->prepare($queryStudents);
+$stmt = $conn->prepare($queryStats);
 $stmt->execute();
 $result = $stmt->get_result();
 $students = [];
+
 while ($row = $result->fetch_assoc()) {
-    $students[] = $row;
+    $students[] = [
+        'id_user'          => $row['id_user'],
+        'full_name'        => $row['full_name'],
+        'total_absences'   => $row['total_absences'] ?? 0,
+        'total_max_hours'  => $row['total_max_hours'] ?? 0
+    ];
 }
 $stmt->close();
 ?>
@@ -125,93 +38,171 @@ $stmt->close();
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiche Assenze Studenti</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .student-list {
-            margin-bottom: 20px;
-        }
-        .student-item {
-            cursor: pointer;
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin: 5px;
-            display: inline-block;
-            background-color: #f9f9f9;
-        }
-        .student-item:hover {
-            background-color: #e0e0e0;
-        }
-        #stats-container {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            background: #f4f4f4;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiche Assenze Studenti</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h2>Elenco Studenti</h2>
-<div class="student-list">
-    <?php foreach ($students as $student): ?>
-        <div class="student-item" data-id="<?= htmlspecialchars($student['id_user']) ?>">
-            <?= htmlspecialchars($student['full_name']) ?>
-        </div>
-    <?php endforeach; ?>
-</div>
+<h2>Statistiche Assenze Studenti</h2>
 
-<h2>Statistiche Assenze</h2>
-<div id="stats-container">
-    <p>Seleziona uno studente per vedere le statistiche.</p>
+<div class="student-list">
+  <?php if (!empty($students)): ?>
+    <?php foreach ($students as $student): ?>
+      <div class="student-item" data-userid="<?= $student['id_user'] ?>">
+        <div class="student-title">
+          <?= htmlspecialchars($student['full_name']) ?>
+        </div>
+        <p class="student-summary">
+          Assenze totali: <?= htmlspecialchars($student['total_absences']) ?> ore
+        </p>
+
+        <div class="student-details" id="details-<?= $student['id_user'] ?>">
+          <h4>Dettagli assenze per <?= htmlspecialchars($student['full_name']) ?></h4>
+
+          <div class="charts-container">
+              <div class="chart-container">
+                  <h3>Percentuale di Assenza</h3>
+                  <div class="chart-wrapper">
+                      <canvas id="absenceChart-<?= $student['id_user'] ?>"></canvas>
+                  </div>
+                  <div class="absence-percentage" id="percent-<?= $student['id_user'] ?>"></div>
+              </div>
+
+              <div class="chart-container">
+                  <h3>Assenze per giorno della settimana</h3>
+                  <div class="chart-wrapper">
+                      <canvas id="weekAbsencesChart-<?= $student['id_user'] ?>"></canvas>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  <?php else: ?>
+      <p>Nessuno studente trovato.</p>
+  <?php endif; ?>
 </div>
 
 <script>
-$(document).ready(function() {
-    $(".student-item").click(function() {
-        const studentId = $(this).data("id");
+// Variabile per tenere traccia del pannello aperto
+let openStudentId = null;
 
-        $.ajax({
-            url: "stats_total.php", // Stesso file
-            method: "POST",
-            dataType: "json",
-            data: {
-                id_user: studentId
-            },
-            success: function(response) {
-                if (response.error) {
-                    $("#stats-container").html(
-                        "<p style='color: red;'>" + response.error + "</p>"
-                    );
-                } else {
-                    let statsHtml = "<p><strong>Ore di assenza totali:</strong> " 
-                                    + response.total_absences + "</p>";
-                    statsHtml += "<p><strong>Ore massime disponibili:</strong> " 
-                                 + response.total_max_hours + "</p>";
-                    statsHtml += "<h3>Assenze per giorno della settimana:</h3><ul>";
-                    
-                    $.each(response.week_absences, function(day, hours) {
-                        statsHtml += "<li>" + day + ": " + hours + " ore</li>";
-                    });
-                    
-                    statsHtml += "</ul>";
-                    $("#stats-container").html(statsHtml);
-                }
-            },
-            error: function(xhr, status, error) {
-                $("#stats-container").html(
-                    "<p style='color: red;'>Errore nel recupero delle statistiche: " + error + "</p>"
-                );
+document.addEventListener('DOMContentLoaded', function() {
+    const items = document.querySelectorAll('.student-item');
+
+    items.forEach(item => {
+        item.addEventListener('click', function() {
+            const userId = this.getAttribute('data-userid');
+            const detailDiv = document.getElementById('details-' + userId);
+
+            // Se è già aperto, chiudilo
+            if (openStudentId === userId) {
+                detailDiv.style.display = 'none';
+                openStudentId = null;
+                return;
             }
+
+            // Chiudi tutti i dettagli aperti
+            closeAllDetails();
+
+            // Mostra il dettaglio selezionato
+            detailDiv.style.display = 'block';
+            openStudentId = userId;
+
+            // Carica i dati via fetch
+            loadStudentStats(userId);
         });
     });
 });
+
+// Funzione per chiudere tutti i dettagli
+function closeAllDetails() {
+    document.querySelectorAll('.student-details').forEach(det => {
+        det.style.display = 'none';
+    });
+}
+
+function loadStudentStats(userId) {
+    fetch('../utils/stats_student.php?id_user=' + userId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+
+            const totalAbsences = data.total_absences;
+            const totalMaxHours = data.total_max_hours;
+            const weekAbsences = data.week_absences || {};
+
+            const percentDiv = document.getElementById('percent-' + userId);
+            percentDiv.innerHTML = `<p><strong>Assenze: ${((totalAbsences / totalMaxHours) * 100).toFixed(1)}%</strong></p>`;
+
+            const absenceChartId = 'absenceChart-' + userId;
+            const weekChartId = 'weekAbsencesChart-' + userId;
+
+            new Chart(document.getElementById(absenceChartId).getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ore di Assenza', 'Ore Frequentate'],
+                    datasets: [{
+                        data: [totalAbsences, totalMaxHours - totalAbsences],
+                        backgroundColor: ['#FF4B5C', '#4CAF50'],
+                        hoverOffset: 10
+                    }]
+                }
+            });
+
+            // Traduzione e ordine dei giorni della settimana
+            const giorniOrdinati = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+            const giorniMappa = {
+                "Monday": "Lunedì",
+                "Tuesday": "Martedì",
+                "Wednesday": "Mercoledì",
+                "Thursday": "Giovedì",
+                "Friday": "Venerdì",
+                "Saturday": "Sabato",
+                "Sunday": "Domenica"
+            };
+
+            // Creiamo gli array dei giorni e delle assenze in ordine corretto
+            const weekLabels = [];
+            const weekData = [];
+
+            giorniOrdinati.forEach(giorno => {
+                const engDay = Object.keys(giorniMappa).find(key => giorniMappa[key] === giorno);
+                weekLabels.push(giorno);
+                weekData.push(weekAbsences[engDay] || 0);
+            });
+
+            if (weekLabels.length > 0) {
+                new Chart(document.getElementById(weekChartId).getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: weekLabels,
+                        datasets: [{
+                            label: 'Ore di assenza per giorno',
+                            data: weekData,
+                            backgroundColor: '#FFA500'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => console.error('Errore nel caricamento delle statistiche:', error));
+}
+
 </script>
 
 </body>

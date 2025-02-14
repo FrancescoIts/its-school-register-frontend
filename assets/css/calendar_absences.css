@@ -1,0 +1,33 @@
+.navigation { text-align:center; margin-top:10px; }
+.month-nav {
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  padding: 2px 30px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 30px;
+  transition: background-color 0.3s ease;
+}
+.month-nav:hover {
+  background-color: #2980b9;
+}
+.month-nav:active {
+  background-color: #1f6390;
+}
+
+
+.absence-dot {
+  display: block;
+  margin: 4px auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: red; 
+}
+
+
+.absence-day {
+  background-color: #ffe5e5; 
+}

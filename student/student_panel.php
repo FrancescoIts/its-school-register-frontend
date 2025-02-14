@@ -34,6 +34,7 @@ if (!file_exists($corso_img)) {
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
+    <link rel="stylesheet" href="../assets/css/calendar_absences.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
@@ -149,60 +150,56 @@ document.addEventListener("DOMContentLoaded", function() {
 
             <!-- Script per caricare i dati -->
             <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                fetch("../utils/stats.php")
-                    .then(response => response.json())
+                document.addEventListener("DOMContentLoaded", () => {
+                    fetch("../utils/stats.php")
+                    .then(res => res.json())
                     .then(data => {
-                        if (data.error) {
-                            console.error(data.error);
-                            return;
+                        console.log("DEBUG data:", data); // <--- vedi se arriva week_absences
+                        if (data.error) return console.error(data.error);
+
+                        // Dati generali
+                        const totalAbsences = data.total_absences || 0;
+                        const totalMaxHours = data.total_max_hours || 0;
+                        const weekAbsences  = data.week_absences || {};
+
+                        // Calcolo percentuale
+                        const absencePercentage = totalMaxHours > 0
+                            ? ((totalAbsences / totalMaxHours) * 100).toFixed(1)
+                            : 0;
+
+                        document.querySelector('.absence-percentage').innerHTML =
+                            `<p><strong>Assenze: ${absencePercentage}%</strong></p>`;
+
+                        // Chart 1 (doughnut)
+                        const ctx1 = document.getElementById('absenceChart');
+                        if (ctx1) {
+                            new Chart(ctx1, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: ['Ore di Assenza', 'Ore Frequentate'],
+                                    datasets: [{
+                                        data: [totalAbsences, totalMaxHours - totalAbsences],
+                                        backgroundColor: ['#FF4B5C', '#4CAF50']
+                                    }]
+                                },
+                                options: { responsive: true, maintainAspectRatio: false }
+                            });
                         }
 
-                        const totalAbsences = data.total_absences;
-                        const totalMaxHours = data.total_max_hours;
-                        const weekLabels = Object.keys(data.week_absences);
-                        const weekData = Object.values(data.week_absences);
+                        // Chart 2 (bar) week days
+                        const ctx2 = document.getElementById('weekAbsencesChart');
+                        if (ctx2) {
                         
-                        // Percentuale di assenza
-                        const absencePercentage = ((totalAbsences / totalMaxHours) * 100).toFixed(1);
-                        const attendancePercentage = (100 - absencePercentage).toFixed(1);
-                        document.querySelector('.absence-percentage').innerHTML = 
-                            `<p><strong>Assenze: ${absencePercentage}%</strong> `;
+                            const giorniOrdinati = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
+                           
+                            const weekData = giorniOrdinati.map(giornoIT => {
+                                return weekAbsences[giornoIT] || 0;
+                            });
 
-                        // Grafico a torta
-                        const ctx = document.getElementById('absenceChart').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['Ore di Assenza', 'Ore Frequentate'],
-                                datasets: [{
-                                    data: [totalAbsences, totalMaxHours - totalAbsences],
-                                    backgroundColor: ['#FF4B5C', '#4CAF50'],
-                                    hoverOffset: 10
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(tooltipItem) {
-                                                return tooltipItem.raw + " ore";
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
-
-                        // Grafico a barre
-                        if (weekLabels.length > 0) {
-                            const ctx2 = document.getElementById('weekAbsencesChart').getContext('2d');
                             new Chart(ctx2, {
                                 type: 'bar',
                                 data: {
-                                    labels: weekLabels,
+                                    labels: giorniOrdinati,
                                     datasets: [{
                                         label: 'Ore di assenza per giorno',
                                         data: weekData,
@@ -212,17 +209,14 @@ document.addEventListener("DOMContentLoaded", function() {
                                 options: {
                                     responsive: true,
                                     maintainAspectRatio: false,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
+                                    scales: { y: { beginAtZero: true } }
                                 }
                             });
                         }
                     })
-                    .catch(error => console.error('Errore nel caricamento delle statistiche:', error));
-            });
+                    .catch(err => console.error("Errore nel caricamento delle statistiche:", err));
+                });
+
             </script>
         </div>
     </div>
