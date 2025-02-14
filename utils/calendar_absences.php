@@ -158,12 +158,24 @@ function setupListeners() {
       let absenceH   = this.getAttribute('data-absence'); // stringa
       let eventTitle = this.getAttribute('data-event');   // stringa
 
+      let dateObj = new Date(dateStr.replace(/-/g, '/'));
+
+      // Definiamo le opzioni di formattazione: in italiano, con giorno, mese (nome esteso), e anno
+      let opzioniFormattazione = { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric'
+      };
+
+      // Con toLocaleDateString("it-IT") otteniamo la data in italiano
+      let dateStrIta = dateObj.toLocaleDateString('it-IT', opzioniFormattazione);
+
       let msg = '';
       if (eventTitle)  msg += `Evento: ${eventTitle}\n`;
       if (absenceH)    msg += `Ore di assenza: ${absenceH}\n`;
       if (!msg) {
         Swal.fire({
-          title: `Dettagli ${dateStr}`,
+          title: `Dettagli ${dateStrIta}`,
           html: '<img src="https://media.giphy.com/media/1l7GT4n3CGTzW/giphy.gif" style="width:100%; max-width:300px; border-radius:10px;">',
           showConfirmButton: false,
           timer: 3000,
@@ -173,7 +185,7 @@ function setupListeners() {
       }
 
       Swal.fire({
-        title: `Dettagli: ${dateStr}`,
+        title: `Dettagli: ${dateStrIta}`,
         text: msg.trim(),
         icon: 'info',
         confirmButtonText: 'OK',
