@@ -21,6 +21,7 @@
     margin: 0;
     font-size: 14px;
 }
+
 /* Contenitore nascosto (dettagli) */
 .student-details {
     display: none;
@@ -39,16 +40,16 @@
     transform: translateY(0);
 }
 
-/* Contenitore grafici: centrati e affiancati */
+/* Contenitore dei grafici: affiancati */
 .charts-container {
-    margin-left: 1000px;
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 40px;
+    justify-content: center;  /* Centra i grafici nella riga */
+    flex-wrap: wrap;          /* Permette il ritorno a capo se lo spazio è troppo stretto */
+    gap: 40px;                /* Distanza tra i grafici */
     margin-top: 20px;
 }
 
+/* Singolo contenitore di un grafico */
 .chart-container {
     flex: 1;
     min-width: 350px;
@@ -57,11 +58,13 @@
     text-align: center;
 }
 
+/* Contenitore interno per i grafici */
 .chart-wrapper {
     width: 100%;
     height: 300px;
 }
 
+/* Percentuale di assenza */
 .absence-percentage {
     margin-top: 10px;
     font-size: 18px;

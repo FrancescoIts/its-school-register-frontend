@@ -85,7 +85,7 @@ if (count($corsi) > 0) {
         }
     });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 
 <!-- Navbar -->
@@ -118,7 +118,7 @@ if (count($corsi) > 0) {
     <div class="courses">
         <div class="course-card">
             <?php
-                require('../utils/calendar.php');
+                require('../utils/calendar_admin.php');
             ?>
         </div>
     </div>

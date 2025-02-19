@@ -13,28 +13,33 @@ if (empty($docCourseIds)) {
     exit;
 }
 
+// Query corretta per il calcolo delle assenze basate sull'orario di ingresso/uscita
 $queryStats = "
 SELECT 
     u.id_user, 
     CONCAT(u.firstname, ' ', u.lastname) AS full_name,
     c.name AS course_name,
-    COALESCE(YEAR(a.date), 2025) AS academic_year, 
-    COALESCE(SUM(a.absence_hours), 0) AS total_absences,
-    900 AS total_max_hours
+    900 AS total_max_hours,
+    COALESCE(SUM(
+        CASE 
+            WHEN (a.entry_hour IS NULL OR a.exit_hour IS NULL) THEN 4
+            ELSE GREATEST(0, (TIME_TO_SEC(TIMEDIFF('18:00:00', a.exit_hour)) / 3600))
+                 + GREATEST(0, (TIME_TO_SEC(TIMEDIFF(a.entry_hour, '14:00:00')) / 3600))
+        END
+    ), 0) AS total_absences
 FROM users u
 INNER JOIN user_role_courses urc ON u.id_user = urc.id_user
 INNER JOIN courses c ON urc.id_course = c.id_course
-LEFT JOIN attendance a ON u.id_user = a.id_user AND a.id_course = urc.id_course
+LEFT JOIN attendance a ON u.id_user = a.id_user AND a.id_course = urc.id_course AND YEAR(a.date) = 2025
 WHERE urc.id_role = 1 -- Solo studenti
 AND urc.id_course IN (" . implode(',', array_fill(0, count($docCourseIds), '?')) . ")
-AND (a.date IS NULL OR YEAR(a.date) = 2025)
-GROUP BY u.id_user, full_name, c.name, academic_year;
+GROUP BY u.id_user, full_name, c.name;
 ";
 
 // Prepariamo la query
 $stmt = $conn->prepare($queryStats);
 if ($stmt === false) {
-    die(json_encode(['error' => 'Errore nella preparazione della query.']));
+    die(json_encode(['error' => 'Errore nella preparazione della query: ' . $conn->error]));
 }
 
 // Bind dei parametri dinamici
@@ -79,22 +84,23 @@ $stmt->close();
             <h4>Dettagli assenze per <?= htmlspecialchars($student['full_name']) ?> 
             (Corso: <?= htmlspecialchars($student['course']) ?>, Anno: <?= htmlspecialchars(date('Y')) ?>)</h4>
             <br>
-            <div class="charts-flex">
+            <div class="charts-container">
                 <!-- Grafico a torta -->
                 <div class="chart-container">
                     <h3>Percentuale di Assenza</h3>
                     <div class="chart-wrapper">
-                        <canvas id="absenceChart-<?= $student['id_user'] ?>" width="200" height="200"></canvas>
+                        <canvas id="absenceChart-<?= $student['id_user'] ?>"></canvas>
                     </div>
                     <div class="absence-percentage" id="percent-<?= $student['id_user'] ?>">
                         <strong>Assenze: <?= $student['absence_percentage'] ?> (<?= $student['total_absences'] ?> ore su 900)</strong>
                     </div>
                 </div>
-                <!-- Grafico a barre: distribuzione per giorni della settimana -->
+
+                <!-- Grafico a barre -->
                 <div class="chart-container">
                     <h3>Assenze per Giorno</h3>
                     <div class="chart-wrapper">
-                        <canvas id="absenceDaysChart-<?= $student['id_user'] ?>" width="200" height="200"></canvas>
+                        <canvas id="absenceDaysChart-<?= $student['id_user'] ?>"></canvas>
                     </div>
                 </div>
             </div>
@@ -193,12 +199,10 @@ function loadStudentStats(userId) {
                 'Martedì': 'Tuesday',
                 'Mercoledì': 'Wednesday',
                 'Giovedì': 'Thursday',
-                'Venerdì': 'Friday',
-                'Sabato': 'Saturday',
-                'Domenica': 'Sunday'
+                'Venerdì': 'Friday'
             };
             // Etichette in italiano in ordine
-            const labels = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+            const labels = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'];
             const weekAbsences = data.week_absences || {};
             const daysData = labels.map(italianDay => {
                 const englishDay = invertedMapping[italianDay];

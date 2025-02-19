@@ -2,26 +2,31 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
-
 checkSession(true, ['docente','admin','sadmin']);
 
 header('Content-Type: application/json');
 
 if (!isset($_GET['id_user'])) {
-    echo json_encode(['error'=>'Manca il parametro id_user']);
+    echo json_encode(['error' => 'Manca il parametro id_user']);
     exit;
 }
 
 $id_user = intval($_GET['id_user']);
 
-// 1) Calcolo assenze totali, ore massime, ecc.
+// Query aggiornata per il calcolo delle assenze totali
 $query = "
     SELECT 
-        SUM(a.absence_hours) AS total_absences,
-        (COUNT(DISTINCT a.date) * 8) AS total_max_hours
+        COALESCE(SUM(
+            CASE 
+                WHEN (a.entry_hour IS NULL OR a.exit_hour IS NULL) THEN 4
+                ELSE GREATEST(0, (TIME_TO_SEC(TIMEDIFF('18:00:00', a.exit_hour)) / 3600))
+                     + GREATEST(0, (TIME_TO_SEC(TIMEDIFF(a.entry_hour, '14:00:00')) / 3600))
+            END
+        ), 0) AS total_absences
     FROM attendance a
-    WHERE a.id_user = ?
+    WHERE a.id_user = ? AND YEAR(a.date) = 2025
 ";
+
 $stmt = $conn->prepare($query);
 $stmt->bind_param('i', $id_user);
 $stmt->execute();
@@ -29,22 +34,23 @@ $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 $stmt->close();
 
-if (!$row) {
-    echo json_encode(['error'=> 'Studente non trovato.']);
-    exit;
-}
-
 $total_absences  = floatval($row['total_absences'] ?? 0);
-$total_max_hours = floatval($row['total_max_hours'] ?? 0);
+$total_max_hours = 900;
 
-// 2) Calcolo distribuzione delle assenze per giorno della settimana
+// Query per le assenze per giorno della settimana
 $queryDays = "
     SELECT 
         DAYOFWEEK(a.date) AS day_index,
         DAYNAME(a.date)   AS day_name,
-        SUM(a.absence_hours) as sum_hours
+        COALESCE(SUM(
+            CASE 
+                WHEN (a.entry_hour IS NULL OR a.exit_hour IS NULL) THEN 4
+                ELSE GREATEST(0, (TIME_TO_SEC(TIMEDIFF('18:00:00', a.exit_hour)) / 3600))
+                     + GREATEST(0, (TIME_TO_SEC(TIMEDIFF(a.entry_hour, '14:00:00')) / 3600))
+            END
+        ), 0) as sum_hours
     FROM attendance a
-    WHERE a.id_user = ?
+    WHERE a.id_user = ? AND YEAR(a.date) = 2025
     GROUP BY DAYOFWEEK(a.date), DAYNAME(a.date)
     ORDER BY day_index ASC
 ";
@@ -61,10 +67,11 @@ while ($r = $res2->fetch_assoc()) {
 }
 $stmt2->close();
 
-// 3) Rispondo in JSON
+// Restituisci il JSON corretto
 echo json_encode([
     'total_absences'  => $total_absences,
     'total_max_hours' => $total_max_hours,
     'week_absences'   => $weekAbsences
 ]);
 exit;
+?>
