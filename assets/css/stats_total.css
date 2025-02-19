@@ -21,7 +21,6 @@
     margin: 0;
     font-size: 14px;
 }
-
 /* Contenitore nascosto (dettagli) */
 .student-details {
     display: none;
@@ -30,25 +29,37 @@
     background: #38A5DD;
     position: relative;
     border-radius: 10px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.student-details.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
+/* Contenitore grafici: centrati e affiancati */
 .charts-container {
+    margin-left: 1000px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 40px;
+    margin-top: 20px;
 }
 
 .chart-container {
     flex: 1;
-    min-width: 300px;
+    min-width: 350px;
     max-width: 450px;
-    min-height: 250px;
+    min-height: 320px;
+    text-align: center;
 }
 
 .chart-wrapper {
     width: 100%;
-    height: 250px;
+    height: 300px;
 }
 
 .absence-percentage {

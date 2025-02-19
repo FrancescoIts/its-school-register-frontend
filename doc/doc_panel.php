@@ -2,10 +2,7 @@
 require_once '../utils/check_session.php'; 
 require_once '../utils/course_image_map.php';
 
-// Richiama checkSession() che effettuerà i controlli e ritorna i dati utente
-$user = checkSession(); 
-// Oppure, se non vuoi ritornare nulla, dopo checkSession() puoi fare:
-// $user = $_SESSION['user'];
+$user = checkSession();
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -13,19 +10,29 @@ ini_set('display_errors', 1);
 $nome_completo = $user['firstname'] . " " . $user['lastname'];
 $corsi = $user['courses'] ?? [];
 
-if (count($corsi) > 0) {
-    $corso = $corsi[0]['name'];
-    $file_img = getCourseImage($corso);
-    $corso_img = "../assets/img/courses/" . $file_img;
-} else {
-    $corso = "Nessun corso assegnato";
-    $corso_img = "../assets/img/courses/default.jpg";
-}
+$corso_html = "";
+$corso_img = "../assets/img/courses/default.jpg"; 
 
-if (!file_exists($corso_img)) {
-    $corso_img = "../assets/img/courses/default.jpg";
+if (count($corsi) > 0) {
+    foreach ($corsi as $corso) {
+        $corso_nome = htmlspecialchars($corso['name']);
+        $file_img = getCourseImage($corso_nome);
+        $img_path = "../assets/img/courses/" . $file_img;
+
+        if (!file_exists($img_path)) {
+            $img_path = "../assets/img/courses/default.jpg";
+        }
+
+        $corso_html .= "<div class='course-card'>";
+        $corso_html .= "<p>{$corso_nome}</p>";
+        $corso_html .= "<img src='{$img_path}' alt='Logo Corso'>";
+        $corso_html .= "</div>";
+    }
+} else {
+    $corso_html = "<div class='course-card'>Nessun corso assegnato</div>";
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="it">
@@ -96,14 +103,14 @@ if (!file_exists($corso_img)) {
     <button class="theme-toggle" id="theme-toggle">🌙</button>
 </div>
 
-<!-- Sezione Corso -->
+<!-- Sezione Corsi -->
 <div class="dashboard">
-    <h3 class="">Corso</h3>
+    <h3 class="">Corsi</h3>
     <div class="courses">
-        <div class="course-card"><?php echo htmlspecialchars($corso); ?></div>
-        <img src="<?php echo htmlspecialchars($corso_img); ?>" alt="Logo Corso"> 
+        <?php echo $corso_html; ?>
     </div>
 </div>
+
 
 <!-- Sezione Calendario con Eventi -->
 <div class="dashboard">

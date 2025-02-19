@@ -28,6 +28,7 @@ error_reporting(E_ALL);
     color: #fff;
     text-align: center;
     z-index: 10; 
+    border-radius: 0 !important;
 }
 
 

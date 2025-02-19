@@ -2,7 +2,7 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
-// Controlla la sessione e che l'utente abbia i ruoli ammessi
+
 checkSession(true, ['docente','admin','sadmin']);
 
 header('Content-Type: application/json');
@@ -34,7 +34,6 @@ if (!$row) {
     exit;
 }
 
-// Estraggo le variabili
 $total_absences  = floatval($row['total_absences'] ?? 0);
 $total_max_hours = floatval($row['total_max_hours'] ?? 0);
 
@@ -56,9 +55,6 @@ $res2 = $stmt2->get_result();
 
 $weekAbsences = [];
 while ($r = $res2->fetch_assoc()) {
-    // day_name di solito esce in inglese (Sunday, Monday...) 
-    // Se il server MySQL è configurato in italiano, potrebbe uscire in italiano. 
-    // Eventualmente potresti mappare a mano i nomi nei tuoi preferiti.
     $dayname = $r['day_name'];
     $sum = floatval($r['sum_hours']);
     $weekAbsences[$dayname] = $sum;

@@ -47,7 +47,7 @@ function getCalendar($month, $year, $conn)
         $hasEvent = isset($eventData[$date]);
         $eventText = $hasEvent ? htmlspecialchars($eventData[$date]) : "";
 
-        $calendar .= "<td class='calendar-day" . ($hasEvent ? " has-event" : "") . "' data-date='$date' data-event='$eventText'>";
+        $calendar .= "<td class='calendar-event" . ($hasEvent ? " has-event" : "") . "' data-date='$date' data-event='$eventText'>";
         $calendar .= "<strong>$day</strong>";
         if ($hasEvent) {
             $calendar .= "<div class='event-dot'></div>";
@@ -66,26 +66,36 @@ function getCalendar($month, $year, $conn)
 }
 
 echo getCalendar(date('m'), date('Y'), $conn);
-
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.calendar-day.has-event').forEach(day => {
+        document.querySelectorAll('.calendar-event').forEach(day => {
             day.addEventListener('click', function () {
                 let eventText = this.getAttribute('data-event');
 
-                // Mostra il popup con SweetAlert2
-                Swal.fire({
-                    title: 'Dettagli lezione',
-                    text: eventText,
-                    icon: 'info',
-                    confirmButtonText: 'Chiudi',
-                    showCloseButton: true,
-                    background: '#fff',
-                    backdrop: 'rgba(0, 0, 0, 0.5)',
-                });
+                if (eventText) {
+                    Swal.fire({
+                        title: 'Dettagli lezione',
+                        text: eventText,
+                        icon: 'info',
+                        confirmButtonText: 'Chiudi',
+                        showCloseButton: true,
+                        background: '#fff',
+                        backdrop: 'rgba(0, 0, 0, 0.5)',
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Nessun evento',
+                        html: `
+                            <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGtybG1wd3F4ZmxuZWM4cjFsMnVueWxnaHphMmQ3bmx4bXJjbDhiNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1l7GT4n3CGTzW/giphy.gif" style="width:100%; max-width:300px; border-radius:10px;">
+                        `,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        backdrop: 'rgba(0, 0, 0, 0.5)',
+                    });
+                }
             });
         });
     });

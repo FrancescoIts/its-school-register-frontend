@@ -185,21 +185,19 @@ document.addEventListener("DOMContentLoaded", function() {
                                 options: { responsive: true, maintainAspectRatio: false }
                             });
                         }
-
                         // Chart 2 (bar) week days
                         const ctx2 = document.getElementById('weekAbsencesChart');
                         if (ctx2) {
-                        
-                            const giorniOrdinati = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
-                           
-                            const weekData = giorniOrdinati.map(giornoIT => {
-                                return weekAbsences[giornoIT] || 0;
-                            });
+                            // Consideriamo solo i giorni feriali
+                            const giorniFeriali = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
+
+                            // Costruiamo l'array dei dati per il grafico
+                            const weekData = giorniFeriali.map(giorno => weekAbsences[giorno] || 0);
 
                             new Chart(ctx2, {
                                 type: 'bar',
                                 data: {
-                                    labels: giorniOrdinati,
+                                    labels: giorniFeriali,
                                     datasets: [{
                                         label: 'Ore di assenza per giorno',
                                         data: weekData,
@@ -213,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 }
                             });
                         }
+
                     })
                     .catch(err => console.error("Errore nel caricamento delle statistiche:", err));
                 });
