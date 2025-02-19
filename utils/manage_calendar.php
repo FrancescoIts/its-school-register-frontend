@@ -62,8 +62,6 @@ function userCanModifyEvent($conn, $event_id, $id_user, $isAdmin) {
     return false; // Nessun permesso per modificare
 }
 
-
-
 // Switch sull'azione
 switch ($action) {
     case "add":

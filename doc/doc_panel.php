@@ -45,6 +45,8 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/stats_total.css">
+    <link rel="stylesheet" href="../assets/css/manage_attendance.css">
+    <link rel="stylesheet" href="../assets/css/checkbox.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
@@ -111,7 +113,6 @@ if (count($corsi) > 0) {
     </div>
 </div>
 
-
 <!-- Sezione Calendario con Eventi -->
 <div class="dashboard">
     <h3 class="">Calendario Eventi (Lezioni)</h3>
@@ -120,6 +121,16 @@ if (count($corsi) > 0) {
             <?php
                 require('../utils/calendar_admin.php');
             ?>
+        </div>
+    </div>
+</div>
+
+<!-- Sezione Statistiche -->
+<div class="dashboard">
+    <h3>Lezione di oggi</h3>
+    <div class="courses">
+        <div class="course-card">
+        <?php require('../utils/manage_attendance.php'); ?>
         </div>
     </div>
 </div>

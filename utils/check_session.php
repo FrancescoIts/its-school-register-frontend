@@ -51,7 +51,6 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente']
         exit;
     }
 
-    // *** (Facoltativo) *** 
     // Aggiorno la variabile di sessione locale,
     // così nei file che la usano esiste di nuovo:
     $_SESSION['user'] = $userData;

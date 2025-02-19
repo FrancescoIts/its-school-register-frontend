@@ -75,8 +75,7 @@ $calendarData  = getCalendar($currentMonth, $currentYear, $conn, $id_course);
 ?>
 
 <!-- HTML -->
-<div class="calendar-header" style="margin-bottom: 10px;">
-    <h3>Calendario per il corso selezionato</h3>
+<div class="calendar-header" style="margin-bottom: 10px;">  
     <label for="course-select">Seleziona Corso:</label>
     <select id="course-select" 
             style="padding: 5px; border-radius: 4px; border: 1px solid #ccc; margin-left: 10px; background-color: #2090C9; color: #FFF;">
