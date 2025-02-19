@@ -70,6 +70,10 @@ echo getCalendar(date('m'), date('Y'), $conn);
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    const oggi = new Date();
+    const opzioni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    const dataItaliana = oggi.toLocaleDateString('it-IT', opzioni);
+
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.calendar-event').forEach(day => {
             day.addEventListener('click', function () {
@@ -77,7 +81,7 @@ echo getCalendar(date('m'), date('Y'), $conn);
 
                 if (eventText) {
                     Swal.fire({
-                        title: 'Dettagli lezione',
+                        title: `${dataItaliana}`,
                         text: eventText,
                         icon: 'info',
                         confirmButtonText: 'Chiudi',
@@ -87,7 +91,7 @@ echo getCalendar(date('m'), date('Y'), $conn);
                     });
                 } else {
                     Swal.fire({
-                        title: 'Nessun evento',
+                        title: `${dataItaliana}`,
                         html: `
                             <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGtybG1wd3F4ZmxuZWM4cjFsMnVueWxnaHphMmQ3bmx4bXJjbDhiNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1l7GT4n3CGTzW/giphy.gif" style="width:100%; max-width:300px; border-radius:10px;">
                         `,
