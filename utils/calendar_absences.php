@@ -148,15 +148,18 @@ function setupListeners() {
             let opzioniFormattazione = { day: 'numeric', month: 'long', year: 'numeric' };
             let dateStrIta = dateObj.toLocaleDateString('it-IT', opzioniFormattazione);
 
-            let msg = absenceH ? `Ore di assenza: ${absenceH}` : 'Nessuna assenza registrata';
+            let msg = absenceH 
+            ? `Ore di assenza: ${absenceH}` 
+            : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?cid=790b7611xn5dg1mlcc0g7hk6hdo94xtx3dqtpotmlk4uez7b&ep=v1_gifs_search&rid=giphy.gif&ct=g" width="250" alt="GIF">`;
 
             Swal.fire({
                 title: `Dettagli: ${dateStrIta}`,
-                text: msg.trim(),
+                html: msg,  // Usa "html" invece di "text" per visualizzare immagini e contenuti HTML
                 icon: 'info',
                 confirmButtonText: 'OK',
                 backdrop: 'rgba(0, 0, 0, 0.5)',
             });
+
         });
     });
 

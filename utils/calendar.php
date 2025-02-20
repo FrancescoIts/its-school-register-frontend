@@ -72,10 +72,11 @@ function getCalendar($month, $year, $conn, $id_course)
         $eventText = $hasEvent ? htmlspecialchars($eventData[$date]['event'], ENT_QUOTES, 'UTF-8') : "";
         $creatorName = $hasEvent ? htmlspecialchars($eventData[$date]['creator_name'], ENT_QUOTES, 'UTF-8') : "Nessun creatore";
 
-        $calendar .= "<td class='calendar-event" . ($hasEvent ? " has-event" : "") . "' 
+        $calendar .= "<td class='calendar-event' 
                         data-date='$date' 
                         data-event='$eventText' 
                         data-creator='$creatorName'>";
+
         $calendar .= "<strong>$day</strong>";
         if ($hasEvent) {
             $calendar .= "<div class='event-dot'></div>";
@@ -96,28 +97,34 @@ echo getCalendar(date('m'), date('Y'), $conn, $studentCourse);
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.calendar-event.has-event').forEach(day => {
-            day.addEventListener('click', function () {
-                let eventText = this.getAttribute('data-event');
-                let creatorName = this.getAttribute('data-creator');
-                let clickedDate = this.getAttribute('data-date');
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.calendar-event').forEach(day => { // Seleziona tutti i giorni
+        day.addEventListener('click', function () {
+            let eventText = this.getAttribute('data-event') || ""; // Se non esiste, è vuoto
+            let creatorName = this.getAttribute('data-creator') || "Nessun creatore";
+            let clickedDate = this.getAttribute('data-date');
 
-                // Converti la data cliccata in formato leggibile
-                let dateObject = new Date(clickedDate);
-                const opzioni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                const dataItaliana = dateObject.toLocaleDateString('it-IT', opzioni);
+            // Converti la data cliccata in formato leggibile
+            let dateObject = new Date(clickedDate);
+            const opzioni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const dataItaliana = dateObject.toLocaleDateString('it-IT', opzioni);
 
-                Swal.fire({
-                    title: `${dataItaliana}`,
-                    html: `<p><strong>Creato da:</strong> ${creatorName}</p><p>${eventText}</p>`,
-                    icon: 'info',
-                    confirmButtonText: 'Chiudi',
-                    showCloseButton: true,
-                    background: '#fff',
-                    backdrop: 'rgba(0, 0, 0, 0.5)',
-                });
+            // Controllo se non c'è evento
+            let content = eventText.trim()
+                ? `<p><strong>Creato da:</strong> ${creatorName}</p><p>${eventText}</p>` 
+                : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?cid=790b7611xn5dg1mlcc0g7hk6hdo94xtx3dqtpotmlk4uez7b&ep=v1_gifs_search&rid=giphy.gif&ct=g" width="250" alt="Nessun evento">`;
+
+            Swal.fire({
+                title: `${dataItaliana}`,
+                html: content, // Usa "html" per visualizzare immagini e testo formattato
+                icon: eventText.trim() ? 'info' : null, // Nessuna icona se non c'è evento
+                confirmButtonText: 'Chiudi',
+                showCloseButton: true,
+                background: '#fff',
+                backdrop: 'rgba(0, 0, 0, 0.5)',
             });
         });
     });
+});
+
 </script>
