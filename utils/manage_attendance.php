@@ -117,9 +117,9 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
             // Se la checkbox è presente => lo studente è “presente”
             $isPresente = isset($valori['presente']) ? 1 : 0;
 
-            // Se presente, orari di default 14:00 e 16:00, salvo diversamente se il docente li ha modificati
+            
             $entryHour = $isPresente ? (!empty($valori['entry_hour']) ? $valori['entry_hour'] : '14:00:00') : null;
-            $exitHour  = $isPresente ? (!empty($valori['exit_hour'])  ? $valori['exit_hour']  : '16:00:00') : null;
+            $exitHour  = $isPresente ? (!empty($valori['exit_hour'])  ? $valori['exit_hour']  : '18:00:00') : null;
 
             // Controlla se esiste già un record di attendance per (id_user, id_course, date=oggi)
             $sqlCheck = "SELECT id FROM attendance
