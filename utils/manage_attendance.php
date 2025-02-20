@@ -16,6 +16,7 @@ $user = checkSession(true, ['docente', 'admin', 'sadmin']);
 
 // 3) Ottenimento data odierna
 $oggi = date('Y-m-d');
+$oggiIta = date('d-m-Y');
 
 // ----------------------------------------------------
 // Funzione di utilità per verificare se l'utente
@@ -284,7 +285,7 @@ if ($idCorsoSelezionato > 0) {
     if (count($corsiDisponibili) > 1) {
         ?>
         <form method="post">
-            <p>Seleziona il corso per cui inserire le presenze di oggi: <?php echo $oggi; ?></p><br>
+            <p>Seleziona il corso per cui inserire le presenze di oggi: <?php echo $oggiIta; ?></p><br>
             <select name="id_course" required>
                 <option value="">-- scegli un corso --</option>
                 <?php foreach ($corsiDisponibili as $c): ?>
