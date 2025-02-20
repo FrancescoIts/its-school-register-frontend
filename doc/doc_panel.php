@@ -39,7 +39,7 @@ if (count($corsi) > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Studente (o Docente)</title>
+    <title>Dashboard Docente</title>
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -86,6 +86,15 @@ if (count($corsi) > 0) {
             typeEffect();
         }
     });
+    document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem('scrollPosition')) {
+                window.scrollTo(0, localStorage.getItem('scrollPosition'));
+                localStorage.removeItem('scrollPosition');
+            }
+            document.querySelector("form").addEventListener("submit", function() {
+                localStorage.setItem('scrollPosition', window.scrollY);
+            });
+        });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="scroll-progress" id="scrollProgress"></div>

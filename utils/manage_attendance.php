@@ -209,7 +209,6 @@ if ($idCorsoSelezionato > 0) {
     <link rel="stylesheet" href="../assets/css/checkbox.css">
 </head>
 <body>
-
 <div class="container">
     <h3>Presenze di oggi (<?php echo $oggi; ?>)</h3>
     <?php
@@ -227,9 +226,8 @@ if ($idCorsoSelezionato > 0) {
     }
     ?>
     <p><strong><?php echo htmlspecialchars($nomeCorsoSelezionato); ?></strong></p>
-
         <br>
-    <form method="post" class="styled-form">
+    <form method="post" class="styled-form" id="attendanceForm">
         <input type="hidden" name="id_course" value="<?php echo $idCorsoSelezionato; ?>" />
     <div class="table-container">
         <table class="attendance-table">
@@ -270,7 +268,11 @@ if ($idCorsoSelezionato > 0) {
         <?php endforeach; ?>
         </table>
     </div>
+    <br>
+    <div class="button-container">
         <button type="submit" name="salva_presenze">Salva Presenze</button>
+        <button class="back" type="button" onclick="window.location.href='doc_panel.php'">Indietro</button>
+    </div>
     </form>
 </div>
 </body>

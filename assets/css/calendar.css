@@ -14,7 +14,11 @@
     height: 6px;
     background-color: rgba(255, 17, 0, 0.986);
     border-radius: 50%;
-    margin: 4px auto;
+    position: absolute;  /* Posizionamento assoluto rispetto alla cella */
+    top: 50%;            /* Centra verticalmente */
+    right: 5px;          /* Sposta a destra */
+    transform: translateY(-50%); /* Perfetto centraggio verticale */
+    cursor: pointer;
 }
 
 .calendar-table {
@@ -31,6 +35,7 @@ min-width: 50px;
 vertical-align: top;
 color: #FFF;
 background: #38A5DD;
+cursor: pointer;
 }
 .calendar-table th {
 padding: 10px;

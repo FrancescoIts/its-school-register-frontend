@@ -190,14 +190,17 @@ document.addEventListener('DOMContentLoaded', function () {
     let eventId = td.dataset.eventId;
     let createdBy = td.dataset.createdBy;
 
-    let existingEvent = calendarData.find(e => e.id == eventId);
+    let existingEvent = calendarData.find(e => e.id == eventId) || null;
 
-    if (!existingEvent) {
-        return; // Nessun evento in questa data
+    let creatorName = "Sconosciuto";
+    let eventText = "Nessun dettaglio disponibile.";
+
+    // Se esiste un evento, aggiorna i valori
+    if (existingEvent) {
+        creatorName = existingEvent.creator_name || "Sconosciuto";
+        eventText = existingEvent.event || "Nessun dettaglio disponibile.";
     }
 
-    let creatorName = existingEvent.creator_name || "Sconosciuto";
-    let eventText = existingEvent.event || "Nessun dettaglio disponibile.";
 
     // Se l'utente non è admin e non è il creatore, mostra il popup con il nome del creatore
     if (existingEvent && !isAdmin && parseInt(createdBy) !== parseInt(userId)) {
@@ -213,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let title = existingEvent ? 'Gestione Evento' : 'Aggiungi Nuovo Evento';
     let inputValue = existingEvent ? existingEvent.event : '';
 
+    // Se non esiste un evento, permetti di crearne uno
     let swalOptions = {
         title: title,
         input: 'text',
@@ -230,10 +234,11 @@ document.addEventListener('DOMContentLoaded', function () {
     Swal.fire(swalOptions).then((result) => {
         if (result.isConfirmed) {
             saveEvent(eventId, dateString, result.value);
-        } else if (result.isDenied) {
+        } else if (result.isDenied && existingEvent) {
             deleteEvent(eventId);
         }
     });
+
 }
 
 
