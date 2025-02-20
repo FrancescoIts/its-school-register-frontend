@@ -45,27 +45,28 @@ if (!userHasAnyRole($user['roles'], ['docente','admin','sadmin'])) {
 // ----------------------------------------------------
 $corsiDisponibili = [];
 
-// PER ORA NON SERVE DIVIDERE LE CONDIZONI
+// Se l'utente è admin/sadmin, può vedere tutti i corsi
+// Altrimenti (docente) recuperiamo i corsi associati
 $ruoliMinuscoli = array_map('strtolower', $user['roles']);
 if (in_array('admin', $ruoliMinuscoli) || in_array('sadmin', $ruoliMinuscoli)) {
-    $stmt = $conn->prepare("
-    SELECT c.*
-    FROM courses c
-    JOIN user_role_courses urc ON c.id_course = urc.id_course
-    JOIN users u ON urc.id_user = u.id_user
-    WHERE u.id_user = ?
-      AND urc.id_role = 2   -- ruolo docente
-    ORDER BY c.name
-");
-$stmt->bind_param('i', $user['id_user']);
-$stmt->execute();
-$res = $stmt->get_result();
-if ($res && $res->num_rows > 0) {
-    while ($rowC = $res->fetch_assoc()) {
-        $corsiDisponibili[] = $rowC;
+$stmt = $conn->prepare("
+        SELECT c.*
+        FROM courses c
+        JOIN user_role_courses urc ON c.id_course = urc.id_course
+        JOIN users u ON urc.id_user = u.id_user
+        WHERE u.id_user = ?
+          AND (urc.id_role = 3 OR urc.id_role = 4 )  -- ruolo admin/sadmin
+        ORDER BY c.name
+    ");
+    $stmt->bind_param('i', $user['id_user']);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($res && $res->num_rows > 0) {
+        while ($rowC = $res->fetch_assoc()) {
+            $corsiDisponibili[] = $rowC;
+        }
     }
-}
-$stmt->close();
+    $stmt->close();
 } else { 
     $stmt = $conn->prepare("
         SELECT c.*
