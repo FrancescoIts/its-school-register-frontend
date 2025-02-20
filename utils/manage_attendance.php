@@ -45,24 +45,28 @@ if (!userHasAnyRole($user['roles'], ['docente','admin','sadmin'])) {
 // ----------------------------------------------------
 $corsiDisponibili = [];
 
-// Se l'utente è admin/sadmin, può vedere tutti i corsi
-// Altrimenti (docente) recuperiamo i corsi associati
+// PER ORA NON SERVE DIVIDERE LE CONDIZONI
 $ruoliMinuscoli = array_map('strtolower', $user['roles']);
 if (in_array('admin', $ruoliMinuscoli) || in_array('sadmin', $ruoliMinuscoli)) {
-    // Tutti i corsi
-    $sqlAll = "SELECT * FROM courses ORDER BY name";
-    $resultAll = $conn->query($sqlAll);
-    if ($resultAll && $resultAll->num_rows > 0) {
-        while ($row = $resultAll->fetch_assoc()) {
-            $corsiDisponibili[] = $row;
-        }
+    $stmt = $conn->prepare("
+    SELECT c.*
+    FROM courses c
+    JOIN user_role_courses urc ON c.id_course = urc.id_course
+    JOIN users u ON urc.id_user = u.id_user
+    WHERE u.id_user = ?
+      AND urc.id_role = 2   -- ruolo docente
+    ORDER BY c.name
+");
+$stmt->bind_param('i', $user['id_user']);
+$stmt->execute();
+$res = $stmt->get_result();
+if ($res && $res->num_rows > 0) {
+    while ($rowC = $res->fetch_assoc()) {
+        $corsiDisponibili[] = $rowC;
     }
-    $resultAll->free();
-} else {
-    // L’utente è docente: cerchiamo i corsi associati
-    // L’esempio presuppone che in $user['courses'] tu abbia già i corsi
-    // (come da session_data). Altrimenti puoi fare una query su user_role_courses.
-    // Se preferisci recuperare dal DB:  
+}
+$stmt->close();
+} else { 
     $stmt = $conn->prepare("
         SELECT c.*
         FROM courses c
@@ -272,7 +276,15 @@ if ($idCorsoSelezionato > 0) {
     <br>
     <div class="button-container">
         <button type="submit" name="salva_presenze">Salva Presenze</button>
-        <button class="back" type="button" onclick="window.location.href='doc_panel.php'">Indietro</button>
+        <?php
+            // Controlla il ruolo dell'utente
+            if (in_array('docente', $user['roles'])) {
+                echo '<button class="back" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
+            } else { // Se è admin o sadmin
+                echo '<button class="back" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
+            }
+        ?>
+
     </div>
     </form>
 </div>
