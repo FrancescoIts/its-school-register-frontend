@@ -64,7 +64,6 @@ $stmt->close();
 <?php if (empty($courses)): ?>
     <p>Non hai corsi associati.</p>
 <?php else: ?>
-    <link rel="stylesheet" href="../assets/css/courses_admin.css">
     <form method="POST" action="">
         <label for="course_id">Seleziona Corso:</label>
         <select name="course_id" id="course_id" onchange="this.form.submit()" required>
@@ -90,15 +89,6 @@ $stmt->close();
             $stmt->close();
         }
         ?>
-        <style>
-            .justifycontent{
-                align-items: center;
-                justify-content: center !important;
-                display: flex !important;
-                flex-direction: column !important;
-            }
-        
-        </style>
         <?php if ($selectedCourse): ?>
             <div class="justifycontent">
             <table class="attendance-table">

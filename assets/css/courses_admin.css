@@ -1,0 +1,7 @@
+
+.justifycontent{
+    align-items: center;
+    justify-content: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+}

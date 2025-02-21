@@ -1,0 +1,144 @@
+/* Contenitore principale */
+.view-users-container {
+    background-color: #ffffff;
+    max-width: 80%;
+    margin: 50px auto;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    overflow-x: auto;  /* Permette lo scroll orizzontale se necessario */
+}
+
+/* Titolo della sezione */
+.view-users-title {
+    text-align: center;
+    color: #333333;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Contenitore con scroll orizzontale per la tabella */
+.view-users-table-container {
+    overflow-x: auto;
+}
+
+/* Stile tabella */
+.view-users-table {
+    width: 100%;
+    min-width: 800px; /* Evita il sovrapporsi dei dati */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.view-users-table th,
+.view-users-table td {
+    padding: 8px 10px; /* Ridotto il padding */
+    text-align: center;
+    border-bottom: 1px solid #dddddd;
+    font-size: 0.9rem;
+}
+
+.view-users-table th {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+}
+
+.view-users-table tr:nth-child(even) {
+    background-color: #7DC9ED;
+}
+
+/* Colonne specifiche più strette */
+.view-users-table th:nth-child(1),
+.view-users-table td:nth-child(1),
+.view-users-table th:nth-child(7),
+.view-users-table td:nth-child(7) {
+    width: 5%; /* ID e Stato più stretti */
+}
+
+.view-users-table th:nth-child(4),
+.view-users-table td:nth-child(4),
+.view-users-table th:nth-child(5),
+.view-users-table td:nth-child(5) {
+    width: 15%; /* Email e Telefono */
+}
+
+/* Contenitore dei pulsanti */
+.view-users-button-container {
+    display: flex;
+    justify-content: center; /* Allinea i pulsanti al centro */
+    gap: 8px; /* Spaziatura tra i pulsanti */
+    margin-top: 5px;
+}
+
+/* Pulsanti azioni */
+.view-users-button {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+/* Pulsante per disattivare */
+.view-users-button.inactive {
+    background-color: #ffc107;
+}
+
+.view-users-button.inactive:hover {
+    background-color: #e0a800;
+}
+
+/* Pulsante per eliminare */
+.view-users-button.delete {
+    background-color: #dc3545;
+}
+
+.view-users-button.delete:hover {
+    background-color: #c82333;
+}
+
+
+/* Messaggio di conferma o errore */
+.view-users-message {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.view-users-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.view-users-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive: Migliora visualizzazione su schermi piccoli */
+@media (max-width: 768px) {
+    .view-users-container {
+        max-width: 95%;
+        padding: 15px;
+    }
+
+    .view-users-table {
+        min-width: 600px;  /* Minima larghezza ridotta per schermi piccoli */
+    }
+
+    .view-users-title {
+        font-size: 1.2rem;
+    }
+}
+
+a {
+    text-decoration: none;
+}

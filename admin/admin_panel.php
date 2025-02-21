@@ -40,12 +40,14 @@ if (count($corsi) > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Coordinatore</title>
-    <link rel="stylesheet" href="../assets/css/student_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/stats_total.css">
     <link rel="stylesheet" href="../assets/css/courses_admin.css">
+    <link rel="stylesheet" href="../assets/css/view_users.css">
+    <link rel="stylesheet" href="../assets/css/create_user.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
 
     <link rel="stylesheet" href="../assets/css/checkbox.css">
@@ -168,6 +170,29 @@ if (count($corsi) > 0) {
     </div>
 </div>
 
+<!-- Sezione Mostra Utenti -->
+<div class="dashboard">
+    <h3>Mostra Utenti</h3>
+    <div class="courses">
+        <div class="course-card">
+            <?php
+                require('./view_users.php');
+            ?>
+        </div>
+    </div>
+</div>
+
+<!-- Sezione Crezione Utenti -->
+<div class="dashboard">
+    <h3>Crezione Utenti</h3>
+    <div class="courses">
+        <div class="course-card">
+            <?php
+                require('./create_user.php');
+            ?>
+        </div>
+    </div>
+</div>
 
 <!-- Sezione Calendario Assenze Studenti -->
 <div class="dashboard" id="abencesAdmin">
