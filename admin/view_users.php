@@ -68,13 +68,15 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
                     <td><?php echo htmlspecialchars($user['course_name']); ?></td>
                     <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
                     <td>
+                    <div class="view-users-actions">
                         <?php if ($user['active']): ?>
                             <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive">Disattiva</a>
                         <?php else: ?>
                             <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive">Attiva</a>
                         <?php endif; ?>
                         <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" class="view-users-button delete" onclick="return confirm('Sei sicuro di voler eliminare questo utente?');">Elimina</a>
-                    </td>
+                    </div>
+                </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

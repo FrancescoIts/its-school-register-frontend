@@ -2,7 +2,7 @@
 
 /* Contenitore principale del form */
 .create-user-container {
-    background-color: #c0bebe;
+    background-color: #7DC9ED;
     max-width: 600px;
     margin: 50px auto;
     padding: 30px 40px;
@@ -14,7 +14,7 @@
 /* Titolo della sezione */
 .create-user-title {
     text-align: center;
-    color: #333333;
+    color: #FFF;
     margin-bottom: 30px;
     font-weight: bold;
 }

@@ -73,15 +73,25 @@
     margin-top: 5px;
 }
 
-/* Pulsanti azioni */
+/* Contenitore dei pulsanti */
+.view-users-actions {
+    display: flex;
+    flex-direction: column;  /* Imposta la disposizione verticale */
+    gap: 5px;  /* Spazio tra i pulsanti */
+    align-items: center;  /* Centra i pulsanti nella cella */
+}
+
+/* Stile generico per i pulsanti */
 .view-users-button {
-    padding: 8px 10px;
+    padding: 8px 12px;
     border: none;
     border-radius: 5px;
     color: white;
     cursor: pointer;
     font-size: 12px;
     transition: background-color 0.3s ease;
+    width: 100%; /* Rende i pulsanti della stessa larghezza */
+    text-align: center;
 }
 
 /* Pulsante per disattivare */
@@ -101,6 +111,7 @@
 .view-users-button.delete:hover {
     background-color: #c82333;
 }
+
 
 
 /* Messaggio di conferma o errore */
