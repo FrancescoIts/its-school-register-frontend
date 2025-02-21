@@ -147,7 +147,7 @@ $stmtA->close();
 <div id="course-select-form">
     <form method="GET" action="">
         <label for="course_id">Seleziona il corso:</label>
-        <select name="course_id" id="course_id" onchange="this.form.submit()">
+        <select name="course_id" id="course_id" onchange="redirectWithAnchor()">
             <?php
             foreach ($courseList as $id_corso => $nome_corso) {
                 $selectedAttr = ($id_corso == $selectedCourse) ? 'selected' : '';
@@ -155,9 +155,6 @@ $stmtA->close();
             }
             ?>
         </select>
-        <!-- Se vuoi un pulsante, toglie l’onchange e decommenta: 
-        <button type="submit">Mostra</button> 
-        -->
     </form>
 </div>
 <?php else: ?>
@@ -236,6 +233,14 @@ function renderCalendar(month, year) {
 
     document.getElementById('calendar').innerHTML = html;
     setupListeners();
+}
+
+
+function redirectWithAnchor() {
+    const form = document.querySelector('#course-select-form form');
+    const selectedCourseId = document.getElementById('course_id').value;
+    form.action = "?course_id=" + selectedCourseId + "#abencesAdmin"; 
+    form.submit();
 }
 
 // Gestione degli eventi di click

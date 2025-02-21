@@ -123,7 +123,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Calendario con Eventi -->
-<div class="dashboard">
+<div class="dashboard"  id="calendarAdmin">
     <h3 class="">Calendario Eventi (Lezioni)</h3>
     <div class="courses">
         <div class="course-card">
@@ -134,8 +134,8 @@ if (count($corsi) > 0) {
     </div>
 </div>
 
-<!-- Sezione Statistiche -->
-<div class="dashboard">
+<!-- Sezione Presenze -->
+<div class="dashboard" id="attendanceAdmin">
     <h3>Lezione di oggi</h3>
     <div class="courses">
         <div class="course-card">

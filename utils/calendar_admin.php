@@ -306,7 +306,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Cambio corso
     document.getElementById('course-select').addEventListener('change', function() {
-        window.location.href = "?id_course=" + this.value;
+        window.location.href = "?id_course=" + this.value + "#calendarAdmin";
     });
+
 });
 </script>
