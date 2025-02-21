@@ -13,7 +13,7 @@ if (empty($docCourseIds)) {
     exit;
 }
 
-// Query corretta per il calcolo delle assenze basate sull'orario di ingresso/uscita
+// Query aggiornata per usare gli orari reali dei corsi
 $queryStats = "
 SELECT 
     u.id_user, 
@@ -22,9 +22,50 @@ SELECT
     900 AS total_max_hours,
     COALESCE(SUM(
         CASE 
-            WHEN (a.entry_hour IS NULL OR a.exit_hour IS NULL) THEN 4
-            ELSE GREATEST(0, (TIME_TO_SEC(TIMEDIFF('18:00:00', a.exit_hour)) / 3600))
-                 + GREATEST(0, (TIME_TO_SEC(TIMEDIFF(a.entry_hour, '14:00:00')) / 3600))
+            WHEN (a.entry_hour IS NULL OR a.exit_hour IS NULL) THEN 
+                TIMESTAMPDIFF(HOUR, 
+                    CASE DAYNAME(a.date)
+                        WHEN 'Monday' THEN c.start_time_monday
+                        WHEN 'Tuesday' THEN c.start_time_tuesday
+                        WHEN 'Wednesday' THEN c.start_time_wednesday
+                        WHEN 'Thursday' THEN c.start_time_thursday
+                        WHEN 'Friday' THEN c.start_time_friday
+                    END, 
+                    CASE DAYNAME(a.date)
+                        WHEN 'Monday' THEN c.end_time_monday
+                        WHEN 'Tuesday' THEN c.end_time_tuesday
+                        WHEN 'Wednesday' THEN c.end_time_wednesday
+                        WHEN 'Thursday' THEN c.end_time_thursday
+                        WHEN 'Friday' THEN c.end_time_friday
+                    END
+                )
+            ELSE GREATEST(0, 
+                TIME_TO_SEC(
+                    TIMEDIFF(
+                        CASE DAYNAME(a.date)
+                            WHEN 'Monday' THEN c.start_time_monday
+                            WHEN 'Tuesday' THEN c.start_time_tuesday
+                            WHEN 'Wednesday' THEN c.start_time_wednesday
+                            WHEN 'Thursday' THEN c.start_time_thursday
+                            WHEN 'Friday' THEN c.start_time_friday
+                        END, 
+                        a.entry_hour
+                    )
+                ) / 3600
+            ) + GREATEST(0, 
+                TIME_TO_SEC(
+                    TIMEDIFF(
+                        a.exit_hour, 
+                        CASE DAYNAME(a.date)
+                            WHEN 'Monday' THEN c.end_time_monday
+                            WHEN 'Tuesday' THEN c.end_time_tuesday
+                            WHEN 'Wednesday' THEN c.end_time_wednesday
+                            WHEN 'Thursday' THEN c.end_time_thursday
+                            WHEN 'Friday' THEN c.end_time_friday
+                        END
+                    )
+                ) / 3600
+            )
         END
     ), 0) AS total_absences
 FROM users u
@@ -56,12 +97,14 @@ while ($row = $result->fetch_assoc()) {
         'course'          => $row['course_name'],
         'total_absences'  => $row['total_absences'],
         'total_max_hours' => $row['total_max_hours'],
-        'absence_percentage' => round(($row['total_absences'] / 900) * 100, 2) . '%'
+        'absence_percentage' => round(($row['total_absences'] / $row['total_max_hours']) * 100, 2) . '%'
     ];
 }
 
 $stmt->close();
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="it">

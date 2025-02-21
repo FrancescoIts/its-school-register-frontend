@@ -2,19 +2,38 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
-// Verifica che l'utente loggato abbia ruolo "admin"
 $user = checkSession(true, ['admin']);
 
-// ID dell'utente che è (o include) admin
+
 $id_admin = $user['id_user'] ?? 0;
 
-// Imposta gli id_role corrispondenti
+
 $idRoleAdmin    = 3;
 $idRoleStudente = 1;
 
-// Orario standard di presenza
-$standard_entry = "14:00:00";
-$standard_exit  = "18:00:00";
+// Funzione per recuperare gli orari effettivi del giorno (es. "monday") dal DB
+function getTimes($conn, $idCourse, $theDate) {
+    // Ricava il giorno in inglese minuscolo (monday, tuesday, ...)
+    $dayOfWeek = strtolower(date('l', strtotime($theDate)));
+
+    // Colonne su cui fare la SELECT
+    $startColumn = 'start_time_' . $dayOfWeek;
+    $endColumn   = 'end_time_' . $dayOfWeek;
+
+    $query = "SELECT $startColumn AS start_time, $endColumn AS end_time 
+              FROM courses 
+              WHERE id_course = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $idCourse);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    $startTime = $result['start_time'];
+    $endTime   = $result['end_time'];
+
+    return [$startTime, $endTime];
+}
 
 // 1) Recupera TUTTI i corsi di competenza di questo admin (id e nome)
 $sqlCourses = "
@@ -41,9 +60,7 @@ if (empty($courseList)) {
     exit;
 }
 
-// 2) Determiniamo quale corso visualizzare: 
-//    se è stato passato via GET e appartiene davvero all'admin, usiamo quello;
-//    altrimenti prendiamo il primo.
+// 2) Determiniamo quale corso visualizzare
 if (isset($_GET['course_id']) && array_key_exists($_GET['course_id'], $courseList)) {
     $selectedCourse = (int)$_GET['course_id'];
 } else {
@@ -86,13 +103,15 @@ $sqlA = "
     SELECT id_user, date, entry_hour, exit_hour
     FROM attendance
     WHERE id_user IN ($inClauseStd)
+      AND id_course = ?    -- Solo per il corso selezionato
       AND YEAR(date) = ?
 ";
 $stmtA = $conn->prepare($sqlA);
 
-// Costruisco parametri per la query su attendance
-$typesA = str_repeat('i', count($studentIds)) . 'i'; // "i" per ogni id_user + "i" per l'anno
-$paramsA = array_merge($studentIds, [$year]);
+// Costruisco i parametri per la query su attendance
+//  (lista di id_user seguita da [id_course, year])
+$typesA = str_repeat('i', count($studentIds)) . 'ii'; 
+$paramsA = array_merge($studentIds, [$selectedCourse, $year]);
 $stmtA->bind_param($typesA, ...$paramsA);
 
 $stmtA->execute();
@@ -106,25 +125,28 @@ while ($row = $resA->fetch_assoc()) {
     $entry  = $row['entry_hour'] ?? null;
     $exit   = $row['exit_hour']  ?? null;
 
-    // Converto gli orari in secondi
-    $standard_entry_seconds = strtotime($standard_entry);
-    $standard_exit_seconds  = strtotime($standard_exit);
+    // Otteniamo gli orari effettivi per il giorno in base al corso
+    list($courseStart, $courseEnd) = getTimes($conn, $selectedCourse, $date);
 
-    // Se non c'è entry o exit => 4 ore di assenza (14-18)
+    $courseStartSec = strtotime($courseStart);
+    $courseEndSec   = strtotime($courseEnd);
+
+    // Se orari non impostati nel DB, usiamo default (14:00-18:00) → già gestito nella funzione
+    // 1) Se non c'è entry o exit => assenza totale: differenza tra orario di fine e inizio
     if (!$entry || !$exit) {
-        $absence_hours = 4;
+        $absence_hours = ($courseEndSec - $courseStartSec) / 3600; 
     } else {
         $entry_seconds = strtotime($entry);
         $exit_seconds  = strtotime($exit);
 
         $absence_hours = 0;
         // Entrato in ritardo
-        if ($entry_seconds > $standard_entry_seconds) {
-            $absence_hours += ($entry_seconds - $standard_entry_seconds) / 3600;
+        if ($entry_seconds > $courseStartSec) {
+            $absence_hours += ($entry_seconds - $courseStartSec) / 3600;
         }
         // Uscito prima
-        if ($exit_seconds < $standard_exit_seconds) {
-            $absence_hours += ($standard_exit_seconds - $exit_seconds) / 3600;
+        if ($exit_seconds < $courseEndSec) {
+            $absence_hours += ($courseEndSec - $exit_seconds) / 3600;
         }
         $absence_hours = round($absence_hours, 2);
     }
@@ -140,7 +162,7 @@ while ($row = $resA->fetch_assoc()) {
 }
 $stmtA->close();
 ?>
-<body>
+<body id="abencesAdmin">
 
 <!-- 5) Form per la scelta del corso (compare se c’è più di un corso) -->
 <?php if (count($courseList) > 1): ?>
@@ -171,7 +193,7 @@ const userAbsences = <?php echo json_encode($absencesAvanzate); ?>;
 
 // Funzione per renderizzare il calendario
 function renderCalendar(month, year) {
-    const firstDayJS   = new Date(year, month - 1, 1).getDay();
+    const firstDayJS   = new Date(year, month - 1, 1).getDay(); // 0 = Domenica
     const daysInMonth  = new Date(year, month, 0).getDate();
 
     const daysOfWeek = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
@@ -183,13 +205,14 @@ function renderCalendar(month, year) {
                   <div class="calendar-header"><h3>${monthName} ${year}</h3></div>
                   <table class="calendar-table"><thead><tr>`;
 
+    // Intestazioni giorni della settimana
     for (let d of daysOfWeek) {
         html += `<th>${d}</th>`;
     }
     html += `</tr></thead><tbody><tr>`;
 
-    // Calcolo l'indice del primo giorno (in cui 0 = Domenica in JS)
-    let firstDayIndex = (firstDayJS === 0) ? 7 : firstDayJS;
+    // Calcolo l'indice del primo giorno (1 = Lun, 7 = Dom). In JS getDay() 0=Dom
+    let firstDayIndex = firstDayJS === 0 ? 7 : firstDayJS; 
 
     // Celle vuote prima del primo giorno
     for (let i = 1; i < firstDayIndex; i++) {
@@ -210,7 +233,7 @@ function renderCalendar(month, year) {
         html += `<td class="${cellClasses}" data-date="${dayString}">
                     <strong>${day}</strong>
                     ${dotHTML}
-                </td>`;
+                 </td>`;
 
         let totalCellsSoFar = (firstDayIndex - 1) + day;
         if (totalCellsSoFar % 7 === 0) {
@@ -235,7 +258,6 @@ function renderCalendar(month, year) {
     setupListeners();
 }
 
-
 function redirectWithAnchor() {
     const form = document.querySelector('#course-select-form form');
     const selectedCourseId = document.getElementById('course_id').value;
@@ -243,7 +265,6 @@ function redirectWithAnchor() {
     form.submit();
 }
 
-// Gestione degli eventi di click
 function setupListeners() {
     // Click su una cella del calendario
     document.querySelectorAll('.calendar-day').forEach(cell => {
@@ -296,9 +317,11 @@ function showNoAbsences(dateStr) {
     let opzioniFormattazione = { day: 'numeric', month: 'long', year: 'numeric' };
     let dateStrIta = dateObj.toLocaleDateString('it-IT', opzioniFormattazione);
 
-    let msg = `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?cid=790b7611xn5dg1mlcc0g7hk6hdo94xtx3dqtpotmlk4uez7b&ep=v1_gifs_search&rid=giphy.gif&ct=g"
+    let msg = `
+        <img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?cid=790b7611xn5dg1mlcc0g7hk6hdo94xtx3dqtpotmlk4uez7b&ep=v1_gifs_search&rid=giphy.gif&ct=g"
                width="250" alt="GIF">
-               <p>Nessuna assenza registrata in questa data</p>`;
+        <p>Nessuna assenza registrata in questa data</p>
+    `;
 
     Swal.fire({
         title: `Dettagli: ${dateStrIta}`,
@@ -315,4 +338,3 @@ let currentMonth = new Date().getMonth() + 1;
 renderCalendar(currentMonth, currentYear);
 </script>
 </body>
-

@@ -2,29 +2,53 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
-header('Content-Type: application/json');
+// Disabilita l'output HTML di errori per evitare conflitti con il JSON
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+header('Content-Type: application/json');
 
 if (!isset($_SESSION['user']['id_user'])) {
-    die(json_encode(["error" => "Utente non autenticato."]));
+    echo json_encode(["error" => "Utente non autenticato."]);
+    exit;
 }
 
 $id_user = $_SESSION['user']['id_user'];
+$max_hours = 900;
 
-// Orario standard di presenza (14:00 - 18:00)
-$standard_entry = "14:00:00";
-$standard_exit  = "18:00:00";
-$max_hours = 900; // Ore massime previste nel periodo
+// Query per recuperare i corsi dell'utente
+$queryCourses = "
+    SELECT c.id_course, c.name, 
+        c.start_time_monday, c.end_time_monday,
+        c.start_time_tuesday, c.end_time_tuesday,
+        c.start_time_wednesday, c.end_time_wednesday,
+        c.start_time_thursday, c.end_time_thursday,
+        c.start_time_friday, c.end_time_friday
+    FROM courses c
+    JOIN user_role_courses urc ON c.id_course = urc.id_course
+    WHERE urc.id_user = ?
+";
+
+$stmt = $conn->prepare($queryCourses);
+$stmt->bind_param("i", $id_user);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$courses = [];
+while ($row = $result->fetch_assoc()) {
+    $courses[$row['id_course']] = $row;
+}
+$stmt->close();
 
 // Query per ottenere tutte le presenze dell'utente nel 2025
-$query = "
-    SELECT date, entry_hour, exit_hour 
+$queryAttendance = "
+    SELECT id_course, date, entry_hour, exit_hour 
     FROM attendance 
     WHERE id_user = ? AND YEAR(date) = 2025
 ";
 
-$stmt = $conn->prepare($query);
+$stmt = $conn->prepare($queryAttendance);
 $stmt->bind_param("i", $id_user);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -36,60 +60,70 @@ $week_absences = [
 ];
 
 $weekdaysMap = [
-    1 => "Lunedì", 2 => "Martedì", 3 => "Mercoledì", 
-    4 => "Giovedì", 5 => "Venerdì", 6 => "Sabato", 0 => "Domenica"
+    1 => "monday", 2 => "tuesday", 3 => "wednesday",
+    4 => "thursday", 5 => "friday"
 ];
 
+
 while ($row = $result->fetch_assoc()) {
+    $id_course = $row['id_course'];
     $date = $row['date'];
     $entry = $row['entry_hour'] ?? null;
-    $exit  = $row['exit_hour'] ?? null;
+    $exit = $row['exit_hour'] ?? null;
 
-    // Converto gli orari in secondi per fare i calcoli
-    $entry_seconds = $entry ? strtotime($entry) : null;
-    $exit_seconds  = $exit ? strtotime($exit) : null;
-    $standard_entry_seconds = strtotime($standard_entry);
-    $standard_exit_seconds  = strtotime($standard_exit);
-
-    // Calcolo delle ore di assenza
-    $absence_hours = 0;
-
-    if (!$entry_seconds || !$exit_seconds) {
-        // Se manca uno dei due, consideriamo 4 ore di assenza
-        $absence_hours = 4;
-    } else {
-        if ($entry_seconds > $standard_entry_seconds) { 
-            // Entrato in ritardo
-            $absence_hours += ($entry_seconds - $standard_entry_seconds) / 3600;
-        }
-        if ($exit_seconds < $standard_exit_seconds) { 
-            // Uscito prima del previsto
-            $absence_hours += ($standard_exit_seconds - $exit_seconds) / 3600;
-        }
+    if (!isset($courses[$id_course])) {
+        continue;
     }
 
-    // Arrotondiamo il valore
-    $absence_hours = round($absence_hours, 2);
+    $course = $courses[$id_course];
+    $weekdayIndex = date('w', strtotime($date));
 
-    // Aggiungiamo le ore di assenza totali
-    $total_absences += $absence_hours;
+    if ($weekdayIndex >= 1 && $weekdayIndex <= 5) {
+        $day = $weekdaysMap[$weekdayIndex];
+        $dayLower = strtolower($day);
 
-    // Otteniamo il giorno della settimana e aggiorniamo il conteggio (escludendo Sabato e Domenica)
-    $weekdayIndex = date('w', strtotime($date)); // 0 = Domenica, 6 = Sabato
-    if ($weekdayIndex >= 1 && $weekdayIndex <= 5) { // Solo Lunedì-Venerdì
-        $weekdayName = $weekdaysMap[$weekdayIndex];
-        $week_absences[$weekdayName] += $absence_hours;
+        $start_time_key = "start_time_" . $day; 
+        $end_time_key = "end_time_" . $day;
+        
+
+        $standard_entry = $course[$start_time_key];
+        $standard_exit = $course[$end_time_key];
+
+        if (!$standard_entry || !$standard_exit) {
+            continue;
+        }
+
+        $entry_seconds = $entry ? strtotime($entry) : null;
+        $exit_seconds = $exit ? strtotime($exit) : null;
+        $standard_entry_seconds = strtotime($standard_entry);
+        $standard_exit_seconds = strtotime($standard_exit);
+
+        $absence_hours = 0;
+
+        if (!$entry_seconds || !$exit_seconds) {
+            $absence_hours = ($standard_exit_seconds - $standard_entry_seconds) / 3600;
+        } else {
+            if ($entry_seconds > $standard_entry_seconds) {
+                $absence_hours += ($entry_seconds - $standard_entry_seconds) / 3600;
+            }
+            if ($exit_seconds < $standard_exit_seconds) {
+                $absence_hours += ($standard_exit_seconds - $exit_seconds) / 3600;
+            }
+        }
+
+        $absence_hours = round($absence_hours, 2);
+        $total_absences += $absence_hours;
+
+        // Aggiungo le assenze al giorno corretto
+        $week_absences[$day] += $absence_hours;
     }
 }
 
 $stmt->close();
 
-// Assicuriamoci che il massimo sia sempre 900 ore
-$total_max_hours = $max_hours;
-
+// Restituisco i dati in formato JSON
 echo json_encode([
     "total_absences" => $total_absences,
-    "total_max_hours" => $total_max_hours,
+    "total_max_hours" => $max_hours,
     "week_absences" => $week_absences
 ]);
-?>

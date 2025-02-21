@@ -45,6 +45,7 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/stats_total.css">
+    <link rel="stylesheet" href="../assets/css/courses_admin.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
 
     <link rel="stylesheet" href="../assets/css/checkbox.css">
@@ -155,13 +156,26 @@ if (count($corsi) > 0) {
     </div>
 </div>
 
+<!-- Sezione Impostazioni Corsi -->
+<div class="dashboard" id="courseSettings">
+    <h3>Impostazioni Corsi</h3>
+    <div class="courses">
+        <div class="course-card">
+            <?php
+                require('./courses_admin.php');
+            ?>
+        </div>
+    </div>
+</div>
+
+
 <!-- Sezione Calendario Assenze Studenti -->
 <div class="dashboard" id="abencesAdmin">
     <h3>Calendario Assenze Studenti</h3>
     <div class="courses">
         <div class="course-card" id="calendar-absences">
             <?php
-                require_once '../utils/calendar_absences_admin.php';
+                require('../utils/calendar_absences_admin.php');
             ?>
         </div>
     </div>
