@@ -11,6 +11,6 @@
 ### 60% PANNELLO ADMIN
 
 ## Fixes:
-    - Orari di lezione flessibili (non lezioni di 4 ore)
-    - ~~Aggiustare alcuni refresh di pagina con id=""~~
-    - Crezione utenti per admin
+    1 Orari di lezione flessibili (non lezioni di 4 ore)
+    2 ~~Aggiustare alcuni refresh di pagina con id=""~~
+    3 Crezione utenti per admin
