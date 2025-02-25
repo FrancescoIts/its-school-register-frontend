@@ -15,3 +15,5 @@
 2. ~~Aggiustare alcuni refresh di pagina con id=""~~
 3. ~~Crezione utenti per admin~~
 4. ~~Visualizzazione utenti per admin~~
+5. Bacheca
+6. Rendere asincrona la pagina (senza ricarica di pagina dove possibile)
