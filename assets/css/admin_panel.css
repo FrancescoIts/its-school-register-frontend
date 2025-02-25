@@ -100,6 +100,7 @@ body {
 
 .logout:hover {
     background: #ddd;
+    text-decoration: none;
 }
 /* Modalità Tema Scuro */
 .dark-mode {
@@ -198,14 +199,28 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    display: none;
+    opacity: 0; /* Nascondi il bottone inizialmente */
     background-color: blueviolet;
-  }
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.5s ease, background-color 0.3s ease; /* Comparsa graduale */
+    pointer-events: none; /* Disabilita i click quando nascosto */
+}
+
+#btn-back-to-top:hover {
+    background-color: darkviolet;
+}
 
 .dark-mode #btn-back-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: none;
     background-color: rgb(43, 42, 44);
-  }
+    color: white;
+}
+
+.dark-mode #btn-back-to-top:hover {
+    background-color: rgb(70, 69, 72);
+}

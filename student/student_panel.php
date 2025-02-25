@@ -37,6 +37,7 @@ if (!file_exists($corso_img)) {
     <link rel="stylesheet" href="../assets/css/calendar_absences.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
@@ -44,7 +45,13 @@ if (!file_exists($corso_img)) {
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
-
+<button
+        type="button"
+        class="btn btn-danger btn-floating btn-lg"
+        id="btn-back-to-top"
+        >
+  <i class="fas fa-arrow-up"></i>
+</button>
 <!-- Navbar -->
 <div class="navbar">
     <div class="logo">

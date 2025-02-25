@@ -49,7 +49,7 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/view_users.css">
     <link rel="stylesheet" href="../assets/css/create_user.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/checkbox.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>

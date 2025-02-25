@@ -87,29 +87,35 @@ document.head.appendChild(style);
             }
         });
     });
-    
 
 let mybutton = document.getElementById("btn-back-to-top");
 
-// When the user scrolls down 20px from the top of the document, show the button
+// Mostra o nascondi il bottone quando l'utente scorre
 window.onscroll = function () {
   scrollFunction();
 };
 
 function scrollFunction() {
-  if (
-    document.body.scrollTop > 20 ||
-    document.documentElement.scrollTop > 20
-  ) {
-    mybutton.style.display = "block";
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.opacity = "1"; // Appare gradualmente
+    mybutton.style.pointerEvents = "auto"; // Abilita i click
   } else {
-    mybutton.style.display = "none";
+    mybutton.style.opacity = "0"; // Scompare gradualmente
+    mybutton.style.pointerEvents = "none"; // Disabilita i click
   }
 }
-// When the user clicks on the button, scroll to the top of the document
-mybutton.addEventListener("click", backToTop);
 
-function backToTop() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
+// Scroll lento e fluido
+mybutton.addEventListener("click", smoothScrollToTop);
+
+function smoothScrollToTop() {
+  const scrollDuration = 800; // Durata dello scroll in ms
+  const scrollStep = -window.scrollY / (scrollDuration / 15); // Passo per ogni intervallo
+  const scrollInterval = setInterval(() => {
+    if (window.scrollY !== 0) {
+      window.scrollBy(0, scrollStep);
+    } else {
+      clearInterval(scrollInterval);
+    }
+  }, 15);
 }
