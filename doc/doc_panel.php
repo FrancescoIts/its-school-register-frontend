@@ -50,8 +50,9 @@ if (count($corsi) > 0) {
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/calendar_admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<script src="../assets/js/main.js" defer></script>
+<script src="../assets/js/calendar_admin.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -78,13 +79,18 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Calendario con Eventi -->
-<div class="dashboard"  id="calendarAdmin">
+<div class="dashboard"  id="calendarAdmin" data-section="calendarAdmin">
+<div class="dashboard-header">
     <h3 class="">Calendario Eventi (Lezioni)</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php
                 require_once '../utils/calendar_admin.php';
             ?>
+        </div>
         </div>
     </div>
 </div>
@@ -102,22 +108,32 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Statistiche -->
-<div class="dashboard">
+<div class="dashboard" data-section="statsStudents">
+<div class="dashboard-header">
     <h3>Statistiche Studenti</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php 
                 require_once '../utils/stats_total.php'; 
             ?>
         </div>
+        </div>
     </div>
 </div>
 
 <!-- Sezione Bacheca -->
-<div class="dashboard">
+<div class="dashboard" data-section="bacheca">
+<div class="dashboard-header">
     <h3 class="">Bacheca</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">Contenuto della bacheca</div>
+    </div>
     </div>
 </div>
 

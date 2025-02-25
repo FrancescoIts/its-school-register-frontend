@@ -153,3 +153,72 @@
 a {
     text-decoration: none;
 }
+
+
+/* Dark mode styles */
+.dark-mode .view-users-container {
+    background-color: #333; /* Sfondo scuro */
+    color: #f1f1f1; /* Testo chiaro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Ombra più pronunciata */
+}
+
+.dark-mode .view-users-title {
+    color: #f1f1f1;
+}
+
+.dark-mode .view-users-table {
+    background-color: #222; /* Sfondo scuro per la tabella */
+    border-collapse: collapse;
+}
+
+.dark-mode .view-users-table th {
+    background-color: #444; /* Intestazioni più scure */
+    color: #f1f1f1;
+}
+
+.dark-mode .view-users-table td {
+    border-bottom: 1px solid #555;
+    color: #f1f1f1;
+}
+
+.dark-mode .view-users-table tr:nth-child(even) {
+    background-color: #555; /* Riga pari con colore più scuro */
+}
+
+.dark-mode .view-users-button {
+    background-color: #444; /* Colore scuro per i pulsanti */
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+.dark-mode .view-users-button:hover {
+    background-color: #666; /* Colore più chiaro al passaggio del mouse */
+}
+
+.dark-mode .view-users-button.inactive {
+    background-color: #775a2f;
+}
+
+.dark-mode .view-users-button.inactive:hover {
+    background-color: #967944;
+}
+
+.dark-mode .view-users-button.delete {
+    background-color: #772d2d;
+}
+
+.dark-mode .view-users-button.delete:hover {
+    background-color: #9c4b4b;
+}
+
+.dark-mode .view-users-message.success {
+    background-color: #2d8659;
+    color: #aaffaa;
+    border: 1px solid #3ca76f;
+}
+
+.dark-mode .view-users-message.error {
+    background-color: #552222;
+    color: #ffaaaa;
+    border: 1px solid #aa4444;
+}

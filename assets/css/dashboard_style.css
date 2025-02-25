@@ -63,7 +63,43 @@
     flex-direction: column;
     align-items: center;
 }
+/* Stili per l'header della dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+}
 
+/* Icona del toggle */
+.toggle-icon {
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+/* Contenuto della dashboard */
+.dashboard-content {
+    display: block;
+    transition: all 0.3s ease;
+    padding: 15px;
+    width: 80%;
+    max-width: 1200px;
+}
+
+/* Nascondi il contenuto se la dashboard è chiusa */
+.dashboard.closed .dashboard-content {
+    display: none;
+}
+
+/* Ruota l'icona quando la dashboard è chiusa */
+.dashboard.closed .toggle-icon {
+    transform: rotate(180deg);
+}
 .dashboard h3 {
     font-size: 22px;
     color: #FFF;

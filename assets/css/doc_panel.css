@@ -163,29 +163,6 @@ body {
     font-weight: bold;
 }
 
-.type1 {
-    
-    color: lime;
-    text-decoration: none;
-}
-.type2 {
-    text-decoration: none;
-    color: cornflowerblue;
-}
-
-#cursor {
-    display: inline-block;
-    width: 10px;
-    color: #FFF;
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% {
-        opacity: 0;
-    }
-}
-
 .navbar {
     display: flex;
     align-items: center;

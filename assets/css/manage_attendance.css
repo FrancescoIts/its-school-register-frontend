@@ -130,3 +130,74 @@ option, select {
     background-color: #2090C9;
     color: #FFF;
 }
+
+/* Stili dark mode */
+.dark-mode .container {
+    background-color: #333;
+    color: #f1f1f1;
+}
+
+.dark-mode .styled-form {
+    color: #f1f1f1;
+}
+
+.dark-mode .table-container {
+    color: #f1f1f1;
+}
+
+.dark-mode .attendance-table {
+    border: 1px solid #444;
+    background-color: #222;
+    color: #f1f1f1;
+}
+
+.dark-mode .attendance-table th {
+    background-color: #444;
+    color: #f1f1f1;
+}
+
+.dark-mode .attendance-table td {
+    background-color: #555;
+    color: #f1f1f1;
+}
+
+.dark-mode input[type="time"] {
+    background-color: #444;
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+.dark-mode input[type="checkbox"] {
+    border: 1px solid #555;
+    background-color: #444;
+}
+
+.dark-mode button {
+    background-color: #28a746b4;
+    color: #f1f1f1;
+    border: 1px solid #666;
+}
+
+.dark-mode button:hover {
+    background-color: #666;
+}
+
+.dark-mode select {
+    background-color: #444;
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+.dark-mode option {
+    background-color: #444;
+    color: #f1f1f1;
+}
+
+.dark-mode .back {
+    background-color: rgba(220, 20, 60, 0.616);
+}
+
+
+.dark-mode .back:hover {
+    background-color: #666;
+}

@@ -28,13 +28,14 @@ $stmt->close();
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $firstname = $_POST['firstname'];
-    $lastname = $_POST['lastname'];
-    $phone = $_POST['phone'];
-    $role = (int)$_POST['role'];
-    $course_id = (int)$_POST['course_id'];
+    $email = $_POST['email'] ?? null;
+    $password = $_POST['password'] ?? null;
+    $firstname = $_POST['firstname'] ?? null;
+    $lastname = $_POST['lastname'] ?? null;
+    $phone = $_POST['phone'] ?? null;
+    $role = isset($_POST['role']) ? (int)$_POST['role'] : null;
+    $course_id = isset($_POST['course_id']) ? (int)$_POST['course_id'] : null;
+    
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !str_ends_with($email, '@itssmartacademy.it')) {
         $message = '<div class="create-user-message error">Email non valida o dominio errato.</div>';

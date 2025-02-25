@@ -74,7 +74,9 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
                         <?php else: ?>
                             <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive">Attiva</a>
                         <?php endif; ?>
-                        <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" class="view-users-button delete" onclick="return confirm('Sei sicuro di voler eliminare questo utente?');">Elimina</a>
+                        <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" 
+                        class="view-users-button delete"
+                        onclick="return confirmDelete(this);">Elimina</a>
                     </div>
                 </td>
                 </tr>

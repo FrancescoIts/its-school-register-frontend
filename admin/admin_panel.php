@@ -54,12 +54,20 @@ if (count($corsi) > 0) {
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
+<script src="../assets/js/view_users.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
-
+<button
+        type="button"
+        class="btn btn-danger btn-floating btn-lg"
+        id="btn-back-to-top"
+        >
+  <i class="fas fa-arrow-up"></i>
+</button>
 <!-- Navbar -->
 <div class="navbar">
     <div class="logo">
@@ -83,13 +91,18 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Calendario con Eventi -->
-<div class="dashboard">
-    <h3 class="">Calendario Eventi (Lezioni)</h3>
+<div class="dashboard" data-section="events">
+<div class="dashboard-header">
+    <h3 class="">Calendario Eventi</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php
                 require_once '../utils/calendar_admin.php';
             ?>
+        </div>
         </div>
     </div>
 </div>
@@ -107,44 +120,63 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Statistiche -->
-<div class="dashboard">
+<div class="dashboard" data-section="events">
+<div class="dashboard-header">
     <h3>Statistiche Studenti</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php
             require_once '../utils/stats_total.php'; 
             ?>
         </div>
+        </div>
     </div>
 </div>
 
 <!-- Sezione Impostazioni Corsi -->
-<div class="dashboard" id="courseSettings">
+<div class="dashboard" id="courseSettings" data-section="coursesSettings">
+<div class="dashboard-header">
     <h3>Impostazioni Corsi</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php
                 require_once './courses_admin.php';
             ?>
         </div>
+        </div>
     </div>
 </div>
 
 <!-- Sezione Mostra Utenti -->
-<div class="dashboard" id="viewUsers">
+<div class="dashboard" id="viewUsers" data-section="showUsers">
+<div class="dashboard-header">
     <h3>Mostra Utenti</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php
                 require_once './view_users.php';
             ?>
         </div>
+        </div>
     </div>
 </div>
 
 <!-- Sezione Crezione Utenti -->
-<div class="dashboard">
+<div class="dashboard" data-section="createUser">
+<div class="dashboard-header">
     <h3>Crezione Utenti</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <?php
@@ -153,10 +185,15 @@ if (count($corsi) > 0) {
         </div>
     </div>
 </div>
+</div>
 
 <!-- Sezione Calendario Assenze Studenti -->
-<div class="dashboard" id="abencesAdmin">
+<div class="dashboard" id="abencesAdmin" data-section="studentsAbesences">
+<div class="dashboard-header">
     <h3>Calendario Assenze Studenti</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card" id="calendar-absences">
         
@@ -164,16 +201,22 @@ if (count($corsi) > 0) {
                 require_once '../utils/calendar_absences_admin.php';
             ?>
         </div>
+        </div>
     </div>
 </div>
 
 
 
 <!-- Sezione Bacheca -->
-<div class="dashboard">
+<div class="dashboard" data-section="bacheca">
+<div class="dashboard-header">
     <h3 class="">Bacheca</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">Contenuto della bacheca</div>
+    </div>
     </div>
 </div>
 

@@ -82,3 +82,48 @@
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
+
+/* Stili dark mode */
+.dark-mode .create-user-container {
+    background-color: #333;
+    color: #f1f1f1; /* Testo chiaro per contrasto */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .create-user-title {
+    color: #ffffff; /* Testo bianco per il titolo */
+}
+
+.dark-mode .create-user-label {
+    color: #cccccc; /* Etichette in grigio chiaro */
+}
+
+.dark-mode .create-user-input, 
+.dark-mode .create-user-select {
+    background-color: #444;
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+.dark-mode .create-user-button {
+    background-color: #444;
+    color: white;
+    border: 1px solid #555;
+}
+
+.dark-mode .create-user-button:hover {
+    background-color: #666; /* Leggero contrasto al passaggio del mouse */
+}
+
+.dark-mode .create-user-message.success {
+    background-color: #2d8659;
+    color: #aaffaa;
+    border: 1px solid #3ca76f;
+}
+
+.dark-mode .create-user-message.error {
+    background-color: #552222;
+    color: #ffaaaa;
+    border: 1px solid #aa4444;
+}

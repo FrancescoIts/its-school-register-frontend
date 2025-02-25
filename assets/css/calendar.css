@@ -41,3 +41,41 @@ min-width: 50px;
 vertical-align: top;
 color: #FFF;
 }
+
+/* Stili dark mode */
+.dark-mode .calendar-day {
+    background: #333; /* Sfondo più scuro */
+    color: #f1f1f1; /* Testo più chiaro per visibilità */
+    border: 1px solid #444; /* Bordo più scuro */
+}
+
+.dark-mode .calendar-day.has-event {
+    font-weight: bold;
+    color: #ff6b6b; /* Un colore che risalta per gli eventi */
+}
+
+.dark-mode .event-dot {
+    background-color: #e74c3c; /* Cambia colore del pallino evento */
+}
+
+.dark-mode .calendar-table {
+    background: #222; /* Sfondo generale della tabella */
+    border: 1px solid #444;
+}
+
+.dark-mode .calendar-table td {
+    padding: 10px;
+    border: 1px solid #555;
+    color: #f1f1f1; /* Testo bianco */
+    background: #333; /* Celle scure */
+    cursor: pointer;
+}
+
+.dark-mode .calendar-table th {
+    padding: 10px;
+    border: 1px solid #555;
+    background: #444; /* Intestazione più scura */
+    color: #f1f1f1; /* Testo bianco */
+    font-weight: bold;
+}
+

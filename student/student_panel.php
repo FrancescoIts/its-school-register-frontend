@@ -39,6 +39,7 @@ if (!file_exists($corso_img)) {
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar.js" defer></script>
@@ -60,7 +61,7 @@ if (!file_exists($corso_img)) {
 
 <!-- Sezione Corso -->
 <div class="dashboard">
-    <h3 class="">Corso</h3>
+    <h3>Corso</h3>
     <div class="courses">
         <div class="course-card"><?php echo htmlspecialchars($corso); ?></div>
         <img src="<?php echo htmlspecialchars($corso_img); ?>" alt="Logo Corso"> 
@@ -68,19 +69,28 @@ if (!file_exists($corso_img)) {
 </div>
 
 <!-- Sezione Calendario con Eventi -->
-<div class="dashboard">
-    <h3 class="">Calendario Eventi (Lezioni)</h3>
-    <div class="courses">
-        <div class="course-card">
-        <?php require_once '../utils/calendar.php';?>
+<div class="dashboard" data-section="calendario_eventi">
+    <div class="dashboard-header">
+        <h3>Calendario Eventi</h3>
+        <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+        <div class="courses">
+            <div class="course-card">
+                <?php require_once '../utils/calendar.php';?>
+            </div>
         </div>
     </div>
 </div>
 
 
 <!-- Sezione Statistiche -->
-<div class="dashboard">
-    <h3 class="">Le tue statistiche</h3>
+<div class="dashboard"  data-section="stats">
+    <div class="dashboard-header">
+    <h3>Le tue statistiche</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card">
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -188,15 +198,21 @@ if (!file_exists($corso_img)) {
             </script>
         </div>
     </div>
+    </div>  
 </div>
 
 <!-- Sezione Calendario con Assenze -->
-<div class="dashboard">
+<div class="dashboard"  data-section="absences">
+<div class="dashboard-header">
     <h3 class="">Calendario Assenze</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
     <div class="courses">
         <div class="course-card" id="calendar-absences">
             <?php require_once '../utils/calendar_absences.php';?>
         </div>
+    </div>
     </div>
 </div>
 

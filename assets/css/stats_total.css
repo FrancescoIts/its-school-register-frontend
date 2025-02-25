@@ -70,3 +70,42 @@
     font-size: 18px;
     font-weight: bold;
 }
+
+/* Stili dark mode */
+.dark-mode .student-item {
+    background-color: #333; /* Sfondo più scuro per il tema dark */
+    color: #f1f1f1; /* Testo chiaro per contrasto */
+    border: 3px solid #444;
+}
+
+.dark-mode .student-item:hover {
+    background-color: #444; /* Cambia colore al passaggio del mouse */
+}
+
+.dark-mode .student-title {
+    color: #f1f1f1;
+}
+
+.dark-mode .student-summary {
+    color: #cccccc;
+}
+
+.dark-mode .student-details {
+    background: #444;
+    color: #f1f1f1;
+    border: 3px solid #555;
+}
+
+.dark-mode .charts-container {
+    color: #f1f1f1;
+}
+
+.dark-mode .chart-container {
+    background-color: #444;
+    color: #f1f1f1;
+    border: 1px solid #555;
+}
+
+.dark-mode .absence-percentage {
+    color: #f1f1f1;
+}
