@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Inizio output buffering
 session_start();
 require_once 'config.php'; 
 
@@ -11,8 +12,14 @@ if (isset($_SESSION['user'])) {
     $stmt->bind_param('si', $session_id, $id_user);
     $stmt->execute();
 }
+
+// Distruggere la sessione
 session_unset();
 session_destroy();
-header("Location: ../index.php");
+
+// Eseguire il redirect con JavaScript per evitare problemi di output
+echo "<script>window.location.href = '../index.php';</script>";
+ob_end_flush(); // Fine output buffering
+
 exit;
-?>
+

@@ -1,12 +1,13 @@
 <?php
 session_start();
-require_once 'config.php'; 
+require_once 'config.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 
-function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente', 'admin', 'sadmin']) {
+function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente', 'admin', 'sadmin'])
+{
     global $conn;
 
     if (!isset($conn)) {
@@ -57,9 +58,6 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
 
     // Se devo controllare il ruolo, lo faccio adesso
     if ($checkRole) {
-        // $userData['roles'] dovrebbe essere un array di ruoli 
-        // (es. ["studente","docente","admin"]).
-        // Se per caso è una stringa, normalizzo
         $ruoli = $userData['roles'] ?? [];
         if (!is_array($ruoli)) {
             $ruoli = [$ruoli];
@@ -73,9 +71,7 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
             exit;
         }
     }
-
-    // Se arrivo qui, la sessione è valida e l’utente è nel ruolo giusto
-    // Restituisco (o rendo disponibile) i dati utente completi
     return $userData;
 }
-?>
+
+

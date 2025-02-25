@@ -41,17 +41,29 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Query per ottenere tutte le presenze dell'utente nel 2025
+// Ottengo l'anno corrente
+$currentYear = date('Y');
+
+// Query per ottenere tutte le presenze dell'utente con l'anno corrente
 $queryAttendance = "
     SELECT id_course, date, entry_hour, exit_hour 
     FROM attendance 
-    WHERE id_user = ? AND YEAR(date) = 2025
+    WHERE id_user = ? AND YEAR(date) = ?
 ";
 
+// Preparazione della query
 $stmt = $conn->prepare($queryAttendance);
-$stmt->bind_param("i", $id_user);
+if ($stmt === false) {
+    die(json_encode(['error' => 'Errore nella preparazione della query: ' . $conn->error]));
+}
+
+// Bind dei parametri (id_user e anno corrente)
+$stmt->bind_param("ii", $id_user, $currentYear);
+
+// Esecuzione della query
 $stmt->execute();
 $result = $stmt->get_result();
+
 
 $total_absences = 0;
 $week_absences = [

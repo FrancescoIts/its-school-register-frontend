@@ -51,51 +51,7 @@ if (count($corsi) > 0) {
 </head>
 <body>
 <script src="../assets/js/main.js"></script>
-<script>
-    // Barra di progresso e animazioni...
-    document.addEventListener("scroll", function() {
-        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrollPercent = (scrollTop / scrollHeight) * 100;
-        document.getElementById("scrollProgress").style.width = scrollPercent + "%";
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".course-card.info p").forEach(function (element) {
-            element.addEventListener("click", function () {
-                this.classList.toggle("visible");
-            });
-        });
-
-        // Effetto digitazione
-        const userName = "Ciao <?php echo htmlspecialchars($user['firstname']); ?>"; 
-        const dynamicSpan = document.getElementById("dynamicText");
-        const cursorSpan = document.getElementById("cursor");
-        let i = 0;
-
-        function typeEffect() {
-            if (i < userName.length) {
-                dynamicSpan.innerHTML += userName.charAt(i);
-                i++;
-                setTimeout(typeEffect, 100);
-            } else {
-                cursorSpan.style.display = "inline-block";
-            }
-        }
-        if (dynamicSpan) {
-            typeEffect();
-        }
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-            if (localStorage.getItem('scrollPosition')) {
-                window.scrollTo(0, localStorage.getItem('scrollPosition'));
-                localStorage.removeItem('scrollPosition');
-            }
-            document.querySelector("form").addEventListener("submit", function() {
-                localStorage.setItem('scrollPosition', window.scrollY);
-            });
-        });
-</script>
+<script src="../assets/js/calendar_admin.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -107,8 +63,7 @@ if (count($corsi) > 0) {
         </a>
     </div>
     <div class="navbar-title">
-        <a class="type1">ITS@Registro</a>:<a class="type2">~</a>$ 
-        <span id="dynamicText"></span><span id="cursor">|</span>
+
     </div>
     <a class="logout" href="../utils/logout.php">Logout</a>
     <button class="theme-toggle" id="theme-toggle">🌙</button>
@@ -128,7 +83,7 @@ if (count($corsi) > 0) {
     <div class="courses">
         <div class="course-card">
             <?php
-                require('../utils/calendar_admin.php');
+                require_once '../utils/calendar_admin.php';
             ?>
         </div>
     </div>
@@ -139,7 +94,9 @@ if (count($corsi) > 0) {
     <h3>Lezione di oggi</h3>
     <div class="courses">
         <div class="course-card">
-        <?php require('../utils/manage_attendance.php'); ?>
+        <?php
+            require_once '../utils/manage_attendance.php';
+         ?>
         </div>
     </div>
 </div>
@@ -149,7 +106,9 @@ if (count($corsi) > 0) {
     <h3>Statistiche Studenti</h3>
     <div class="courses">
         <div class="course-card">
-            <?php require('../utils/stats_total.php'); ?>
+            <?php 
+                require_once '../utils/stats_total.php'; 
+            ?>
         </div>
     </div>
 </div>

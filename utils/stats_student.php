@@ -42,16 +42,25 @@ if (empty($courses)) {
     exit;
 }
 
+// Ottengo l'anno corrente
+$currentYear = date('Y');
+
+// Preparazione della query con l'anno corrente come parametro
 $queryAttendance = "
     SELECT a.id_course, a.date, a.entry_hour, a.exit_hour
     FROM attendance a
-    WHERE a.id_user = ? AND YEAR(a.date) = 2025
+    WHERE a.id_user = ? AND YEAR(a.date) = ?
 ";
 
 $stmt = $conn->prepare($queryAttendance);
-$stmt->bind_param('i', $id_user);
+
+// Associazione dei parametri (id_user e anno corrente)
+$stmt->bind_param('ii', $id_user, $currentYear);
+
+// Esecuzione della query
 $stmt->execute();
 $result = $stmt->get_result();
+
 
 $total_absences = 0;
 $weekAbsences = [];

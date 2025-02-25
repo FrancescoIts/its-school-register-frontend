@@ -5,53 +5,97 @@ require_once 'check_session.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Assumiamo che l'utente sia loggato e $user definito in check_session
+$user = checkSession(true, ['studente']);
 $id_user = $user['id_user'] ?? 0;
 
-// Orario standard di presenza (esempio: 14:00 - 18:00)
-$standard_entry = "14:00:00";
-$standard_exit  = "18:00:00";
+// Recupero del corso associato all'utente
+$stmtCourse = $conn->prepare("
+  SELECT id_course FROM user_role_courses
+  WHERE id_user = ? LIMIT 1
+");
+$stmtCourse->bind_param("i", $id_user);
+$stmtCourse->execute();
+$resultCourse = $stmtCourse->get_result()->fetch_assoc();
+$stmtCourse->close();
 
-/**
- * 1) Carichiamo gli orari di ingresso e uscita per il 2025
- */
+$id_course = $resultCourse['id_course'] ?? null;
+
+if (!$id_course) {
+    die("Nessun corso associato all'utente.");
+}
+
+// Funzione per recuperare gli orari dal database
+function getCourseTimes($conn, $id_course, $day_of_week) {
+    $query = "
+        SELECT start_time_{$day_of_week} AS start_time, end_time_{$day_of_week} AS end_time
+        FROM courses
+        WHERE id_course = ?
+    ";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id_course);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    return [$result['start_time'], $result['end_time']];
+}
+
+// Recupero delle assenze
+$currentYear = date('Y'); // Ottiene l'anno corrente
 $stmtA = $conn->prepare("
   SELECT date, entry_hour, exit_hour
   FROM attendance
   WHERE id_user = ?
-    AND YEAR(date) = 2025
+    AND id_course = ?
+    AND YEAR(date) = ?
 ");
-$stmtA->bind_param("i", $id_user);
+
+// Binding del parametro dell'anno corrente
+$stmtA->bind_param("iii", $id_user, $id_course, $currentYear);
+
 $stmtA->execute();
 $resA = $stmtA->get_result();
 
-$absences = []; 
+$absences = [];
 while ($row = $resA->fetch_assoc()) {
     $date = $row['date'];
     $entry = $row['entry_hour'] ?? null;
     $exit  = $row['exit_hour'] ?? null;
 
+    // Ottieni il giorno della settimana in inglese (monday, tuesday, ecc.)
+    $dayOfWeek = strtolower(date('l', strtotime($date)));
+
+    // Ottieni gli orari di inizio e fine dal corso
+    list($course_start, $course_end) = getCourseTimes($conn, $id_course, $dayOfWeek);
+
+    // Se non ci sono orari definiti per quel giorno, salta
+    if (!$course_start || !$course_end) {
+        continue;
+    }
+
+    $standard_entry_seconds = strtotime($course_start);
+    $standard_exit_seconds  = strtotime($course_end);
+
     // Se mancano i dati di ingresso o uscita, consideriamo l'intera fascia oraria come assente
     if (!$entry || !$exit) {
-        $absences[$date] = 4; 
+        $absence_hours = ($standard_exit_seconds - $standard_entry_seconds) / 3600;
+        $absences[$date] = round($absence_hours, 2);
         continue;
     }
 
     // Converto gli orari in secondi per fare i calcoli
     $entry_seconds = strtotime($entry);
     $exit_seconds  = strtotime($exit);
-    $standard_entry_seconds = strtotime($standard_entry);
-    $standard_exit_seconds  = strtotime($standard_exit);
 
     // Calcolo le ore di assenza
     $absence_hours = 0;
 
-    if ($entry_seconds > $standard_entry_seconds) { 
+    if ($entry_seconds > $standard_entry_seconds) {
         // Entrato in ritardo
         $absence_hours += ($entry_seconds - $standard_entry_seconds) / 3600;
     }
-    if ($exit_seconds < $standard_exit_seconds) { 
-        // Uscito prima del previsto
+    if ($exit_seconds < $standard_exit_seconds) {
+        // Uscito prima
         $absence_hours += ($standard_exit_seconds - $exit_seconds) / 3600;
     }
 
@@ -63,21 +107,8 @@ while ($row = $resA->fetch_assoc()) {
 $stmtA->close();
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Calendario Anno 2025 (Eventi + Assenze)</title>
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-
-  </style>
-</head>
 <body>
-
 <div id="calendar"></div>
-
 <script>
 // Dati delle assenze e degli eventi in formato JSON
 const userAbsences = <?php echo json_encode($absences); ?>; 
@@ -178,6 +209,5 @@ let currentMonth = new Date().getMonth() + 1;
 renderCalendar(currentMonth, currentYear);
 
 </script>
-
 </body>
 </html>

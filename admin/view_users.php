@@ -37,7 +37,7 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
         $conn->query("DELETE FROM users WHERE id_user = $id_user");
     }
     //header("Location: ./view_users.php/");
-    echo "<script>window.location.href = 'admin_panel.php';</script>";    
+    echo "<script>window.location.href = 'admin_panel.php#viewUsers';</script>";    
 
     exit;
 }

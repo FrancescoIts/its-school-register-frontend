@@ -22,7 +22,7 @@ if (count($corsi) > 0) {
 
 if (!file_exists($corso_img)) {
     $corso_img = "../assets/img/courses/default.jpg";
-}   
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,48 +39,9 @@ if (!file_exists($corso_img)) {
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
-<script src="../assets/js/main.js"></script>
-<script>
-    // Barra di progresso in base allo scroll
-    document.addEventListener("scroll", function() {
-        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrollPercent = (scrollTop / scrollHeight) * 100;
-        document.getElementById("scrollProgress").style.width = scrollPercent + "%";
-    });
-    // Dati personali blurati
-    document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".course-card.info p").forEach(function (element) {
-        element.addEventListener("click", function () {
-            this.classList.toggle("visible");
-        });
-    });
-});
-document.addEventListener("DOMContentLoaded", function() {
-    const userName = "Ciao <?php echo htmlspecialchars($user['firstname']); ?>"; // Nome utente
-    const dynamicSpan = document.getElementById("dynamicText");
-    const cursorSpan = document.getElementById("cursor");
-
-    let i = 0;
-
-    function typeEffect() {
-        if (i < userName.length) {
-            dynamicSpan.innerHTML += userName.charAt(i);
-            i++;
-            setTimeout(typeEffect, 100); // Velocità di scrittura
-        } else {
-            cursorSpan.style.display = "inline-block"; // Mantiene il cursore
-        }
-    }
-
-    if (dynamicSpan) {
-        typeEffect();
-    }
-});
-
-
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../assets/js/main.js" defer></script>
+<script src="../assets/js/calendar.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 
 <!-- Navbar -->
@@ -91,8 +52,6 @@ document.addEventListener("DOMContentLoaded", function() {
         </a>
     </div>
     <div class="navbar-title">
-        <a class="type1">ITS@Registro</a>:<a class="type2">~</a>$ 
-        <span id="dynamicText"></span><span id="cursor">|</span>
     </div>
     <a class="logout" href="../utils/logout.php">Logout</a>
     <button class="theme-toggle" id="theme-toggle">🌙</button>
@@ -113,9 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <h3 class="">Calendario Eventi (Lezioni)</h3>
     <div class="courses">
         <div class="course-card">
-        <?php
-            require('../utils/calendar.php');
-        ?>
+        <?php require_once '../utils/calendar.php';?>
         </div>
     </div>
 </div>
@@ -233,20 +190,15 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
 </div>
 
-
-
 <!-- Sezione Calendario con Assenze -->
 <div class="dashboard">
     <h3 class="">Calendario Assenze</h3>
     <div class="courses">
         <div class="course-card" id="calendar-absences">
-        <?php
-            require('../utils/calendar_absences.php');
-        ?>
+            <?php require_once '../utils/calendar_absences.php';?>
         </div>
     </div>
 </div>
-
 
 <!-- Sezione Bacheca -->
 <div class="dashboard">

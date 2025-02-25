@@ -8,10 +8,10 @@
 
 ### 100% PANNELLO DOCENTI
 
-### 60% PANNELLO ADMIN
+### 90% PANNELLO ADMIN
 
 ## Fixes
 1. ~~Orari di lezione flessibili (non lezioni di 4 ore)~~
 2. ~~Aggiustare alcuni refresh di pagina con id=""~~
-3. Crezione utenti per admin
+3. ~~Crezione utenti per admin~~
 4. ~~Visualizzazione utenti per admin~~

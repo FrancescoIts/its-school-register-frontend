@@ -13,7 +13,10 @@ if (empty($docCourseIds)) {
     exit;
 }
 
-// Query aggiornata per usare gli orari reali dei corsi
+// Ottengo l'anno corrente
+$currentYear = date('Y');
+
+// Query orari reali dei corsi con l'anno corrente
 $queryStats = "
 SELECT 
     u.id_user, 
@@ -71,7 +74,7 @@ SELECT
 FROM users u
 INNER JOIN user_role_courses urc ON u.id_user = urc.id_user
 INNER JOIN courses c ON urc.id_course = c.id_course
-LEFT JOIN attendance a ON u.id_user = a.id_user AND a.id_course = urc.id_course AND YEAR(a.date) = 2025
+LEFT JOIN attendance a ON u.id_user = a.id_user AND a.id_course = urc.id_course AND YEAR(a.date) = ?
 WHERE urc.id_role = 1 -- Solo studenti
 AND urc.id_course IN (" . implode(',', array_fill(0, count($docCourseIds), '?')) . ")
 GROUP BY u.id_user, full_name, c.name;
@@ -83,11 +86,15 @@ if ($stmt === false) {
     die(json_encode(['error' => 'Errore nella preparazione della query: ' . $conn->error]));
 }
 
-// Bind dei parametri dinamici
-$types = str_repeat('i', count($docCourseIds));
-$stmt->bind_param($types, ...$docCourseIds);
+// Bind dei parametri dinamici (anno corrente + id dei corsi)
+$types = 'i' . str_repeat('i', count($docCourseIds)); // Aggiungo 'i' per l'anno corrente
+$params = array_merge([$currentYear], $docCourseIds);
+$stmt->bind_param($types, ...$params);
+
+// Esecuzione della query
 $stmt->execute();
 $result = $stmt->get_result();
+
 
 $students = [];
 while ($row = $result->fetch_assoc()) {

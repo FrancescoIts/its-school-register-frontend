@@ -1,5 +1,3 @@
-/* create_user.css */
-
 /* Contenitore principale del form */
 .create-user-container {
     background-color: #7DC9ED;
@@ -21,7 +19,7 @@
 
 /* Etichette dei campi di input */
 .create-user-label {
-    display: block;
+    display: flex;
     margin-bottom: 8px;
     color: #444444;
     font-weight: bold;
