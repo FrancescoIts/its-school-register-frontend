@@ -14,20 +14,27 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
         die("Errore: Connessione al database non disponibile.");
     }
 
-    // Recupera l'id di sessione corrente
+    // Se la sessione è già attiva in PHP, usiamola direttamente
+    if (isset($_SESSION['user'])) {
+        return $_SESSION['user'];
+    }
+
+    // Recupera l'ID di sessione attuale
     $session_id = session_id();
 
-    // Vai a prendere dal DB la sessione corrispondente
-    $sql = "SELECT id_user, data_scadenza, session_data 
+    // Controlla nel database se c'è una sessione valida per questo utente
+    $sql = "SELECT id_user, session_id, data_scadenza, session_data 
             FROM sessions 
-            WHERE session_id = ? 
+            WHERE id_user = (SELECT id_user FROM sessions WHERE session_id = ? LIMIT 1)
+            AND data_scadenza > NOW()
             LIMIT 1";
+    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('s', $session_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Se non trovo nulla, utente non loggato / sessione inesistente
+    // Se non troviamo una sessione valida, disconnettiamo l'utente
     if (!$row = $result->fetch_assoc()) {
         header("Location: ../utils/logout.php");
         exit;
@@ -35,43 +42,35 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
 
     $stmt->close();
 
-    // Controllo scadenza
-    $data_scadenza = new DateTime($row['data_scadenza']);
-    $adesso = new DateTime();
-    if ($adesso > $data_scadenza) {
-        // Sessione scaduta
-        header("Location: ../utils/logout.php");
-        exit;
+    // Se l'ID della sessione corrente è diverso da quello nel database, riprendiamo quella attiva
+    if ($row['session_id'] !== $session_id) {
+        session_id($row['session_id']);
+        session_start();
     }
 
-    // Decodifico i dati utente (salvati come JSON)
+    // Decodifica i dati della sessione
     $userData = json_decode($row['session_data'], true);
     if (!$userData) {
-        // Se per qualche ragione non riesco a decodificare
         header("Location: ../utils/logout.php");
         exit;
     }
 
-    // Aggiorno la variabile di sessione locale,
-    // così nei file che la usano esiste di nuovo:
+    // Memorizza i dati nella sessione corrente
     $_SESSION['user'] = $userData;
 
-    // Se devo controllare il ruolo, lo faccio adesso
+    // Controllo ruoli, se richiesto
     if ($checkRole) {
         $ruoli = $userData['roles'] ?? [];
         if (!is_array($ruoli)) {
             $ruoli = [$ruoli];
         }
-        // Converto in minuscolo
         $ruoli = array_map('strtolower', $ruoli);
 
-        // Se non c'è nessuna intersezione con i ruoli ammessi, blocco
         if (!array_intersect($ruoli, $allowedRoles)) {
             header("Location: ../index.php");
             exit;
         }
     }
+
     return $userData;
 }
-
-

@@ -119,3 +119,29 @@ function smoothScrollToTop() {
     }
   }, 15);
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    function checkSession() {
+        fetch('../utils/check_session.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.session_active) {
+                    Swal.fire({
+                        title: "Sessione Scaduta",
+                        text: "La tua sessione è scaduta. Verrai disconnesso.",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    }).then(() => {
+                        window.location.href = "../utils/logout.php";
+                    });
+                }
+            })
+            .catch(error => console.error("Errore nel controllo della sessione:", error));
+    }
+
+    checkSession();
+    setInterval(checkSession, 60000); 
+});
