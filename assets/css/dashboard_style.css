@@ -20,6 +20,11 @@
     height: auto;
 }
 
+body.dark-mode .navbar .logo img {
+    display: none;
+}
+
+
 .navbar .actions {
     display: flex;
     gap: 10px;
