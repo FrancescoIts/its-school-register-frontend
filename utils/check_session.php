@@ -16,6 +16,19 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
 
     // Se la sessione è già attiva in PHP, usiamola direttamente
     if (isset($_SESSION['user'])) {
+        // Se devi controllare i ruoli anche quando la sessione è già caricata
+        if ($checkRole) {
+            $ruoli = $_SESSION['user']['roles'] ?? [];
+            if (!is_array($ruoli)) {
+                $ruoli = [$ruoli];
+            }
+            $ruoli = array_map('strtolower', $ruoli);
+
+            if (!array_intersect($ruoli, $allowedRoles)) {
+                header("Location: ../index.php");
+                exit;
+            }
+        }
         return $_SESSION['user'];
     }
 

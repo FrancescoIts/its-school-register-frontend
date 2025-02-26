@@ -88,28 +88,37 @@
     border-radius: 5px;
     color: white;
     cursor: pointer;
+    background-color: #38cf24;
     font-size: 12px;
     transition: background-color 0.3s ease;
     width: 100%; /* Rende i pulsanti della stessa larghezza */
     text-align: center;
 }
 
+.view-users-button:hover {
+    background-color: #32921480;
+}
+
 /* Pulsante per disattivare */
 .view-users-button.inactive {
     background-color: #ffc107;
+    font-weight: bold;
 }
 
 .view-users-button.inactive:hover {
     background-color: #e0a800;
+    color: #007BFF;
 }
 
 /* Pulsante per eliminare */
 .view-users-button.delete {
     background-color: #dc3545;
+    font-weight: bold;
 }
 
 .view-users-button.delete:hover {
     background-color: #c82333;
+    color: #007BFF;
 }
 
 
@@ -180,19 +189,22 @@ a {
     border-bottom: 1px solid #555;
     color: #f1f1f1;
 }
+a {
+    text-decoration: none !important;
+}
 
 .dark-mode .view-users-table tr:nth-child(even) {
     background-color: #555; /* Riga pari con colore più scuro */
 }
 
 .dark-mode .view-users-button {
-    background-color: #444; /* Colore scuro per i pulsanti */
+    background-color: #2b6833; /* Colore scuro per i pulsanti */
     color: #f1f1f1;
     border: 1px solid #555;
 }
 
 .dark-mode .view-users-button:hover {
-    background-color: #666; /* Colore più chiaro al passaggio del mouse */
+    background-color: #3ba048; /* Colore più chiaro al passaggio del mouse */
 }
 
 .dark-mode .view-users-button.inactive {

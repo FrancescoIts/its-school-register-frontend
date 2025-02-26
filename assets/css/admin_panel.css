@@ -94,6 +94,10 @@ body {
     transition: background 0.3s, color 0.3s;
 }
 
+a {
+    text-decoration: none !important;
+}
+
 .theme-toggle:hover {
     background: #ddd;
 }

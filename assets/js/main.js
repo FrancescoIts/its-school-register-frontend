@@ -123,18 +123,19 @@ function smoothScrollToTop() {
 
 document.addEventListener("DOMContentLoaded", function () {
     function checkSession() {
-        fetch('../utils/check_session.php')
+        fetch('../utils/api_check_session.php')
             .then(response => response.json())
             .then(data => {
                 if (!data.session_active) {
                     Swal.fire({
                         title: "Sessione Scaduta",
-                        text: "La tua sessione è scaduta. Verrai disconnesso.",
+                        text: data.error || "La tua sessione è scaduta. Verrai disconnesso.",
                         icon: "warning",
                         confirmButtonText: "OK",
                         allowOutsideClick: false,
                         allowEscapeKey: false
                     }).then(() => {
+                        // Esegue il logout
                         window.location.href = "../utils/logout.php";
                     });
                 }
@@ -143,5 +144,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     checkSession();
-    setInterval(checkSession, 60000); 
+    setInterval(checkSession, 60000);      
 });
