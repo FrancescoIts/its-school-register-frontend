@@ -170,38 +170,49 @@ document.addEventListener('DOMContentLoaded', function() {
   
   
   document.addEventListener('DOMContentLoaded', function() {
-    function addValidation(form) {
-        form.addEventListener('submit', function(event) {
-            let errorFound = false;
-            const allRows = form.querySelectorAll('.attendance-table tr:not(:first-child)');
-            allRows.forEach((row) => {
-                const checkBox = row.querySelector('input[name*="[presente]"]');
-                if (!checkBox || !checkBox.checked) return;
-                const entryInput = row.querySelector('input[name*="[entry_hour]"]');
-                const exitInput  = row.querySelector('input[name*="[exit_hour]"]');
-                const entryVal = entryInput ? entryInput.value : '';
-                const exitVal  = exitInput ? exitInput.value : '';
-                if (entryVal > exitVal) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Errore orario',
-                        text: 'L\'orario di ingresso non può superare quello di uscita.'
-                    });
-                    errorFound = true;
-                }
-            });
-            if (errorFound) {
-                event.preventDefault();
-                event.stopPropagation();
+    function validateForm(event, formType) {
+        let errorFound = false;
+        const form = event.target; // Riferimento al form che ha attivato il submit
+        const allRows = form.querySelectorAll('.attendance-table tr:not(:first-child)');
+
+        allRows.forEach((row) => {
+            const checkBox = row.querySelector('input[name*="[presente]"]');
+            if (!checkBox || !checkBox.checked) return;
+
+            const entryInput = row.querySelector('input[name*="[entry_hour]"]');
+            const exitInput  = row.querySelector('input[name*="[exit_hour]"]');
+            const entryVal = entryInput ? entryInput.value : '';
+            const exitVal  = exitInput ? exitInput.value : '';
+
+            if (entryVal > exitVal) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errore orario',
+                    text: `L'orario di ingresso non può superare quello di uscita per il modulo: ${formType}.`
+                });
+                errorFound = true;
             }
         });
+
+        if (errorFound) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
     }
+
+    // Assegna validazione separata ai due form
     const attendanceForm = document.getElementById('attendanceForm');
     if (attendanceForm) {
-        addValidation(attendanceForm);
+        attendanceForm.addEventListener('submit', function(event) {
+            validateForm(event, 'Registrazione Presenze');
+        });
     }
+
     const modifyForm = document.getElementById('modifyForm');
     if (modifyForm) {
-        addValidation(modifyForm);
+        modifyForm.addEventListener('submit', function(event) {
+            validateForm(event, 'Modifica Presenze');
+        });
     }
 });
+

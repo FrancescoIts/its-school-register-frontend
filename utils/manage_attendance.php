@@ -14,7 +14,6 @@ $oggiIta = date('d/m/Y');
 // ----------------------------------------------------
 // Funzione per verificare se l'utente
 // possiede almeno uno dei ruoli passati.
-//
 function userHasAnyRole($userRoles, $allowedRoles) {
     foreach ($userRoles as $r) {
         if (in_array(strtolower($r), $allowedRoles)) {
@@ -24,7 +23,6 @@ function userHasAnyRole($userRoles, $allowedRoles) {
     return false;
 }
 
-
 if (!userHasAnyRole($user['roles'], ['docente','admin','sadmin'])) {
     echo "<p>Non hai i permessi per accedere a questa pagina.</p>";
     exit;
@@ -32,7 +30,6 @@ if (!userHasAnyRole($user['roles'], ['docente','admin','sadmin'])) {
 
 // ----------------------------------------------------
 // Determiniamo i corsi a cui può accedere l’utente
-// ----------------------------------------------------
 $corsiDisponibili = [];
 $ruoliMinuscoli = array_map('strtolower', $user['roles']);
 
@@ -82,7 +79,7 @@ if (count($corsiDisponibili) == 1) {
     $idCorsoSelezionato = $corsiDisponibili[0]['id_course'];
 }
 
-// Funzione per ottenere gli orari di inizio/fine del giorno corrente (es. Monday -> start_time_monday)
+// Funzione per ottenere gli orari di inizio/fine del giorno corrente
 function getDailyCourseTimes($conn, $idCourse, $oggi) {
     $dayOfWeek = strtolower(date('l', strtotime($oggi))); // monday, tuesday, ...
     $startColumn = 'start_time_' . $dayOfWeek;
@@ -115,6 +112,7 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
     // Orari effettivi del giorno
     list($startTimeDay, $endTimeDay) = getDailyCourseTimes($conn, $idCorsoSelezionato, $oggi);
 
+    $operationPerformed = false;
     if (!empty($_POST['students']) && is_array($_POST['students'])) {
         foreach ($_POST['students'] as $idStudente => $valori) {
             $idStudente = (int)$idStudente;
@@ -122,7 +120,6 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
             // Se presente => orari (o default se vuoti)
             $isPresente = isset($valori['presente']) ? 1 : 0;
             
-            // Se la spunta è presente ma non ci sono orari, è presenza per TUTTE le ore
             if ($isPresente) {
                 $entryHour = !empty($valori['entry_hour']) ? $valori['entry_hour'] : $startTimeDay;
                 $exitHour  = !empty($valori['exit_hour'])  ? $valori['exit_hour']  : $endTimeDay;
@@ -158,25 +155,38 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
             } else {
                 // INSERT
                 $sqlInsert = "
-                INSERT INTO attendance (id_user, id_course, date, entry_hour, exit_hour, created_by)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ";
-            $stmtI = $conn->prepare($sqlInsert);
-            $stmtI->bind_param(
-                'iisssi',
-                $idStudente,
-                $idCorsoSelezionato,
-                $oggi,
-                $entryHour,
-                $exitHour,
-                $user['id_user'] 
-            );
-            
-            $stmtI->execute();
-            $stmtI->close();
-            
+                    INSERT INTO attendance (id_user, id_course, date, entry_hour, exit_hour, created_by)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ";
+                $stmtI = $conn->prepare($sqlInsert);
+                $stmtI->bind_param(
+                    'iisssi',
+                    $idStudente,
+                    $idCorsoSelezionato,
+                    $oggi,
+                    $entryHour,
+                    $exitHour,
+                    $user['id_user'] 
+                );
+                $stmtI->execute();
+                $stmtI->close();
             }
+            $operationPerformed = true;
         }
+    }
+    
+    if ($operationPerformed) {
+        echo "<script>
+            Swal.fire({
+                title: 'Successo!',
+                text: 'Modifiche salvate con successo.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '" . $_SERVER['PHP_SELF'] . "?sel_date=" . urlencode($oggi) . "&id_course=" . $idCorsoSelezionato . "';
+            });
+        </script>";
+        exit;
     }
 }
 
@@ -324,13 +334,6 @@ if ($idCorsoSelezionato > 0) {
     // Se l’utente ha più corsi, mostra il form per la selezione corso
     if (count($corsiDisponibili) > 1) {
         ?>
-        <!DOCTYPE html>
-        <html lang="it">
-        <head>
-            <meta charset="UTF-8">
-            <title>Seleziona Corso</title>
-        </head>
-        <body>
         <form method="post">
             <p>Seleziona il corso per cui inserire le presenze di oggi: <?php echo $oggiIta; ?></p><br>
             <select name="id_course" required>
@@ -343,8 +346,6 @@ if ($idCorsoSelezionato > 0) {
             </select>
             <button type="submit">Vai</button>
         </form>
-        </body>
-        </html>
         <?php
     } else {
         echo "<p>Nessun corso disponibile o non selezionato.</p>";
