@@ -1,0 +1,255 @@
+<?php
+require_once '../utils/config.php';
+require_once '../utils/check_session.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
+$user = checkSession(true, ['docente', 'admin', 'sadmin']);
+
+// -----------------------------------------------------------------------------------
+// Funzione per verificare se l'utente possiede almeno uno dei ruoli indicati.
+//
+function hasAnyRole($userRoles, $allowedRoles) {
+    foreach ($userRoles as $r) {
+        if (in_array(strtolower($r), $allowedRoles)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// -----------------------------------------------------------------------------------
+// Funzione per recuperare gli orari di inizio/fine giornata dal DB in base al giorno
+// della settimana e al corso selezionato.
+//
+function dailyCourseTimes($conn, $idCourse, $date) {
+    // Ricava il giorno della settimana dalla data (es. Monday, Tuesday, etc.)
+    $dayOfWeek = strtolower(date('l', strtotime($date)));
+    $startColumn = 'start_time_' . $dayOfWeek;
+    $endColumn   = 'end_time_' . $dayOfWeek;
+
+    $sql = "SELECT $startColumn AS start_day, $endColumn AS end_day
+            FROM courses
+            WHERE id_course = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $idCourse);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+
+    $start = $res['start_day'];
+    $end   = $res['end_day'];
+
+    return [$start, $end];
+}
+
+// -----------------------------------------------------------------------------------
+// Verifica ruolo
+//
+if (!hasAnyRole($user['roles'], ['docente', 'admin', 'sadmin'])) {
+    echo "<script>Swal.fire('Accesso Negato', 'Non hai i permessi per modificare le presenze.', 'error');</script>";
+    exit;
+}
+
+$oggi = date('Y-m-d');
+$dataSelezionata = $_POST['sel_date'] ?? '';
+$idCorsoSelezionato = (int) ($_POST['id_course'] ?? 0);
+
+// -----------------------------------------------------------------------------------
+// 1) Recupera date e corsi disponibili per le assenze passate create da questo utente
+//
+$sql = "
+    SELECT DISTINCT a.date, a.id_course, c.name AS course_name
+    FROM attendance a
+    JOIN courses c ON a.id_course = c.id_course
+    WHERE a.created_by = ?
+      AND a.date < ?
+    ORDER BY a.date DESC, c.name
+";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('is', $user['id_user'], $oggi);
+$stmt->execute();
+$res = $stmt->get_result();
+
+$opzioni = [];
+while ($row = $res->fetch_assoc()) {
+    $opzioni[] = $row;
+}
+$stmt->close();
+
+// Se non ci sono presenze passate
+if (!$opzioni) {
+    echo "<script>Swal.fire('Nessuna Assenza', 'Non ci sono presenze passate da modificare.', 'info');</script>";
+    exit;
+}
+?>
+<!-- Form per selezionare la data e il corso -->
+<form method="post">
+    <label>Seleziona una data e un corso:</label><br><br>
+    <select name="sel_date" required>
+        <option value="">-- Seleziona --</option>
+        <?php foreach ($opzioni as $opt): 
+            $valCombo = htmlspecialchars($opt['date'] . '|' . $opt['id_course']);
+            $labelCombo = htmlspecialchars($opt['date'] . ' - ' . $opt['course_name']);
+        ?>
+            <option value="<?= $valCombo; ?>"><?= $labelCombo; ?></option>
+        <?php endforeach; ?>
+    </select>
+    <br><br>
+    <button type="submit" name="mostra_presenze">Mostra Presenze</button>
+</form>
+
+<?php
+// -----------------------------------------------------------------------------------
+// 2) Se è stata selezionata una data e un corso, mostra l'elenco delle presenze
+//
+if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
+    list($dataSelezionata, $idCorsoSelezionato) = explode('|', $_POST['sel_date']);
+
+    $sql = "
+        SELECT a.id, a.id_user, a.entry_hour, a.exit_hour,
+               u.firstname, u.lastname
+        FROM attendance a
+        JOIN users u ON a.id_user = u.id_user
+        WHERE a.created_by = ?
+          AND a.id_course = ?
+          AND a.date = ?
+        ORDER BY u.lastname, u.firstname
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('iis', $user['id_user'], $idCorsoSelezionato, $dataSelezionata);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    $presenze = [];
+    while ($row = $res->fetch_assoc()) {
+        $presenze[] = $row;
+    }
+    $stmt->close();
+
+    if (!$presenze) {
+        echo "<script>Swal.fire('Errore', 'Nessuna presenza trovata per questa data.', 'warning');</script>";
+        exit;
+    }
+
+    // PRIMA DI GENERARE LA TABELLA, recuperiamo gli orari "min" e "max" dal DB per il giorno
+    list($giornoStart, $giornoEnd) = dailyCourseTimes($conn, $idCorsoSelezionato, $dataSelezionata);
+
+    ?>
+    <h3>Modifica Presenze del <?= htmlspecialchars($dataSelezionata) ?></h3>
+    <form method="post">
+        <!-- Ripassiamo data/corso -->
+        <input type="hidden" name="sel_date" value="<?= htmlspecialchars($dataSelezionata) ?>" />
+        <input type="hidden" name="id_course" value="<?= (int) $idCorsoSelezionato ?>" />
+
+        <table class="attendance-table">
+            <tr>
+                <th>Studente</th>
+                <th>Presente</th>
+                <th>Ora Ingresso</th>
+                <th>Ora Uscita</th>
+            </tr>
+            <?php foreach ($presenze as $p):
+                $idAtt       = $p['id'];
+                $cognomeNome = $p['lastname'] . " " . $p['firstname'];
+                $entryH      = $p['entry_hour'];
+                $exitH       = $p['exit_hour'];
+                $isPresente  = !empty($entryH) && !empty($exitH);
+            ?>
+            <tr>
+                <td><?= htmlspecialchars($cognomeNome) ?></td>
+                <td>
+                    <input type="checkbox"
+                           name="presenze[<?= $idAtt ?>][presente]"
+                           value="1"
+                           <?= $isPresente ? 'checked' : '' ?>
+                    />
+                </td>
+                <td>
+                    <input type="time"
+                           name="presenze[<?= $idAtt ?>][entry]"
+                           value="<?= htmlspecialchars($entryH) ?>"
+                           step="60"
+                           min="<?= $giornoStart ?>"
+                           max="<?= $giornoEnd ?>"
+                    />
+                </td>
+                <td>
+                    <input type="time"
+                           name="presenze[<?= $idAtt ?>][exit]"
+                           value="<?= htmlspecialchars($exitH) ?>"
+                           step="60"
+                           min="<?= $giornoStart ?>"
+                           max="<?= $giornoEnd ?>"
+                    />
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <br>
+        <button type="submit" name="salva_modifiche">Salva Modifiche</button>
+    </form>
+    <?php
+}
+
+// -----------------------------------------------------------------------------------
+// 3) Salvataggio modifiche
+//
+if (isset($_POST['salva_modifiche'])) {
+    $dataSelezionata = $_POST['sel_date'] ?? '';
+    $idCorsoSelezionato = (int) ($_POST['id_course'] ?? 0);
+
+    if (empty($dataSelezionata) || !$idCorsoSelezionato || empty($_POST['presenze'])) {
+        echo "<script>Swal.fire('Errore', 'Nessuna modifica inviata.', 'error');</script>";
+        exit;
+    }
+
+    foreach ($_POST['presenze'] as $idAttendance => $info) {
+        $idAttendance = (int) $idAttendance;
+        $isPresente   = isset($info['presente']) ? 1 : 0;
+        // Prendiamo gli orari inviati (se stringa vuota => null)
+        $entryHour = !empty($info['entry']) ? $info['entry'] : null;
+        $exitHour  = !empty($info['exit'])  ? $info['exit']  : null;
+
+        if (!$isPresente) {
+            // Assente: orari a NULL
+            $entryHour = null;
+            $exitHour  = null;
+        } else {
+            // Presente: se i campi sono vuoti, assegniamo i default dal DB
+            if (empty($entryHour) && empty($exitHour)) {
+                list($startDay, $endDay) = dailyCourseTimes($conn, $idCorsoSelezionato, $dataSelezionata);
+                $entryHour = $startDay;
+                $exitHour  = $endDay;
+            }
+        }
+
+        $sqlUpdate = "
+            UPDATE attendance
+            SET entry_hour = ?, exit_hour = ?
+            WHERE id = ?
+              AND created_by = ?
+        ";
+        $stmtU = $conn->prepare($sqlUpdate);
+        $stmtU->bind_param('ssii', $entryHour, $exitHour, $idAttendance, $user['id_user']);
+        $stmtU->execute();
+        $stmtU->close();
+    }
+
+    echo "<script>
+        Swal.fire({
+            title: 'Successo!',
+            text: 'Modifiche salvate con successo.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = '" . $_SERVER['PHP_SELF'] . "?sel_date=" . urlencode($dataSelezionata)
+                . "&id_course=" . $idCorsoSelezionato . "';
+        });
+    </script>";
+    exit;
+}
+?>
