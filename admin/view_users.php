@@ -7,7 +7,7 @@ $id_admin = $user['id_user'];
 
 // Recupero utenti dei corsi assegnati all'admin/sadmin
 $query = "
-    SELECT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, c.name AS course_name
+    SELECT DISTINCT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, c.name AS course_name
     FROM users u
     JOIN user_role_courses urc ON u.id_user = urc.id_user
     JOIN courses c ON urc.id_course = c.id_course

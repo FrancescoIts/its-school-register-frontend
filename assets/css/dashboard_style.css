@@ -121,7 +121,7 @@ body.dark-mode .navbar .logo img {
 }
 
 .course-card {
-    width: 97%;
+    width: 100%;
     background: rgba(255, 255, 255, 0.2);
     padding: 15px;
     border-radius: 10px;
@@ -146,7 +146,7 @@ body.dark-mode .navbar .logo img {
 }
 
 /* Responsività */
-@media (max-width: 768px) {
+@media (max-width: 390px) {
     .dashboard {
         width: 90%;
     }

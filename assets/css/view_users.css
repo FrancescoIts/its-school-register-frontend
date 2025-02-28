@@ -1,33 +1,10 @@
-/* Contenitore principale */
-.view-users-container {
-    background-color: #ffffff;
-    max-width: 80%;
-    margin: 50px auto;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
-    overflow-x: auto;  /* Permette lo scroll orizzontale se necessario */
-}
-
-/* Titolo della sezione */
-.view-users-title {
-    text-align: center;
-    color: #333333;
-    margin-bottom: 20px;
-    font-weight: bold;
-    font-size: 1.5rem;
-}
-
-/* Contenitore con scroll orizzontale per la tabella */
-.view-users-table-container {
-    overflow-x: auto;
-}
-
-/* Stile tabella */
-.view-users-table {
+.view-users-table-container{
     width: 100%;
-    min-width: 800px; /* Evita il sovrapporsi dei dati */
+}
+
+
+.view-users-table {
+    width: 80%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
@@ -37,7 +14,7 @@
     padding: 8px 10px; /* Ridotto il padding */
     text-align: center;
     border-bottom: 1px solid #dddddd;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .view-users-table th {
@@ -145,34 +122,14 @@
 
 /* Responsive: Migliora visualizzazione su schermi piccoli */
 @media (max-width: 768px) {
-    .view-users-container {
-        max-width: 95%;
-        padding: 15px;
-    }
 
     .view-users-table {
         min-width: 600px;  /* Minima larghezza ridotta per schermi piccoli */
-    }
-
-    .view-users-title {
-        font-size: 1.2rem;
     }
 }
 
 a {
     text-decoration: none;
-}
-
-
-/* Dark mode styles */
-.dark-mode .view-users-container {
-    background-color: #333; /* Sfondo scuro */
-    color: #f1f1f1; /* Testo chiaro */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Ombra più pronunciata */
-}
-
-.dark-mode .view-users-title {
-    color: #f1f1f1;
 }
 
 .dark-mode .view-users-table {
