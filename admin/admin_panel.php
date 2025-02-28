@@ -63,7 +63,7 @@ if (count($corsi) > 0) {
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
-        class="btn btn-danger btn-floating btn-lg"
+        class="btn btn-danger btn-floating btn-lg .go-up"
         id="btn-back-to-top"
         >
   <i class="fas fa-arrow-up"></i>

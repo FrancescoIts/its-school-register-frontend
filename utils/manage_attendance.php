@@ -341,13 +341,13 @@ if ($idCorsoSelezionato > 0) {
 
                 <br>
                 <div class="button-container">
-                    <button type="submit" name="salva_presenze">Salva Presenze</button>
+                    <button type="submit" name="salva_presenze" >Salva Presenze</button>
                     <?php
                         // Tasto Indietro
                         if (in_array('docente', $user['roles'])) {
-                            echo '<button class="back" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
+                            echo '<button class="back attendance" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
                         } else {
-                            echo '<button class="back" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
+                            echo '<button class="back attendance" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
                         }
                     ?>
                 </div>
@@ -369,7 +369,7 @@ if ($idCorsoSelezionato > 0) {
                     </option>
                 <?php endforeach; ?>
             </select>
-            <button type="submit">Vai</button>
+            <button type="submit" class="attendance">Vai</button>
         </form>
         <?php
     } else {

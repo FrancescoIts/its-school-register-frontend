@@ -22,3 +22,11 @@
     height: 2000px;
     background: linear-gradient(white, lightgray);
   }
+
+ button .go-up {
+  background-color: blueviolet !important;
+ }
+
+ button .go-up:hover {
+  background-color: rgba(137, 43, 226, 0.74) !important;
+ }
