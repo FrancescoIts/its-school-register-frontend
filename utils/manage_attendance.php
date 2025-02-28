@@ -28,6 +28,9 @@ if (!userHasAnyRole($user['roles'], ['docente','admin','sadmin'])) {
     exit;
 }
 
+// Flag per sapere se l'utente è admin/sadmin
+$isAdmin = (in_array('admin', array_map('strtolower', $user['roles'])) || in_array('sadmin', array_map('strtolower', $user['roles'])));
+
 // ----------------------------------------------------
 // Determiniamo i corsi a cui può accedere l’utente
 $corsiDisponibili = [];
@@ -128,28 +131,52 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
                 $exitHour  = null;
             }
 
-            // Cerca record esistente per (id_user, id_course, date=oggi)
-            $sqlCheck = "
-                SELECT id FROM attendance
-                WHERE id_user = ? AND id_course = ? AND date = ?
-                LIMIT 1
-            ";
-            $stmtCheck = $conn->prepare($sqlCheck);
-            $stmtCheck->bind_param('iis', $idStudente, $idCorsoSelezionato, $oggi);
+            // Verifica se esiste già un record per (id_user, id_course, date)
+            if ($isAdmin) {
+                $sqlCheck = "
+                    SELECT id, created_by FROM attendance
+                    WHERE id_user = ? AND id_course = ? AND date = ?
+                    LIMIT 1
+                ";
+                $stmtCheck = $conn->prepare($sqlCheck);
+                $stmtCheck->bind_param('iis', $idStudente, $idCorsoSelezionato, $oggi);
+            } else {
+                $sqlCheck = "
+                    SELECT id, created_by FROM attendance
+                    WHERE id_user = ? AND id_course = ? AND date = ? AND created_by = ?
+                    LIMIT 1
+                ";
+                $stmtCheck = $conn->prepare($sqlCheck);
+                $stmtCheck->bind_param('iisi', $idStudente, $idCorsoSelezionato, $oggi, $user['id_user']);
+            }
             $stmtCheck->execute();
             $resCheck = $stmtCheck->get_result();
             $rowAtt = $resCheck->fetch_assoc();
             $stmtCheck->close();
 
             if ($rowAtt) {
+                // Se l'utente non è admin e il record non è stato creato da lui, non permette l'update
+                if (!$isAdmin && $rowAtt['created_by'] != $user['id_user']) {
+                    continue;
+                }
                 // UPDATE
-                $sqlUpdate = "
-                    UPDATE attendance
-                    SET entry_hour = ?, exit_hour = ?
-                    WHERE id = ?
-                ";
-                $stmtU = $conn->prepare($sqlUpdate);
-                $stmtU->bind_param('ssi', $entryHour, $exitHour, $rowAtt['id']);
+                if ($isAdmin) {
+                    $sqlUpdate = "
+                        UPDATE attendance
+                        SET entry_hour = ?, exit_hour = ?
+                        WHERE id = ?
+                    ";
+                    $stmtU = $conn->prepare($sqlUpdate);
+                    $stmtU->bind_param('ssi', $entryHour, $exitHour, $rowAtt['id']);
+                } else {
+                    $sqlUpdate = "
+                        UPDATE attendance
+                        SET entry_hour = ?, exit_hour = ?
+                        WHERE id = ? AND created_by = ?
+                    ";
+                    $stmtU = $conn->prepare($sqlUpdate);
+                    $stmtU->bind_param('ssii', $entryHour, $exitHour, $rowAtt['id'], $user['id_user']);
+                }
                 $stmtU->execute();
                 $stmtU->close();
             } else {
@@ -235,7 +262,7 @@ if ($idCorsoSelezionato > 0) {
         }
         $stmtA->close();
 
-        // Orari per HTML (passiamo min, max e step="60")
+        // Orari per HTML
         list($giornoStart, $giornoEnd) = getDailyCourseTimes($conn, $idCorsoSelezionato, $oggi);
         ?>
         <div class="container">
@@ -270,10 +297,8 @@ if ($idCorsoSelezionato > 0) {
                             $entryH = $mappaPresenze[$stId]['entry_hour'] ?? '';
                             $exitH  = $mappaPresenze[$stId]['exit_hour']  ?? '';
 
-                            // Se l'entry e exit NON vuoti => check
+                            // Se entry e exit non sono vuoti => presente
                             $isPresente = (!empty($entryH) && !empty($exitH));
-                            $min = $giornoStart;
-                            $max = $giornoEnd;
                         ?>
                         <tr>
                             <td><?php echo htmlspecialchars($stud['lastname'] . " " . $stud['firstname']); ?></td>
@@ -297,16 +322,16 @@ if ($idCorsoSelezionato > 0) {
                                 <input type="time"
                                        name="students[<?php echo $stId; ?>][entry_hour]"
                                        step="60"
-                                       min="<?php echo $min; ?>"
-                                       max="<?php echo $max; ?>"
+                                       min="<?php echo $giornoStart; ?>"
+                                       max="<?php echo $giornoEnd; ?>"
                                        value="<?php echo $entryH; ?>" />
                             </td>
                             <td>
                                 <input type="time"
                                        name="students[<?php echo $stId; ?>][exit_hour]"
                                        step="60"
-                                       min="<?php echo $min; ?>"
-                                       max="<?php echo $max; ?>"
+                                       min="<?php echo $giornoStart; ?>"
+                                       max="<?php echo $giornoEnd; ?>"
                                        value="<?php echo $exitH; ?>" />
                             </td>
                         </tr>

@@ -112,9 +112,21 @@ if (count($corsi) > 0) {
     <h3>Lezione di oggi</h3>
     <div class="courses">
         <div class="course-card">
-            <a href="../utils/manage_attendance.php" target="_blank">
-                <button class="open-new-tab">Apri Gestione Presenze</button>
-            </a>
+        <?php
+            require_once '../utils/manage_attendance.php';
+         ?>
+        </div>
+    </div>
+</div>
+
+<!-- Sezione Presenze -->
+<div class="dashboard" id="Panoramica">
+    <h3>Panoramica Presenze/Assenze</h3>
+    <div class="courses">
+        <div class="course-card">
+        <?php
+            require_once '../utils/modify_attendance.php';
+         ?>
         </div>
     </div>
 </div>
