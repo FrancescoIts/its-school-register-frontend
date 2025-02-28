@@ -1,6 +1,6 @@
 /* Nasconde la barra di scorrimento verticale */
 ::-webkit-scrollbar {
-    display: none;
+    display:none;
 }
 
 

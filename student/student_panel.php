@@ -84,11 +84,12 @@ if (!file_exists($corso_img)) {
     <div class="dashboard-content">
         <div class="courses">
             <div class="course-card">
-                <?php require_once '../utils/calendar.php';?>
+                <?php require_once '../utils/calendar.php'; ?>
             </div>
         </div>
     </div>
 </div>
+
 
 
 <!-- Sezione Statistiche -->

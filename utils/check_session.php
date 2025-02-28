@@ -14,64 +14,45 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
         die("Errore: Connessione al database non disponibile.");
     }
 
-    // Se la sessione è già attiva in PHP, usiamola direttamente
-    if (isset($_SESSION['user'])) {
-        // Se devi controllare i ruoli anche quando la sessione è già caricata
-        if ($checkRole) {
-            $ruoli = $_SESSION['user']['roles'] ?? [];
-            if (!is_array($ruoli)) {
-                $ruoli = [$ruoli];
-            }
-            $ruoli = array_map('strtolower', $ruoli);
-
-            if (!array_intersect($ruoli, $allowedRoles)) {
-                header("Location: ../index.php");
-                exit;
-            }
-        }
-        return $_SESSION['user'];
-    }
-
     // Recupera l'ID di sessione attuale
     $session_id = session_id();
 
-    // Controlla nel database se c'è una sessione valida per questo utente
+    // Query per controllare la sessione nel DB
     $sql = "SELECT id_user, session_id, data_scadenza, session_data 
             FROM sessions 
-            WHERE id_user = (SELECT id_user FROM sessions WHERE session_id = ? LIMIT 1)
+            WHERE session_id = ? 
             AND data_scadenza > NOW()
             LIMIT 1";
-    
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('s', $session_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Se non troviamo una sessione valida, disconnettiamo l'utente
+    // Se non troviamo una sessione valida nel DB, disconnettiamo l'utente
     if (!$row = $result->fetch_assoc()) {
         header("Location: ../utils/logout.php");
         exit;
     }
-
     $stmt->close();
 
-    // Se l'ID della sessione corrente è diverso da quello nel database, riprendiamo quella attiva
+    // Se l'ID della sessione nel DB è diverso da quello attuale, aggiorniamo la sessione
     if ($row['session_id'] !== $session_id) {
         session_id($row['session_id']);
         session_start();
     }
 
-    // Decodifica i dati della sessione
+    // Decodifica i dati della sessione memorizzati nel DB
     $userData = json_decode($row['session_data'], true);
     if (!$userData) {
         header("Location: ../utils/logout.php");
         exit;
     }
 
-    // Memorizza i dati nella sessione corrente
+    // Imposta la sessione utente in PHP (aggiornata dal DB)
     $_SESSION['user'] = $userData;
 
-    // Controllo ruoli, se richiesto
+    // Se richiesto, controlla che l'utente abbia uno dei ruoli consentiti
     if ($checkRole) {
         $ruoli = $userData['roles'] ?? [];
         if (!is_array($ruoli)) {
@@ -87,3 +68,4 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
 
     return $userData;
 }
+?>

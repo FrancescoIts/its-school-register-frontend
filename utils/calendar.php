@@ -30,7 +30,7 @@ if (!$studentCourse) {
 }
 
 /**
- * Funzione per ottenere gli eventi con il nome del creatore e generare il calendario HTML
+ * Funzione per ottenere gli eventi
  */
 function getCalendar($month, $year, $conn, $id_course)
 {
@@ -123,17 +123,8 @@ function getCalendar($month, $year, $conn, $id_course)
 $calendarHtml = getCalendar(date('m'), date('Y'), $conn, $studentCourse);
 
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-    <div class="calendar-container">
+<div class="calendar-container scrollable-table">
         <?php
-            // Qui stampiamo il calendario
             echo $calendarHtml;
         ?>
     </div>
-</body>
-</html>

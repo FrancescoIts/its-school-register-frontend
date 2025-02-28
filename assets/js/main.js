@@ -124,7 +124,15 @@ function smoothScrollToTop() {
 document.addEventListener("DOMContentLoaded", function () {
     function checkSession() {
         fetch('../utils/api_check_session.php')
-            .then(response => response.json())
+            .then(response => {
+                // Verifica che il Content-Type sia application/json
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response.json();
+                } else {
+                    throw new Error("Risposta non JSON");
+                }
+            })
             .then(data => {
                 if (!data.session_active) {
                     Swal.fire({
@@ -135,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         allowOutsideClick: false,
                         allowEscapeKey: false
                     }).then(() => {
-                        // Esegue il logout
                         window.location.href = "../utils/logout.php";
                     });
                 }
@@ -144,5 +151,57 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     checkSession();
-    setInterval(checkSession, 60000);      
+    setInterval(checkSession, 60000);
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleziona tutti i paragrafi all'interno di ".course-card.info"
+    const paragraphs = document.querySelectorAll('.course-card.info p');
+  
+    // Aggiunge un listener per il click su ogni paragrafo
+    paragraphs.forEach(p => {
+      p.addEventListener('click', function() {
+        // Toggle della classe "visible" per rimuovere o ripristinare il blur
+        this.classList.toggle('visible');
+      });
+    });
+  });
+  
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    function addValidation(form) {
+        form.addEventListener('submit', function(event) {
+            let errorFound = false;
+            const allRows = form.querySelectorAll('.attendance-table tr:not(:first-child)');
+            allRows.forEach((row) => {
+                const checkBox = row.querySelector('input[name*="[presente]"]');
+                if (!checkBox || !checkBox.checked) return;
+                const entryInput = row.querySelector('input[name*="[entry_hour]"]');
+                const exitInput  = row.querySelector('input[name*="[exit_hour]"]');
+                const entryVal = entryInput ? entryInput.value : '';
+                const exitVal  = exitInput ? exitInput.value : '';
+                if (entryVal > exitVal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore orario',
+                        text: 'L\'orario di ingresso non può superare quello di uscita.'
+                    });
+                    errorFound = true;
+                }
+            });
+            if (errorFound) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+    }
+    const attendanceForm = document.getElementById('attendanceForm');
+    if (attendanceForm) {
+        addValidation(attendanceForm);
+    }
+    const modifyForm = document.getElementById('modifyForm');
+    if (modifyForm) {
+        addValidation(modifyForm);
+    }
 });

@@ -6,11 +6,12 @@
     border-radius: 10px;
 }
 
-/* Rendi la pagina non scrollabile */
+/* Rendi la pagina di base scrollabile */
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Impedisce lo scroll */
+    overflow-x: hidden; /* Evita lo scroll orizzontale */
+    overflow-y: hidden;   /* Permetti lo scroll verticale */
 }
 
 body {
@@ -41,7 +42,6 @@ body {
     font-weight: bold;
     color: #918be4;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-    /* Abbassa il titolo */
     margin-top: 20px;
     margin-bottom: -100px; /* Spazio tra il titolo e il container */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -63,7 +63,6 @@ body {
     width: 400px;
     box-shadow: 0px 0px 24px #5C5696;
     border-radius: 20px;
-
 }
 
 .screen__content {
@@ -281,7 +280,6 @@ body {
     top: 20px;
     right: 20px;
     background: #333;
-
     color: #fff;
     border: none;
     padding: 10px 15px;
@@ -306,7 +304,6 @@ body {
 .dark-mode .login-title {
     color: #c0baba;
     text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.4);
-
 }
 
 .dark-mode .screen {
@@ -338,7 +335,6 @@ body {
     background: #666;
 }
 
-
 .toggle-password {
     position: absolute;
     right: 15px;
@@ -349,11 +345,60 @@ body {
     font-size: 18px;
 }
 
-
 .toggle-password:hover {
     color: #333;
 }
 
 .login__field {
     position: relative;
+}
+
+/* MEDIA QUERIES PER PICCOLI SCHERMI */
+@media (max-width: 600px) {
+    /* Regolazione del container */
+    .container {
+        padding: 20px;
+        min-height: auto;
+    }
+
+    /* Riduzione della dimensione della "screen" e adattamento in altezza */
+    .screen {
+        width: 90%;
+        height: auto;
+        margin: 0 auto 40px auto;
+    }
+
+    /* Adattamento del form */
+    .login {
+        width: 100%;
+        padding: 20px 10px;
+        padding-top: 120px;
+    }
+
+    .login__field {
+        width: 100%;
+        padding: 15px 0;
+    }
+
+    .login__submit {
+        width: 100%;
+        max-width: none; /* Consente di estendersi al 100% */
+    }
+
+    /* Adattamento della sezione social */
+    .social-login {
+        position: static;
+        margin-top: 20px;
+        width: 100%;
+        height: auto;
+        text-align: center;
+    }
+
+    .social-login__icon {
+        padding: 10px;
+    }
+
+    .login-with-google-btn {
+        font-size: 13px;
+    }
 }

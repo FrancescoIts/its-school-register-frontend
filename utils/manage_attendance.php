@@ -136,7 +136,7 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
 
             // Cerca record esistente per (id_user, id_course, date=oggi)
             $sqlCheck = "
-                SELECT id FROM attendance
+                SELECT id, created_by FROM attendance
                 WHERE id_user = ? AND id_course = ? AND date = ?
                 LIMIT 1
             ";
@@ -148,24 +148,26 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
             $stmtCheck->close();
 
             if ($rowAtt) {
-                // UPDATE
-                $sqlUpdate = "
-                    UPDATE attendance
-                    SET entry_hour = ?, exit_hour = ?
-                    WHERE id = ?
-                ";
-                $stmtU = $conn->prepare($sqlUpdate);
-                $stmtU->bind_param('ssi', $entryHour, $exitHour, $rowAtt['id']);
-                $stmtU->execute();
-                $stmtU->close();
+                // UPDATE solo se il record è stato creato dal docente corrente
+                if ($rowAtt['created_by'] == $user['id_user']) {
+                    $sqlUpdate = "
+                        UPDATE attendance
+                        SET entry_hour = ?, exit_hour = ?
+                        WHERE id = ? AND created_by = ?
+                    ";
+                    $stmtU = $conn->prepare($sqlUpdate);
+                    $stmtU->bind_param('ssii', $entryHour, $exitHour, $rowAtt['id'], $user['id_user']);
+                    $stmtU->execute();
+                    $stmtU->close();
+                }
             } else {
-                // INSERT
+                // INSERT: salviamo anche chi ha creato il record
                 $sqlInsert = "
-                    INSERT INTO attendance (id_user, id_course, date, entry_hour, exit_hour)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO attendance (id_user, id_course, date, entry_hour, exit_hour, created_by)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 ";
                 $stmtI = $conn->prepare($sqlInsert);
-                $stmtI->bind_param('iisss', $idStudente, $idCorsoSelezionato, $oggi, $entryHour, $exitHour);
+                $stmtI->bind_param('iisssi', $idStudente, $idCorsoSelezionato, $oggi, $entryHour, $exitHour, $user['id_user']);
                 $stmtI->execute();
                 $stmtI->close();
             }
@@ -200,10 +202,9 @@ if ($idCorsoSelezionato > 0) {
     } else {
         // Presenze già salvate per la data di oggi
         $sqlAtt = "
-            SELECT id_user, entry_hour, exit_hour
+            SELECT id_user, entry_hour, exit_hour, created_by
             FROM attendance
-            WHERE id_course = ?
-              AND date = ?
+            WHERE id_course = ? AND date = ?
         ";
         $stmtA = $conn->prepare($sqlAtt);
         $stmtA->bind_param('is', $idCorsoSelezionato, $oggi);
@@ -214,7 +215,8 @@ if ($idCorsoSelezionato > 0) {
         while ($rowA = $resA->fetch_assoc()) {
             $mappaPresenze[$rowA['id_user']] = [
                 'entry_hour' => $rowA['entry_hour'],
-                'exit_hour'  => $rowA['exit_hour']
+                'exit_hour'  => $rowA['exit_hour'],
+                'created_by' => $rowA['created_by']
             ];
         }
         $stmtA->close();
@@ -226,53 +228,22 @@ if ($idCorsoSelezionato > 0) {
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Gestione Presenze</title>
-    <link rel="stylesheet" href="../assets/css/manage_attendance.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Docente</title>
+    <link rel="stylesheet" href="../assets/css/doc_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
+    <link rel="stylesheet" href="../assets/css/calendar.css">
+    <link rel="stylesheet" href="../assets/css/overflow.css">
+    <link rel="stylesheet" href="../assets/css/stats_total.css">
+    <link rel="stylesheet" href="../assets/css/manage_attendance.css">
     <link rel="stylesheet" href="../assets/css/checkbox.css">
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const attendanceForm = document.getElementById('attendanceForm');
-
-        attendanceForm.addEventListener('submit', function(event) {
-            // Controlli finali SOLO al submit
-            let errorFound = false;
-            const allRows = attendanceForm.querySelectorAll('.attendance-table tr:not(:first-child)');
-
-            allRows.forEach((row) => {
-                const checkBox   = row.querySelector('input[name*="[presente]"]');
-                if (!checkBox.checked) return; // Se non è presente, skip
-
-                const entryInput = row.querySelector('input[name*="[entry_hour]"]');
-                const exitInput  = row.querySelector('input[name*="[exit_hour]"]');
-
-                const entryVal = entryInput.value;
-                const exitVal  = exitInput.value;
-
-                // Se vuoi, puoi fare altri check sul range min/max
-                if (entryVal > exitVal) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Errore orario',
-                        text: 'Orario di ingresso non può superare orario di uscita.'
-                    });
-                    errorFound = true;
-                    return;
-                }
-            });
-
-            if (errorFound) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
-    });
-    </script>
+    <link rel="shortcut icon" href="../assets/img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../assets/js/main.js" defer></script>
 <div class="container">
     <h3>Presenze di oggi (<?php echo $oggiIta; ?>)</h3>
     <?php
@@ -289,6 +260,7 @@ if ($idCorsoSelezionato > 0) {
     ?>
     <p><strong><?php echo htmlspecialchars($nomeCorsoSelezionato); ?></strong></p>
     <br>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
     <form method="post" class="styled-form" id="attendanceForm">
         <input type="hidden" name="id_course" value="<?php echo $idCorsoSelezionato; ?>" />
 
@@ -305,8 +277,8 @@ if ($idCorsoSelezionato > 0) {
                     $entryH = $mappaPresenze[$stId]['entry_hour'] ?? '';
                     $exitH  = $mappaPresenze[$stId]['exit_hour']  ?? '';
 
-                    // Se l'entry e exit NON vuoti => check
-                    $isPresente = (!empty($entryH) && !empty($exitH));
+                    // Se l'entry e exit NON vuoti => check (anche solo se il record è stato creato dal docente)
+                    $isPresente = (!empty($entryH) && !empty($exitH) && ($mappaPresenze[$stId]['created_by'] == $user['id_user']));
                     
                     // Impostiamo min, max e step per consentire "14:00"
                     $min = $giornoStart ?: '14:00:00';
@@ -357,29 +329,43 @@ if ($idCorsoSelezionato > 0) {
             <?php
                 // Tasto Indietro
                 if (in_array('docente', $user['roles'])) {
-                    echo '<button class="back" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
+                    echo '<button class="back" type="button" onclick="window.location.href=\'../doc/doc_panel.php\'">Indietro</button>';
                 } else {
-                    echo '<button class="back" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
+                    echo '<button class="back" type="button" onclick="window.location.href=\'../admin/admin_panel.php\'">Indietro</button>';
                 }
             ?>
         </div>
     </form>
 </div>
 </body>
-</html>
 <?php
     }
 } else {
     // Se l’utente ha più corsi, mostra il form per la selezione corso
     if (count($corsiDisponibili) > 1) {
         ?>
-        <!DOCTYPE html>
-        <html lang="it">
-        <head>
-            <meta charset="UTF-8">
-            <title>Seleziona Corso</title>
-        </head>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Docente</title>
+    <link rel="stylesheet" href="../assets/css/doc_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
+    <link rel="stylesheet" href="../assets/css/calendar.css">
+    <link rel="stylesheet" href="../assets/css/overflow.css">
+    <link rel="stylesheet" href="../assets/css/stats_total.css">
+    <link rel="stylesheet" href="../assets/css/manage_attendance.css">
+    <link rel="stylesheet" href="../assets/css/checkbox.css">
+    <link rel="shortcut icon" href="../assets/img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../assets/js/main.js" defer></script>
         <body>
+            
         <form method="post">
             <p>Seleziona il corso per cui inserire le presenze di oggi: <?php echo $oggiIta; ?></p><br>
             <select name="id_course" required>

@@ -78,4 +78,26 @@ color: #FFF;
     color: #f1f1f1; /* Testo bianco */
     font-weight: bold;
 }
+/* Aggiungi questa classe alle tabelle che devono essere scorrevoli orizzontalmente */
+.scrollable-table {
+    overflow-x: auto;
+    white-space: nowrap;
+}
 
+/* Applica lo stile solo su schermi con una larghezza massima di 390px */
+@media (max-width: 390px) {
+    .scrollable-table {
+        display: block;
+        width: 100%;
+    }
+
+    .scrollable-table table {
+        width: auto;
+        min-width: 100%;
+    }
+
+    .scrollable-table th,
+    .scrollable-table td {
+        white-space: nowrap;
+    }
+}

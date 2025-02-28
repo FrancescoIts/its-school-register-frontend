@@ -19,7 +19,7 @@ session_destroy();
 
 // Eseguire il redirect con JavaScript per evitare problemi di output
 echo "<script>window.location.href = '../index.php';</script>";
-ob_end_flush(); // Fine output buffering
+ob_end_flush();
 
 exit;
 
