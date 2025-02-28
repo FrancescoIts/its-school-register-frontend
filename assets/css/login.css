@@ -325,16 +325,6 @@ body {
     background: #666;
 }
 
-.dark-mode .login-with-google-btn {
-    background: #444;
-    color: #fff;
-    border-color: #666;
-}
-
-.dark-mode .login-with-google-btn:hover {
-    background: #666;
-}
-
 .toggle-password {
     position: absolute;
     right: 15px;
@@ -375,6 +365,19 @@ body {
     text-align: center;
     gap: 8px;
 }
+.google:hover {
+    background-color: #7C78B8;
+    color: #fff;
+}
+
+.dark-mode .google{
+    background: #444;
+    color: #fff;
+    border-color: #666;
+}
+.dark-mode .google:hover {
+    background: #666;
+}
 
 /* MEDIA QUERIES PER PICCOLI SCHERMI */
 @media (max-width: 400px) {
@@ -388,6 +391,7 @@ body {
     .google{
         margin-bottom: 20px;
         margin-left: 100px;
+        background-color: #3B3A3A;
     }
 
     /* Riduzione della dimensione della "screen" e adattamento in altezza */
