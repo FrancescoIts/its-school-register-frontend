@@ -71,7 +71,7 @@ $calendarData  = getCalendar($currentMonth, $currentYear, $conn, $id_course);
 ?>
 
 <!-- HTML -->
-<div class="calendar-header" style="margin-bottom: 10px;">  
+<div class="calendar-header scrollable-table" style="margin-bottom: 10px;">  
     <label for="course-select">Seleziona Corso:</label>
     <select id="course-select" 
             style="padding: 5px; border-radius: 4px; border: 1px solid #ccc; margin-left: 10px; background-color: #2090C9; color: #FFF;">
@@ -83,7 +83,7 @@ $calendarData  = getCalendar($currentMonth, $currentYear, $conn, $id_course);
         <?php endforeach; ?>
     </select>
 </div>
-
+<div class="scrollable-table">
 <table class="calendar-table" style="border-collapse: collapse; width: 100%;">
     <thead>
         <tr>
@@ -100,7 +100,7 @@ $calendarData  = getCalendar($currentMonth, $currentYear, $conn, $id_course);
         <!-- Viene generata via JavaScript -->
     </tbody>
 </table>
-
+</div>
 <script>
         let calendarData = <?= $calendarData ?>;
     let userId       = <?= json_encode($id_user) ?>;

@@ -84,20 +84,22 @@ color: #FFF;
     white-space: nowrap;
 }
 
-/* Applica lo stile solo su schermi con una larghezza massima di 390px */
-@media (max-width: 390px) {
-    .scrollable-table {
+/* Mobile Styles */
+@media (max-width: 400px) {
+    .calendar-container {
+        overflow-x: auto;
         display: block;
         width: 100%;
     }
 
-    .scrollable-table table {
-        width: auto;
+    .calendar-table {
+        width: 350px; /* Permette di scorrere la tabella */
         min-width: 100%;
     }
 
-    .scrollable-table th,
-    .scrollable-table td {
-        white-space: nowrap;
+    .calendar-table td, .calendar-table th {
+        padding: 3px; /* Ulteriore riduzione */
+        min-width: 35px; /* Celle più piccole */
+        font-size: 10px; /* Testo più piccolo per adattarsi */
     }
 }

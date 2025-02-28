@@ -72,8 +72,7 @@ function getCalendar($month, $year, $conn, $id_course)
     $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
     // Inizio tabella del calendario
-    $calendar = '<div class="dashboard"><h3>Calendario Lezioni</h3>';
-    $calendar .= '<table class="calendar-table"><thead><tr>';
+    $calendar = '<table class="calendar-table"><thead><tr>';
     
     $daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
     foreach ($daysOfWeek as $day) {

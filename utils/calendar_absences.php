@@ -122,7 +122,7 @@ function renderCalendar(month, year) {
                        'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 
     let monthName = monthsIta[month - 1] || '??';
-    let html = `<div class="calendar-container">
+    let html = `<div class="calendar-container scrollable-table">
                   <div class="calendar-header"><h3>${monthName} ${year}</h3></div>
                   <table class="calendar-table"><thead><tr>`;
     

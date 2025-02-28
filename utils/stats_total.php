@@ -113,15 +113,7 @@ $stmt->close();
 
 
 
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-
+<div class="scrollable-table">
 <div class="student-list">
   <?php if (!empty($students)): ?>
     <?php foreach ($students as $student): ?>
@@ -161,7 +153,7 @@ $stmt->close();
       <p>Nessuno studente trovato.</p>
   <?php endif; ?>
 </div>
-
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const items = document.querySelectorAll('.student-item');

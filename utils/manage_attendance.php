@@ -265,6 +265,7 @@ if ($idCorsoSelezionato > 0) {
         // Orari per HTML
         list($giornoStart, $giornoEnd) = getDailyCourseTimes($conn, $idCorsoSelezionato, $oggi);
         ?>
+        <div class="scrollable-table">
         <div class="container">
             <h3>Presenze di oggi (<?php echo $oggiIta; ?>)</h3>
             <?php
@@ -353,12 +354,14 @@ if ($idCorsoSelezionato > 0) {
                 </div>
             </form>
         </div>
+        </div>
         <?php
     }
 } else {
     // Se l’utente ha più corsi, mostra il form per la selezione corso
     if (count($corsiDisponibili) > 1) {
         ?>
+        <div class="scrollable-table">
         <form method="post">
             <p>Seleziona il corso per cui inserire le presenze di oggi: <?php echo $oggiIta; ?></p><br>
             <select name="id_course" required>
@@ -371,6 +374,7 @@ if ($idCorsoSelezionato > 0) {
             </select>
             <button type="submit" class="attendance">Vai</button>
         </form>
+        </div>
         <?php
     } else {
         echo "<p>Nessun corso disponibile o non selezionato.</p>";

@@ -161,6 +161,7 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
     // Recupera gli orari "min" e "max" dal DB per il giorno selezionato
     list($giornoStart, $giornoEnd) = dailyCourseTimes($conn, $idCorsoSelezionato, $dataSelezionata);
     ?>
+    <div class="scrollable-table">
     <h3>Modifica Presenze del <?= htmlspecialchars($dataSelezionata) ?></h3>
     <form method="post">
         <!-- Ripassiamo data e corso -->
@@ -214,6 +215,7 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
         <br>
         <button type="submit" name="salva_modifiche">Salva Modifiche</button>
     </form>
+</div>
     <?php
 }
 

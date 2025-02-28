@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+<div class="scrollable-table">
 <div class="create-user-container">
     <?php echo $message; ?>
     <form method="POST" action="" class="create-user-form">
@@ -127,4 +127,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         <button type="submit" name="create_user" class="btn btn-primary btn-block">Crea Utente</button>
     </form>
+</div>
 </div>

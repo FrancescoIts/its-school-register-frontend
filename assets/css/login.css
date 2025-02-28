@@ -353,12 +353,41 @@ body {
     position: relative;
 }
 
+.google{
+    background: #fff;
+    font-size: 14px;
+    margin-top: 30px;
+    padding: 16px 20px;
+    border-radius: 26px;
+    border: 1px solid #D4D3E8;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    max-width: 200px;
+    color: #4C489D;
+    text-decoration: none;
+    box-shadow: 0px 2px 2px #5C5696;
+    cursor: pointer;
+    transition: .2s;
+    text-align: center;
+    gap: 8px;
+}
+
 /* MEDIA QUERIES PER PICCOLI SCHERMI */
-@media (max-width: 600px) {
+@media (max-width: 400px) {
     /* Regolazione del container */
     .container {
+        margin-top: 50px;
         padding: 20px;
         min-height: auto;
+    }
+    
+    .google{
+        margin-bottom: 20px;
+        margin-left: 100px;
     }
 
     /* Riduzione della dimensione della "screen" e adattamento in altezza */
@@ -382,16 +411,18 @@ body {
 
     .login__submit {
         width: 100%;
-        max-width: none; /* Consente di estendersi al 100% */
     }
 
     /* Adattamento della sezione social */
     .social-login {
         position: static;
-        margin-top: 20px;
         width: 100%;
         height: auto;
         text-align: center;
+    }
+
+    .google{
+        padding: 10px -100% !important;
     }
 
     .social-login__icon {

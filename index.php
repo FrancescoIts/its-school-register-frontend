@@ -67,9 +67,13 @@
                     </form>
 
                     <div class="social-login">
-                        <div class="col-md-3">
-                            <a href="" class="login-with-google-btn">Google</a>
-                        </div>
+                    <div class="col-md-3">
+                        <a href="" class="google" 
+                        onmouseover="toggleIcon(this, true)" 
+                        onmouseout="toggleIcon(this, false)">
+                            <i class="fa-brands fa-google" style="color: #7875b5;"></i> Google
+                        </a>
+                    </div>
                     </div>
                 </div>
                 <div class="screen__background">
@@ -83,6 +87,18 @@
 
         <!-- Script per i pop-up -->
 <script>
+     function toggleIcon(element, isHover) {
+        let icon = element.querySelector("i");
+        if (isHover) {
+            icon.classList.remove("fa-google");
+            icon.classList.add("fa-google"); // Cambia l'icona in un cerchio bianco
+            icon.style.color = "#ffffff"; // Cambia colore
+        } else {
+            icon.classList.remove("fa-google");
+            icon.classList.add("fa-google");
+            icon.style.color = "#7875b5"; // Torna al colore originale
+        }
+    }
     function showErrorPopup(errorMessage) {
         document.getElementById("popupContentError").innerHTML = errorMessage;
         document.getElementById("errorPopup").style.display = "block";
