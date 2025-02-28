@@ -128,8 +128,8 @@ while ($row = $resA->fetch_assoc()) {
     // Otteniamo gli orari effettivi per il giorno in base al corso
     list($courseStart, $courseEnd) = getTimes($conn, $selectedCourse, $date);
 
-    $courseStartSec = strtotime($courseStart);
-    $courseEndSec   = strtotime($courseEnd);
+    $courseStartSec = !empty($courseStart) ? strtotime($courseStart) : null;
+    $courseEndSec   = !empty($courseEnd) ? strtotime($courseEnd) : null;
 
     // Se orari non impostati nel DB, usiamo default (14:00-18:00) → già gestito nella funzione
     // 1) Se non c'è entry o exit => assenza totale: differenza tra orario di fine e inizio
