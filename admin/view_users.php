@@ -5,24 +5,27 @@ require_once '../utils/check_session.php';
 $user = checkSession(true, ['admin', 'sadmin']);
 $id_admin = $user['id_user'];
 
-// Recupero utenti dei corsi assegnati all'admin/sadmin
+// Recupero utenti dei corsi assegnati all'admin/sadmin evitando duplicati e rimuovendo l'utente loggato
 $query = "
-    SELECT DISTINCT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, c.name AS course_name
+    SELECT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, 
+           COALESCE(GROUP_CONCAT(DISTINCT c.name ORDER BY c.name SEPARATOR ', '), 'Nessun corso') AS courses
     FROM users u
     JOIN user_role_courses urc ON u.id_user = urc.id_user
     JOIN courses c ON urc.id_course = c.id_course
     WHERE urc.id_course IN (
         SELECT id_course FROM user_role_courses WHERE id_user = ? AND (id_role = 3 OR id_role = 4)
     )
+    AND u.id_user != ?
+    GROUP BY u.id_user
 ";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $id_admin);
+$stmt->bind_param("ii", $id_admin, $id_admin);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $users = [];
 while ($row = $result->fetch_assoc()) {
-    $users[] = $row;
+    $users[] = $row; // Mantiene l'array senza sovrascrivere gli utenti
 }
 $stmt->close();
 
@@ -36,12 +39,9 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
     } elseif ($_GET['action'] == 'delete') {
         $conn->query("DELETE FROM users WHERE id_user = $id_user");
     }
-    //header("Location: ./view_users.php/");
     echo "<script>window.location.href = 'admin_panel.php#viewUsers';</script>";    
-
     exit;
 }
-
 ?>
 <div class="view-users-table-container">
     <table class="view-users-table">
@@ -52,7 +52,7 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
                 <th>Cognome</th>
                 <th>Email</th>
                 <th>Telefono</th>
-                <th>Corso</th>
+                <th>Corsi</th>
                 <th>Stato</th>
                 <th>Azioni</th>
             </tr>
@@ -65,7 +65,7 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
                     <td><?php echo htmlspecialchars($user['lastname']); ?></td>
                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                     <td><?php echo htmlspecialchars($user['phone']); ?></td>
-                    <td><?php echo htmlspecialchars($user['course_name']); ?></td>
+                    <td><?php echo htmlspecialchars($user['courses'] ?? 'Nessun corso'); ?></td>
                     <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
                     <td>
                     <div class="view-users-actions">
