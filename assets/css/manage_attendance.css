@@ -81,7 +81,7 @@ button {
     border: none;
     padding: 10px 15px;
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 10px !important;
     cursor: pointer;
     transition: 0.3s;
     margin: 10px auto;
