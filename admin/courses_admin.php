@@ -1,5 +1,4 @@
 <?php
-
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
@@ -65,58 +64,74 @@ $stmt->close();
     <p>Non hai corsi associati.</p>
 <?php else: ?>
     <div class="scrollable-table">
-    <form method="POST" action="">
-        <label for="course_id"></label>
-        <select name="course_id" id="course_id" onchange="this.form.submit()" required>
-            <option value="">Seleziona un corso</option>
-            <?php foreach ($courses as $course): ?>
-                <option value="<?php echo $course['id_course']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['id_course']) ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($course['name']); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        </div>
-        <?php
-        // Precompila gli orari se è stato selezionato un corso
-        $selectedCourse = null;
-        if (isset($_POST['course_id'])) {
-            $course_id = $_POST['course_id'];
-            $sql = "SELECT * FROM courses WHERE id_course = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('i', $course_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $selectedCourse = $result->fetch_assoc();
-            $stmt->close();
-        }
-        ?>
-        <?php if ($selectedCourse): ?>
-            <div class="scrollable-table">
-            <div class="justifycontent">
-            <table class="attendance-table">
-                <tr>
-                    <th>Giorno</th>
-                    <th>Ora di Inizio</th>
-                    <th>Ora di Fine</th>
-                </tr>
-                <?php
-                $days = ['monday' => 'Lunedì', 'tuesday' => 'Martedì', 'wednesday' => 'Mercoledì', 'thursday' => 'Giovedì', 'friday' => 'Venerdì'];
-                foreach ($days as $key => $dayName): ?>
-                    <tr>
-                        <td><?php echo $dayName; ?></td>
-                        <td>
-                            <input type="time" name="start_time_<?php echo $key; ?>" value="<?php echo $selectedCourse['start_time_' . $key] ?? ''; ?>">
-                        </td>
-                        <td>
-                            <input type="time" name="end_time_<?php echo $key; ?>" value="<?php echo $selectedCourse['end_time_' . $key] ?? ''; ?>">
-                        </td>
-                    </tr>
+        <form method="POST" action="">
+            <label for="course_id"></label>
+            <select name="course_id" id="course_id" onchange="this.form.submit()" required>
+                <option value="">Seleziona un corso</option>
+                <?php foreach ($courses as $course): ?>
+                    <option value="<?php echo $course['id_course']; ?>" <?php echo (isset($_POST['course_id']) && $_POST['course_id'] == $course['id_course']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($course['name']); ?>
+                    </option>
                 <?php endforeach; ?>
-            </table>
-            <br>
-            <button type="submit">Salva Orari</button>
-        <?php endif; ?>
-    </form>
-    </div>
-    </div>
+            </select>
+            </div>
+            <?php
+            // Precompila gli orari se è stato selezionato un corso
+            $selectedCourse = null;
+            if (isset($_POST['course_id'])) {
+                $course_id = $_POST['course_id'];
+                $sql = "SELECT * FROM courses WHERE id_course = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i', $course_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $selectedCourse = $result->fetch_assoc();
+                $stmt->close();
+            }
+            ?>
+            <?php if ($selectedCourse): ?>
+                <div class="scrollable-table">
+                    <div class="justifycontent">
+                        <table class="attendance-table">
+                            <tr>
+                                <th>Giorno</th>
+                                <th>Ora di Inizio</th>
+                                <th>Ora di Fine</th>
+                            </tr>
+                            <?php
+                            $days = [
+                                'monday'    => 'Lunedì',
+                                'tuesday'   => 'Martedì',
+                                'wednesday' => 'Mercoledì',
+                                'thursday'  => 'Giovedì',
+                                'friday'    => 'Venerdì'
+                            ];
+                            foreach ($days as $key => $dayName): ?>
+                                <tr>
+                                    <td><?php echo $dayName; ?></td>
+                                    <td>
+                                        <input type="time" name="start_time_<?php echo $key; ?>" value="<?php echo $selectedCourse['start_time_' . $key] ?? ''; ?>">
+                                    </td>
+                                    <td>
+                                        <input type="time" name="end_time_<?php echo $key; ?>" value="<?php echo $selectedCourse['end_time_' . $key] ?? ''; ?>">
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                        <br>
+                        <button type="submit">Salva Orari</button>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </form>
+<?php endif; ?>
+
+<?php if (!empty($alertMessage)): ?>
+    <script>
+        Swal.fire({
+            title: "<?php echo $alertMessage; ?>",
+            icon: "<?php echo $alertType; ?>",
+            confirmButtonText: "OK"
+        });
+    </script>
 <?php endif; ?>

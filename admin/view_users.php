@@ -44,45 +44,55 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
 }
 ?>
 <div class="scrollable-table">
-<div class="view-users-table-container">
-    <table class="view-users-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Cognome</th>
-                <th>Email</th>
-                <th>Telefono</th>
-                <th>Corsi</th>
-                <th>Stato</th>
-                <th>Azioni</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($users as $user): ?>
+    <div class="view-users-table-container">
+        <table class="view-users-table">
+            <thead>
                 <tr>
-                    <td><?php echo $user['id_user']; ?></td>
-                    <td><?php echo htmlspecialchars($user['firstname']); ?></td>
-                    <td><?php echo htmlspecialchars($user['lastname']); ?></td>
-                    <td><?php echo htmlspecialchars($user['email']); ?></td>
-                    <td><?php echo htmlspecialchars($user['phone']); ?></td>
-                    <td><?php echo htmlspecialchars($user['courses'] ?? 'Nessun corso'); ?></td>
-                    <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
-                    <td>
-                    <div class="view-users-actions">
-                        <?php if ($user['active']): ?>
-                            <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive">Disattiva</a>
-                        <?php else: ?>
-                            <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive">Attiva</a>
-                        <?php endif; ?>
-                        <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" 
-                        class="view-users-button delete"
-                        onclick="return confirmDelete(this);">Elimina</a>
-                    </div>
-                </td>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Email</th>
+                    <th>Telefono</th>
+                    <th>Corsi</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                <?php foreach ($users as $user): ?>
+                    <tr>
+                        <td><?php echo $user['id_user']; ?></td>
+                        <td><?php echo htmlspecialchars($user['firstname']); ?></td>
+                        <td><?php echo htmlspecialchars($user['lastname']); ?></td>
+                        <td><?php echo htmlspecialchars($user['email']); ?></td>
+                        <td><?php echo htmlspecialchars($user['phone']); ?></td>
+                        <td><?php echo htmlspecialchars($user['courses'] ?? 'Nessun corso'); ?></td>
+                        <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
+                        <td>
+                            <div class="view-users-actions">
+                                <?php if ($user['active']): ?>
+                                    <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" 
+                                       class="view-users-button inactive" 
+                                       onclick="return confirmDeactivate(this);">
+                                       Disattiva
+                                    </a>
+                                <?php else: ?>
+                                    <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" 
+                                       class="view-users-button inactive" 
+                                       onclick="return confirmActivate(this);">
+                                       Attiva
+                                    </a>
+                                <?php endif; ?>
+                                <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" 
+                                   class="view-users-button delete"
+                                   onclick="return confirmDelete(this);">
+                                   Elimina
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>

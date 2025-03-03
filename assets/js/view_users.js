@@ -21,3 +21,43 @@ function confirmDelete(link) {
     // Ritorna false per bloccare il comportamento predefinito del link
     return false;
 }
+
+// Funzione per confermare l'attivazione
+function confirmActivate(link) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Attiva Utente',
+        text: "Sei sicuro di voler attivare questo utente?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sì, attiva!',
+        cancelButtonText: 'Annulla'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = link.href;
+        }
+    });
+    return false;
+}
+
+// Funzione per confermare la disattivazione
+function confirmDeactivate(link) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Disattiva Utente',
+        text: "Sei sicuro di voler disattivare questo utente?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sì, disattiva!',
+        cancelButtonText: 'Annulla'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = link.href;
+        }
+    });
+    return false;
+}
