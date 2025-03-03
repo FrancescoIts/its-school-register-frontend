@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 
 <footer class="footer">
     <div class="footer-content">
-        <p>© <script>document.write(new Date().getFullYear());</script> - <a href="https://www.itssmart.it/" class="footer-link">ITS Smart Academy</a> | <a href="#" class="footer-link">Privacy Policy</a></p>
+        <p>© <script>document.write(new Date().getFullYear());</script> - <a href="https://www.itssmart.it/" class="footer-link">ITS Smart Academy</a> | <a href="https://www.itssmart.it/privacy-policy/" class="footer-link">Privacy Policy</a></p>
     </div>
 </footer>
 

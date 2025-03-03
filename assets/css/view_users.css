@@ -15,10 +15,11 @@
     text-align: center;
     border-bottom: 1px solid #dddddd;
     font-size: 0.85rem;
+    text-overflow: ellipsis;
 }
 
 .view-users-table th {
-    background-color: #007bff;
+    background-color: #2090C9;
     color: white;
     text-transform: uppercase;
 }
@@ -126,6 +127,7 @@
     .view-users-table {
         min-width: 600px;  /* Minima larghezza ridotta per schermi piccoli */
     }
+
 }
 
 a {

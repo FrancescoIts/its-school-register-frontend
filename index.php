@@ -91,12 +91,12 @@
         let icon = element.querySelector("i");
         if (isHover) {
             icon.classList.remove("fa-google");
-            icon.classList.add("fa-google"); // Cambia l'icona in un cerchio bianco
-            icon.style.color = "#ffffff"; // Cambia colore
+            icon.classList.add("fa-google"); 
+            icon.style.color = "#ffffff"; 
         } else {
             icon.classList.remove("fa-google");
             icon.classList.add("fa-google");
-            icon.style.color = "#7875b5"; // Torna al colore originale
+            icon.style.color = "#7875b5";
         }
     }
     function showErrorPopup(errorMessage) {

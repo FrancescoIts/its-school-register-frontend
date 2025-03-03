@@ -54,6 +54,7 @@ if (count($corsi) > 0) {
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/main.js" defer></script>

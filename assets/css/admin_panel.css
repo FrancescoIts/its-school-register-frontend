@@ -228,3 +228,26 @@ a {
 .dark-mode #btn-back-to-top:hover {
     background-color: rgb(70, 69, 72);
 }
+
+/* Stili per i pulsanti del form */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.button-container button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.button-container button:not(.back) {
+    background-color: #38cf24;
+    color: white;
+}
+.button-container button.back.attendance {
+    background-color: #6c757d;
+    color: white;
+}

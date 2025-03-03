@@ -2,7 +2,6 @@
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
-// Verifica se l'utente ha i permessi di accesso
 $user = checkSession(true, ['admin', 'sadmin']);
 
 // Recupera i corsi disponibili per questo admin/sadmin
@@ -27,7 +26,8 @@ $stmt->close();
 // Gestione inserimento
 $message = '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Il codice si attiverà solo se la richiesta POST proviene dal form specifico
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user'])) {
     $email = $_POST['email'] ?? null;
     $password = $_POST['password'] ?? null;
     $firstname = $_POST['firstname'] ?? null;
@@ -36,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $role = isset($_POST['role']) ? (int)$_POST['role'] : null;
     $course_id = isset($_POST['course_id']) ? (int)$_POST['course_id'] : null;
     
-
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !str_ends_with($email, '@itssmartacademy.it')) {
         $message = '<div class="create-user-message error">Email non valida o dominio errato.</div>';
     } elseif (!preg_match('/^(?=.*[0-9].*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};\':\"\\|,.<>\/?]).{8,}$/', $password)) {

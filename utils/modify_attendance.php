@@ -8,7 +8,7 @@ ini_set('log_errors', 1);
 
 $user = checkSession(true, ['docente', 'admin', 'sadmin']);
 
-// Flag per sapere se l'utente è admin/sadmin
+
 $isAdmin = (in_array('admin', array_map('strtolower', $user['roles'])) || in_array('sadmin', array_map('strtolower', $user['roles'])));
 
 // -----------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ function hasAnyRole($userRoles, $allowedRoles) {
 // Funzione per recuperare gli orari di inizio/fine giornata dal DB in base al giorno
 // della settimana e al corso selezionato.
 function dailyCourseTimes($conn, $idCourse, $date) {
-    // Ricava il giorno della settimana dalla data (es. Monday, Tuesday, etc.)
+    // Ricava il giorno della settimana dalla data (es. monday, tuesday, etc.)
     $dayOfWeek = strtolower(date('l', strtotime($date)));
     $startColumn = 'start_time_' . $dayOfWeek;
     $endColumn   = 'end_time_' . $dayOfWeek;
@@ -46,8 +46,6 @@ function dailyCourseTimes($conn, $idCourse, $date) {
     return [$start, $end];
 }
 
-// -----------------------------------------------------------------------------------
-// Verifica ruolo
 if (!hasAnyRole($user['roles'], ['docente', 'admin', 'sadmin'])) {
     echo "<script>Swal.fire('Accesso Negato', 'Non hai i permessi per modificare le presenze.', 'error');</script>";
     exit;
@@ -65,10 +63,16 @@ if ($isAdmin) {
         FROM attendance a
         JOIN courses c ON a.id_course = c.id_course
         WHERE a.date < ?
+          AND a.id_course IN (
+              SELECT id_course 
+              FROM user_role_courses 
+              WHERE id_user = ? 
+                AND id_role IN (3,4)
+          )
         ORDER BY a.date DESC, c.name
     ";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('s', $oggi);
+    $stmt->bind_param('si', $oggi, $user['id_user']);
 } else {
     $sql = "
         SELECT DISTINCT a.date, a.id_course, c.name AS course_name
@@ -90,11 +94,6 @@ while ($row = $res->fetch_assoc()) {
 }
 $stmt->close();
 
-// Se non ci sono presenze passate
-if (!$opzioni) {
-    echo "<script>Swal.fire('Nessuna Assenza', 'Non ci sono presenze passate da modificare.', 'info');</script>";
-    exit;
-}
 ?>
 <!-- Form per selezionare la data e un corso -->
 <form method="post">
@@ -119,6 +118,7 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
     list($dataSelezionata, $idCorsoSelezionato) = explode('|', $_POST['sel_date']);
 
     if ($isAdmin) {
+        // Per l'admin mostriamo solo le presenze dei corsi a lui assegnati
         $sql = "
             SELECT a.id, a.id_user, a.entry_hour, a.exit_hour,
                    u.firstname, u.lastname
@@ -126,10 +126,16 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
             JOIN users u ON a.id_user = u.id_user
             WHERE a.id_course = ?
               AND a.date = ?
+              AND a.id_course IN (
+                  SELECT id_course 
+                  FROM user_role_courses 
+                  WHERE id_user = ? 
+                    AND id_role IN (3,4)
+              )
             ORDER BY u.lastname, u.firstname
         ";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('is', $idCorsoSelezionato, $dataSelezionata);
+        $stmt->bind_param('isi', $idCorsoSelezionato, $dataSelezionata, $user['id_user']);
     } else {
         $sql = "
             SELECT a.id, a.id_user, a.entry_hour, a.exit_hour,
@@ -215,7 +221,17 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
         <br>
         <button type="submit" name="salva_modifiche">Salva Modifiche</button>
     </form>
-</div>
+    <!-- Bottone Indietro spostato fuori dal form -->
+    <div style="margin-top: 10px;">
+        <?php
+            if (in_array('docente', $user['roles'])) {
+                echo '<button class="back attendance" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
+            } else {
+                echo '<button class="back attendance" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
+            }
+        ?>
+    </div>
+    </div>
     <?php
 }
 
@@ -228,6 +244,27 @@ if (isset($_POST['salva_modifiche'])) {
     if (empty($dataSelezionata) || !$idCorsoSelezionato || empty($_POST['presenze'])) {
         echo "<script>Swal.fire('Errore', 'Nessuna modifica inviata.', 'error');</script>";
         exit;
+    }
+    
+    // Verifica che, in caso di admin, il corso sia assegnato a lui
+    if ($isAdmin) {
+        $sqlCheck = "
+            SELECT id_course 
+            FROM user_role_courses 
+            WHERE id_course = ? 
+              AND id_user = ? 
+              AND id_role IN (3,4)
+            LIMIT 1
+        ";
+        $stmtCheck = $conn->prepare($sqlCheck);
+        $stmtCheck->bind_param('ii', $idCorsoSelezionato, $user['id_user']);
+        $stmtCheck->execute();
+        $resCheck = $stmtCheck->get_result();
+        if ($resCheck->num_rows === 0) {
+            echo "<script>Swal.fire('Errore', 'Non hai i permessi per modificare le presenze di questo corso.', 'error');</script>";
+            exit;
+        }
+        $stmtCheck->close();
     }
 
     foreach ($_POST['presenze'] as $idAttendance => $info) {
@@ -255,9 +292,15 @@ if (isset($_POST['salva_modifiche'])) {
                 UPDATE attendance
                 SET entry_hour = ?, exit_hour = ?
                 WHERE id = ?
+                  AND id_course IN (
+                      SELECT id_course 
+                      FROM user_role_courses 
+                      WHERE id_user = ? 
+                        AND id_role IN (3,4)
+                  )
             ";
             $stmtU = $conn->prepare($sqlUpdate);
-            $stmtU->bind_param('ssi', $entryHour, $exitHour, $idAttendance);
+            $stmtU->bind_param('ssii', $entryHour, $exitHour, $idAttendance, $user['id_user']);
         } else {
             $sqlUpdate = "
                 UPDATE attendance

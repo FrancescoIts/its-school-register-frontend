@@ -66,7 +66,7 @@ $stmt->close();
 <?php else: ?>
     <div class="scrollable-table">
     <form method="POST" action="">
-        <label for="course_id">Seleziona Corso:</label>
+        <label for="course_id"></label>
         <select name="course_id" id="course_id" onchange="this.form.submit()" required>
             <option value="">Seleziona un corso</option>
             <?php foreach ($courses as $course): ?>
