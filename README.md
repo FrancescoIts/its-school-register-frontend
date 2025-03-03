@@ -1,4 +1,4 @@
-## Codice Front-End per il registro elettronico 🖥️
+## Codice Front-End e Back-End per il registro elettronico 🖥️
 ### Francesco Ferrara 🧑‍🎓
 
 
@@ -16,4 +16,3 @@
 3. ~~Crezione utenti per admin~~
 4. ~~Visualizzazione utenti per admin~~
 5. Bacheca
-6. Rendere asincrona la pagina (senza ricarica di pagina dove possibile)
