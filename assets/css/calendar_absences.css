@@ -18,7 +18,9 @@
 .month-nav:active {
   background-color: #1f6390;
 }
-
+a .month-nav{
+  text-decoration: none;
+}
 
 .absence-dot {
   display: block;
