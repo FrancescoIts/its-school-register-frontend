@@ -92,7 +92,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Calendario con Eventi -->
-<div class="dashboard" data-section="events">
+<div class="dashboard" id="calendarAdmin" data-section="events">
 <div class="dashboard-header">
     <h3 class="">Calendario Eventi</h3>
     <span class="toggle-icon">&#9660;</span>
