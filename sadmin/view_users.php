@@ -2,7 +2,7 @@
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
-// Solo un 'sadmin' può accedere
+
 $user = checkSession(true, ['sadmin']);
 
 // Recupero tutti gli utenti con ruolo 'admin'

@@ -1,4 +1,6 @@
-<?php session_start(); ?>
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -10,32 +12,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./assets/css/login.css">
         <link rel="stylesheet" href="./assets/css/popup.css">
-        <!-- FontAwesome per le icone -->
+        <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="shortcut icon" href="./assets/img/favicon.ico">  
     </head>
     <body>
-
-        <!-- Overlay -->
-        <div class="popup-overlay" id="popupOverlayError"></div>
-
-        <!-- POPUP ERRORE -->
-        <div class="popup" id="errorPopup">
-            <div class="popup-header error">Errore</div>
-            <div class="popup-content" id="popupContentError"></div>
-            <button class="popup-close" onclick="closeErrorPopup()">Chiudi</button>
-        </div>
-
-        <!-- Overlay -->
-        <div class="popup-overlay" id="popupOverlaySuccess"></div>
-
-        <!-- POPUP SUCCESSO -->
-        <div class="popup" id="successPopup">
-            <div class="popup-header success">Successo</div>
-            <div class="popup-content" id="popupContentSuccess"></div>
-            <button class="popup-close success" onclick="closeSuccessPopup()">Chiudi</button>
-        </div>
-
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <div class="header-image">
             <img src="./assets/img/logo.png" alt="Logo" id="rotateImage">
@@ -52,30 +35,23 @@
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
                             <input type="text" name="email" class="login__input" placeholder="Email Scolastica" required>
-                            <p class="error-message"><?php echo $_SESSION['error_email'] ?? ''; ?></p>
+                            <p class="error-message">
+                                <?php echo $_SESSION['error_email'] ?? ''; ?>
+                            </p>
                         </div>
                         <div class="login__field">
                             <i class="login__icon fas fa-lock"></i>
                             <input type="password" id="password" name="password" class="login__input" placeholder="Password" required>
                             <i class="pss fas fa-eye" id="togglePassword"></i>
-                            <p class="error-message"><?php echo $_SESSION['error_password'] ?? ''; ?></p>
+                            <p class="error-message">
+                                <?php echo $_SESSION['error_password'] ?? ''; ?>
+                            </p>
                         </div>
                         <button type="submit" class="button login__submit">
                             <span>ACCEDI</span>
                             <i class="button__icon fas fa-chevron-right"></i>
                         </button>
                     </form>
-
-<!--                 <div class="social-login">
-                    <div class="col-md-3">
-                        <a href="" class="google" 
-                        onmouseover="toggleIcon(this, true)" 
-                        onmouseout="toggleIcon(this, false)">
-                            <i class="fa-brands fa-google" style="color: #7875b5;"></i> Google
-                        </a>
-                    </div>
-                    </div>
-                    -->
                 </div>
                 <div class="screen__background">
                     <span class="screen__background__shape screen__background__shape4"></span>
@@ -86,64 +62,79 @@
             </div>
         </div>
 
-        <!-- Script per i pop-up -->
-<script>
-     function toggleIcon(element, isHover) {
-        let icon = element.querySelector("i");
-        if (isHover) {
-            icon.classList.remove("fa-google");
-            icon.classList.add("fa-google"); 
-            icon.style.color = "#ffffff"; 
-        } else {
-            icon.classList.remove("fa-google");
-            icon.classList.add("fa-google");
-            icon.style.color = "#7875b5";
-        }
-    }
-    function showErrorPopup(errorMessage) {
-        document.getElementById("popupContentError").innerHTML = errorMessage;
-        document.getElementById("errorPopup").style.display = "block";
-        document.getElementById("popupOverlayError").style.display = "block";
-    }
+        <script>
+            // Hover icona 
+            function toggleIcon(element, isHover) {
+                let icon = element.querySelector("i");
+                if (isHover) {
+                    icon.classList.remove("fa-google");
+                    icon.classList.add("fa-google");
+                    icon.style.color = "#ffffff";
+                } else {
+                    icon.classList.remove("fa-google");
+                    icon.classList.add("fa-google");
+                    icon.style.color = "#7875b5";
+                }
+            }
 
-    function closeErrorPopup() {
-        document.getElementById("errorPopup").style.display = "none";
-        document.getElementById("popupOverlayError").style.display = "none";
-    }
+            // Mostra/Nasconde la password
+            document.getElementById("togglePassword").addEventListener("click", function () {
+                var passwordField = document.getElementById("password");
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    this.classList.remove("fa-eye");
+                    this.classList.add("fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    this.classList.remove("fa-eye-slash");
+                    this.classList.add("fa-eye");
+                }
+            });
+        </script>
 
-    function showSuccessPopup(successMessage) {
-        document.getElementById("popupContentSuccess").innerHTML = successMessage;
-        document.getElementById("successPopup").style.display = "block";
-        document.getElementById("popupOverlaySuccess").style.display = "block";
-
-        setTimeout(function() {
-            window.location.href = "<?php echo $_SESSION['redirect'] ?? 'index.php'; ?>";
-        }, 500);
-    }
-    document.getElementById("togglePassword").addEventListener("click", function () {
-        var passwordField = document.getElementById("password");
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            this.classList.remove("fa-eye");
-            this.classList.add("fa-eye-slash");
-        } else {
-            passwordField.type = "password";
-            this.classList.remove("fa-eye-slash");
-            this.classList.add("fa-eye");
-        }
-        });
         <?php
-    if (!empty($_SESSION['errors'])) {
-        echo "showErrorPopup(`" . implode("<br>", $_SESSION['errors']) . "`);";
-        unset($_SESSION['errors']);
-    }
+            // Se abbiamo errori da mostrare
+            if (!empty($_SESSION['errors'])) {
+                $errorMsg = json_encode(implode("<br>", $_SESSION['errors']), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                echo "
+                <script>
+                    Swal.fire({
+                        title: 'Errore',
+                        html: $errorMsg,
+                        icon: 'error',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                </script>";
+                unset($_SESSION['errors']);
+            }
 
-    if (!empty($_SESSION['success'])) {
-        echo "showSuccessPopup(`" . implode("<br>", $_SESSION['success']) . "`);";
-        unset($_SESSION['success']);
-    }
-    ?>
-    </script>
+            // Se abbiamo un messaggio di successo
+            if (!empty($_SESSION['success'])) {
+                $successMsg  = json_encode(implode('<br>', $_SESSION['success']), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                // Verifichiamo se abbiamo una pagina di redirect
+                $redirectUrl = !empty($_SESSION['redirect']) ? json_encode($_SESSION['redirect']) : 'null';
+
+                echo "
+                <script>
+                    Swal.fire({
+                        title: 'Successo',
+                        html: $successMsg,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 500
+                    }).then(() => {
+                        if ($redirectUrl !== null) {
+                            window.location.href = $redirectUrl;
+                        }
+                    });
+                </script>";
+
+                // Pulizia delle variabili
+                unset($_SESSION['success']);
+                unset($_SESSION['redirect']);
+            }
+        ?>
 
         <script src="./assets/js/main.js"></script>
         <?php require('./utils/footer.php'); ?>

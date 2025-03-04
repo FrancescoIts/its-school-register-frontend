@@ -5,13 +5,14 @@ require_once '../utils/config.php';
 $_SESSION['errors'] = [];
 $_SESSION['success'] = [];
 
+// Verifichiamo se il metodo è POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-    // Controllo che l'email contenga '@itssmartacademy.it'
+    // Controllo se l'email contiene "@itssmartacademy.it"
     if (strpos($email, '@itssmartacademy.it') === false) {
-        $_SESSION['errors'][] = "L'email non è valida (deve contenere @itssmartacademy.it).";
+        $_SESSION['errors'][] = "Email non valida.";
         header("Location: ../index.php");
         exit;
     }
@@ -24,14 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
+    // 2) Verifico la password e se l'utente esiste
     if ($user && password_verify($password, $user['psw'])) {
+        // 3) Verifico se l'account è attivo
         if ($user['active'] == 1) {
-            
-            // 2) Controllo se esiste già una sessione attiva per l'utente
+
+            // Controllo se esiste già una sessione attiva per l'utente
             $sqlSession = "
                 SELECT session_id FROM sessions
                 WHERE id_user = ? AND data_scadenza > NOW()
-                LIMIT 1";
+                LIMIT 1
+            ";
             $stmt = $conn->prepare($sqlSession);
             $stmt->bind_param('i', $user['id_user']);
             $stmt->execute();
@@ -39,15 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $existingSession = $result->fetch_assoc();
 
             if ($existingSession) {
-                // Se esiste una sessione attiva, usiamo il suo session_id
+                // Se esiste una sessione attiva, uso il suo session_id
                 session_id($existingSession['session_id']);
                 session_start();
             } else {
-                // Se non c'è una sessione attiva, rigeneriamo l'ID di sessione
+                // Se non c'è una sessione attiva, rigenero l'ID di sessione
                 session_regenerate_id(true);
             }
 
-            // 3) Prelevo dal DB ruoli e corsi associati a quest’utente
+            // 4) Prelevo i ruoli e i corsi dell'utente
             $sqlRolesCourses = "
                 SELECT 
                     urc.id_role,
@@ -59,7 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 FROM user_role_courses urc
                 LEFT JOIN roles r ON r.id_role = urc.id_role
                 LEFT JOIN courses c ON c.id_course = urc.id_course
-                WHERE urc.id_user = ?";
+                WHERE urc.id_user = ?
+            ";
             $stmt2 = $conn->prepare($sqlRolesCourses);
             $stmt2->bind_param('i', $user['id_user']);
             $stmt2->execute();
@@ -82,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // 4) Salvo le informazioni dell'utente in sessione
+            // 5) Salvo i dati utente in sessione
             $_SESSION['user'] = [
                 'id_user'   => $user['id_user'],
                 'lastname'  => $user['lastname'],
@@ -94,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'courses'   => $userCourses
             ];
 
-            // 5) Aggiorno o creo la sessione nel database
+            // 6) Salvo/aggiorno la sessione nel DB
             $session_id = session_id();
             $sessionDataJson = json_encode($_SESSION['user']);
             $sqlSessionSave = "
@@ -103,12 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ON DUPLICATE KEY UPDATE 
                     session_id = VALUES(session_id),
                     data_scadenza = VALUES(data_scadenza),
-                    session_data  = VALUES(session_data)";
+                    session_data  = VALUES(session_data)
+            ";
             $stmtSession = $conn->prepare($sqlSessionSave);
             $stmtSession->bind_param('iss', $user['id_user'], $session_id, $sessionDataJson);
             $stmtSession->execute();
 
-            // 6) Determino la pagina di destinazione in base al ruolo
+            // 7) Determino la pagina di destinazione in base al ruolo
             $_SESSION['success'][] = "Login effettuato con successo!";
 
             if (in_array('admin', $userRoles)) {
@@ -121,14 +127,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['redirect'] = "../registro/sadmin/sadmin_panel.php";
             } else {
                 $_SESSION['errors'][] = "Ruolo non valido. Contatta l'amministratore.";
-               // header("Location: ../index.php");
+                header("Location: ../index.php");
                 exit;
             }
 
+            // Ritorno alla pagina principale per mostrare il messaggio di successo e poi reindirizzare
             header("Location: ../index.php");
             exit;
         } else {
-            $_SESSION['errors'][] = "L'account non è attivo.";
+            $_SESSION['errors'][] = "Account inattivo.";
         }
     } else {
         $_SESSION['errors'][] = "Email o password errati.";
