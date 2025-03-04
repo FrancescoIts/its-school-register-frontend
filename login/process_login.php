@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 3) Verifico se l'account è attivo
         if ($user['active'] == 1) {
 
-            // Controllo se esiste già una sessione attiva per l'utente
+            // **Controllo se l'utente ha già una sessione attiva**
             $sqlSession = "
                 SELECT session_id FROM sessions
                 WHERE id_user = ? AND data_scadenza > NOW()
@@ -43,13 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $existingSession = $result->fetch_assoc();
 
             if ($existingSession) {
-                // Se esiste una sessione attiva, uso il suo session_id
-                session_id($existingSession['session_id']);
-                session_start();
-            } else {
-                // Se non c'è una sessione attiva, rigenero l'ID di sessione
-                session_regenerate_id(true);
+                // Se l'utente ha già una sessione attiva, blocchiamo il login
+                $_SESSION['errors'][] = "Accesso negato: sei già connesso da un altro dispositivo.";
+                header("Location: ../index.php");
+                exit;
             }
+
+            // **Se non c'è una sessione attiva, procediamo con il login**
+            session_regenerate_id(true);
+            $session_id = session_id();
 
             // 4) Prelevo i ruoli e i corsi dell'utente
             $sqlRolesCourses = "
@@ -99,8 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'courses'   => $userCourses
             ];
 
-            // 6) Salvo/aggiorno la sessione nel DB
-            $session_id = session_id();
+            // 6) Salvo la sessione nel DB
             $sessionDataJson = json_encode($_SESSION['user']);
             $sqlSessionSave = "
                 INSERT INTO sessions (id_user, session_id, data_creazione, data_scadenza, session_data)
@@ -131,7 +132,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // Ritorno alla pagina principale per mostrare il messaggio di successo e poi reindirizzare
             header("Location: ../index.php");
             exit;
         } else {

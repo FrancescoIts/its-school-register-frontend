@@ -1,6 +1,26 @@
 <?php
 session_start();
+require_once './utils/config.php';
+
+if (isset($_SESSION['user'])) {
+    $userRoles = $_SESSION['user']['roles'] ?? [];
+
+    if (in_array('admin', $userRoles)) {
+        header("Location: ./admin/admin_panel.php");
+        exit;
+    } elseif (in_array('docente', $userRoles)) {
+        header("Location: ./doc/doc_panel.php");
+        exit;
+    } elseif (in_array('studente', $userRoles)) {
+        header("Location: ./student/student_panel.php");
+        exit;
+    } elseif (in_array('sadmin', $userRoles)) {
+        header("Location: ./sadmin/sadmin_panel.php");
+        exit;
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html>
     <head>
