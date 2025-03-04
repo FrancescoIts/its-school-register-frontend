@@ -148,12 +148,14 @@ $calendarData = getCalendar($month, $year, $conn, $id_course);
         url.searchParams.set('id_course', courseId);
         window.location.href = url.toString();
     }
-
+    let phpYear    = <?= json_encode($year) ?>;
+    let phpMonth   = <?= json_encode($month) ?>;
+    let idCourse   = <?= json_encode($id_course) ?>;
+    let userId     = <?= json_encode($id_user) ?>;
+    let isAdmin    = <?= json_encode($isAdmin) ?>;
+    let isDocente  = <?= json_encode($isDocente) ?>;
     let calendarData = <?= $calendarData ?>;
-    let userId       = <?= json_encode($id_user) ?>;
-    let isAdmin      = <?= json_encode($isAdmin) ?>;
-    let isDocente    = <?= json_encode($isDocente) ?>;
-    let idCourse     = <?= json_encode($id_course) ?>;
+
 
 </script>
 

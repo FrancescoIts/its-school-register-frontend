@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Filtriamo gli eventi reali (dove event != null e created_by != null)
     let events = calendarData.filter(e => e.event != null && e.created_by != null);
 
     // Render del calendario
@@ -7,22 +6,21 @@ document.addEventListener('DOMContentLoaded', function () {
         let tbody = document.querySelector('.calendar-table tbody');
         tbody.innerHTML = '';
 
-        // Data del primo giorno del mese corrente
-        let now = new Date();
-        let year = now.getFullYear();
-        let month = now.getMonth(); // 0-based
+        // Usiamo i valori passati da PHP per anno e mese.
+        let jsYear  = phpYear;           
+        let jsMonth = phpMonth - 1;    
 
-        // Primo giorno del mese (JS: 0=dom, 1=lun,...)
-        let firstDayDate = new Date(year, month, 1);
-        let firstDay = firstDayDate.getDay(); 
+        // Primo giorno del mese
+        let firstDayDate = new Date(jsYear, jsMonth, 1);
+        let firstDay = firstDayDate.getDay(); // Domenica=0, Lunedì=1, etc.
 
-        // Numero di giorni del mese
-        let daysInMonth = new Date(year, month + 1, 0).getDate();
+        // Numero di giorni nel mese
+        let daysInMonth = new Date(jsYear, jsMonth + 1, 0).getDate();
 
         let weekRow = document.createElement('tr');
 
-        // Calcola quanti giorni "vuoti" prima di Lunedì (colonna 1)
-        // Se firstDay=0 => Domenica => mettiamo 6 blank, se firstDay=1 => 0 blank, ...
+        // Calcola quanti giorni "vuoti" prima del Lunedì (colonna 1).
+        // Se firstDay=0 => Domenica => mettiamo 6 blank; se firstDay=1 => 0 blank...
         let blankDays = (firstDay === 0) ? 6 : (firstDay - 1);
 
         for (let i = 0; i < blankDays; i++) {
@@ -32,17 +30,17 @@ document.addEventListener('DOMContentLoaded', function () {
             weekRow.appendChild(emptyTd);
         }
 
+        // Creiamo le celle con i giorni
         for (let day = 1; day <= daysInMonth; day++) {
-            let currentDate = new Date(year, month, day);
+            let currentDate = new Date(jsYear, jsMonth, day);
 
-            // FIX: non usiamo più toISOString() (che restituisce data in UTC causando slittamento)
-            // Creiamo manualmente la stringa in formato YYYY-MM-DD
+            // Costruiamo la stringa YYYY-MM-DD senza usare toISOString()
             let yyyy = currentDate.getFullYear();
             let mm   = String(currentDate.getMonth() + 1).padStart(2, '0');
             let dd   = String(currentDate.getDate()).padStart(2, '0');
             let dateString = `${yyyy}-${mm}-${dd}`;
 
-            // Trova se c'è un evento esistente
+            // Trova se c'è un evento esistente in calendarData
             let existingEvent = events.find(e => e.date === dateString);
 
             let td = document.createElement('td');
@@ -57,35 +55,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             td.innerHTML = content;
 
-            // Aggiungiamo i dataset per gestire il click
+            // Aggiungiamo dataset utili
             td.dataset.date      = dateString;
             td.dataset.eventId   = existingEvent ? existingEvent.id : '';
             td.dataset.createdBy = existingEvent ? existingEvent.created_by : '';
 
-            // Gestione click sul giorno
+            // Click sul giorno
             td.addEventListener('click', () => manageEvent(td));
 
             weekRow.appendChild(td);
 
-            // Se Domenica (getDay()=0), andiamo a capo
+            // Se Domenica (getDay()=0), chiudiamo la riga
             if (currentDate.getDay() === 0) {
                 tbody.appendChild(weekRow);
                 weekRow = document.createElement('tr');
             }
         }
 
-        // Se rimangono celle nella riga, chiudiamo la riga
+        // Se rimangono celle nell'ultima riga, la completiamo
         if (weekRow.children.length > 0) {
             tbody.appendChild(weekRow);
         }
     }
 
+
     function manageEvent(td) {
-        let dateString = td.dataset.date;
-        let [year, month, day] = dateString.split('-');
+        let dateString = td.dataset.date;             // es. "2025-04-10"
+        let [year, month, day] = dateString.split('-'); 
         let dateItalianFormat = `${day}/${month}/${year}`;
-        let eventId    = td.dataset.eventId;
-        let createdBy  = td.dataset.createdBy;
+        let eventId   = td.dataset.eventId;
+        let createdBy = td.dataset.createdBy;
 
         // Troviamo l'evento corrispondente
         let existingEvent = calendarData.find(e => e.id == eventId) || null;
@@ -110,12 +109,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Per admin o creatore, gestiamo aggiunta/modifica
-        let title = existingEvent ? 'Gestione Evento' : 'Aggiungi Nuovo Evento';
+        let title      = existingEvent ? 'Gestione Evento' : 'Aggiungi Nuovo Evento';
         let inputValue = existingEvent ? existingEvent.event : '';
 
         let swalOptions = {
             title: title,
-            // Mostriamo il creatore se l’evento esiste già
             html: existingEvent ? `<p><strong>Creato da:</strong> ${creatorName}</p>` : '',
             input: 'text',
             inputValue: inputValue,
@@ -124,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelButtonText: 'Annulla'
         };
 
+        // Se l'evento esiste, mostriamo anche il bottone di eliminazione
         if (existingEvent) {
             swalOptions.showDenyButton = true;
             swalOptions.denyButtonText = 'Elimina';
@@ -140,6 +139,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /**
+     * Salva o modifica l'evento su manage_calendar.php
+     */
     function saveEvent(eventId, date, eventText) {
         let action = eventId ? 'edit' : 'add';
 
@@ -149,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify({
                 action: action,
                 event_id: eventId,
-                date: date,
+                date: date,        
                 event: eventText,
                 id_course: idCourse
             })
@@ -168,6 +170,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /**
+     * Elimina l'evento
+     */
     function deleteEvent(eventId) {
         fetch('../utils/manage_calendar.php', {
             method: 'POST',
@@ -193,9 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderCalendar();
 
-    // Cambio corso
     document.getElementById('course-select').addEventListener('change', function() {
         window.location.href = "?id_course=" + this.value + "#calendarAdmin";
     });
-
 });
