@@ -66,7 +66,7 @@
                         </button>
                     </form>
 
-                    <div class="social-login">
+<!--                 <div class="social-login">
                     <div class="col-md-3">
                         <a href="" class="google" 
                         onmouseover="toggleIcon(this, true)" 
@@ -75,6 +75,7 @@
                         </a>
                     </div>
                     </div>
+                    -->
                 </div>
                 <div class="screen__background">
                     <span class="screen__background__shape screen__background__shape4"></span>

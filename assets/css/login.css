@@ -191,19 +191,33 @@ body {
 
 .login__submit:active,
 .login__submit:focus,
+.login__submit:active,
+.login__submit:focus,
 .login__submit:hover {
-    color: #fff;
-    background-color: #7C78B8;
-    border-color: #6A679E;
     outline: none;
     transition: .2s;
 }
 
+/* Animazione dell'icona */
 .button__icon {
     font-size: 24px;
     margin-left: auto;
     color: #7875B5;
+    transition: transform 0.3s ease-in-out; /* Transizione fluida */
 }
+
+.login__submit:hover .button__icon {
+    animation: bounce 0.5s infinite alternate;
+}
+
+@keyframes bounce {
+    from { transform: translateX(0); }
+    to { transform: translateX(-5px); }
+}
+
+
+
+
 
 .social-login {
     position: absolute;
