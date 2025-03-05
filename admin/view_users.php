@@ -43,7 +43,7 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
     exit;
 }
 ?>
-<div class="scrollable-table">
+
     <div class="view-users-table-container">
         <table class="view-users-table">
             <thead>
@@ -95,4 +95,3 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
             </tbody>
         </table>
     </div>
-</div>

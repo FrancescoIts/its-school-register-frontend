@@ -244,10 +244,32 @@ a {
     cursor: pointer;
 }
 .button-container button:not(.back) {
-    background-color: #38cf24;
+    background-color: #28a746fd;
     color: white;
 }
+.button-container button:hover {
+    background-color: #28a746b4;
+}
 .button-container button.back.attendance {
-    background-color: #6c757d;
+    background-color: #e42525;
     color: white;
+}
+.button-container button.back.attendance:hover {
+    background-color: #e42525c4;
+}
+
+.dark-mode .button-container button.back.attendance {
+    background-color: #e42525a2;
+    color: white;
+}
+.dark-mode .button-container button.back.attendance:hover {
+    background-color: #666666;
+}
+
+.dark-mode .button-container button:not(.back) {
+    background-color: #28a746b4;
+    color: white;
+}
+.dark-mode .button-container button:hover {
+    background-color: #666666;
 }

@@ -163,7 +163,7 @@ a {
 }
 
 .dark-mode .view-users-button:hover {
-    background-color: #3ba048; /* Colore più chiaro al passaggio del mouse */
+    background-color: #2b6833; /* Colore più chiaro al passaggio del mouse */
 }
 
 .dark-mode .view-users-button.inactive {
