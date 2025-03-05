@@ -224,14 +224,6 @@ if (!file_exists($corso_img)) {
     </div>
 </div>
 
-<!-- Sezione Bacheca -->
-<div class="dashboard">
-    <h3 class="">Bacheca</h3>
-    <div class="courses">
-        <div class="course-card">Contenuto della bacheca</div>
-    </div>
-</div>
-
 <!-- Sezione Informazioni personali -->
 <div class="dashboard">
     <h3 class="">Le tue informazioni</h3>

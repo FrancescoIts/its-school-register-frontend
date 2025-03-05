@@ -48,8 +48,10 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/courses_admin.css">
     <link rel="stylesheet" href="../assets/css/view_users.css">
     <link rel="stylesheet" href="../assets/css/create_user.css">
+    <link rel="stylesheet" href="../assets/css/newsboard.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/checkbox.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
@@ -215,21 +217,6 @@ if (count($corsi) > 0) {
             ?>
         </div>
         </div>
-    </div>
-</div>
-
-
-
-<!-- Sezione Bacheca -->
-<div class="dashboard" data-section="bacheca">
-<div class="dashboard-header">
-    <h3 class="">Bacheca</h3>
-    <span class="toggle-icon">&#9660;</span>
-    </div>
-    <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">Contenuto della bacheca</div>
-    </div>
     </div>
 </div>
 

@@ -128,32 +128,6 @@ if (isset($_SESSION['user'])) {
                 </script>";
                 unset($_SESSION['errors']);
             }
-
-            // Se abbiamo un messaggio di successo
-            if (!empty($_SESSION['success'])) {
-                $successMsg  = json_encode(implode('<br>', $_SESSION['success']), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-                // Verifichiamo se abbiamo una pagina di redirect
-                $redirectUrl = !empty($_SESSION['redirect']) ? json_encode($_SESSION['redirect']) : 'null';
-
-                echo "
-                <script>
-                    Swal.fire({
-                        title: 'Successo',
-                        html: $successMsg,
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 500
-                    }).then(() => {
-                        if ($redirectUrl !== null) {
-                            window.location.href = $redirectUrl;
-                        }
-                    });
-                </script>";
-
-                // Pulizia delle variabili
-                unset($_SESSION['success']);
-                unset($_SESSION['redirect']);
-            }
         ?>
 
         <script src="./assets/js/main.js"></script>

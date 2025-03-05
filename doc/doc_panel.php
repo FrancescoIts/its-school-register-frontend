@@ -143,19 +143,6 @@ if (count($corsi) > 0) {
     </div>
 </div>
 
-<!-- Sezione Bacheca -->
-<div class="dashboard" data-section="bacheca">
-<div class="dashboard-header">
-    <h3 class="">Bacheca</h3>
-    <span class="toggle-icon">&#9660;</span>
-    </div>
-    <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">Contenuto della bacheca</div>
-    </div>
-    </div>
-</div>
-
 <!-- Sezione Informazioni personali -->
 <div class="dashboard">
     <h3 class="">Le tue informazioni</h3>
