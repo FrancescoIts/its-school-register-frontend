@@ -43,12 +43,18 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/doc_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/stats_total.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
     <link rel="stylesheet" href="../assets/css/checkbox.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/courses_admin.css">
+    <link rel="stylesheet" href="../assets/css/view_users.css">
+    <link rel="stylesheet" href="../assets/css/create_user.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
@@ -64,19 +70,36 @@ if (count($corsi) > 0) {
   <i class="fas fa-arrow-up"></i>
 </button>
 <!-- Navbar -->
-<div class="navbar">
+<div class="navbar" id="sticky">
     <div class="logo">
         <a href="https://www.itssmart.it/">
             <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
         </a>
     </div>
-    <div class="navbar-title">
+        <div class="navbar-links">
+            <a href="#calendarAdmin" class="nav-item" data-label="Calendario">
+                <i class="fas fa-calendar-alt"></i>
+            </a>
+            <a href="#attendanceAdmin" class="nav-item" data-label="Lezione di Oggi">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </a>
+            <a href="#Panoramica" class="nav-item" data-label="Panoramica Assenze">
+                <i class="fas fa-user-times"></i>
+            </a>
+            <a href="#statistiche" class="nav-item" data-label="Statistiche">
+                <i class="fas fa-chart-bar"></i>
+            </a>
+            <a href="#personal" class="nav-item" data-label="Informazioni Personali">
+            <i class="fas fa-info"></i>
+            </a>
+        </div>
 
-    </div>
-    <a class="logout" href="../utils/logout.php">Logout</a>
+    <div class="navbar-actions">
     <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <a class="logout" href="../utils/logout.php">Logout</a>
+    </div>
 </div>
-
+<div class="navbar-placeholder"></div>
 <!-- Sezione Corsi -->
 <div class="dashboard">
     <h3 class="">Corsi</h3>
@@ -127,7 +150,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Statistiche -->
-<div class="dashboard" data-section="statsStudents">
+<div class="dashboard" data-section="statsStudents" id="statistiche">
 <div class="dashboard-header">
     <h3>Statistiche Studenti</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -144,7 +167,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Informazioni personali -->
-<div class="dashboard">
+<div class="dashboard" id="personal">
     <h3 class="">Le tue informazioni</h3>
     <div class="courses">
         <div class="course-card info">

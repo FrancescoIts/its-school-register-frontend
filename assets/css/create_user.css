@@ -50,7 +50,6 @@
 .create-user-button {
     width: 100%;
     padding: 15px;
-    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -59,9 +58,6 @@
     transition: background-color 0.3s ease;
 }
 
-.create-user-button:hover {
-    background-color: #0056b3;
-}
 
 /* Messaggi di errore o successo */
 .create-user-message {

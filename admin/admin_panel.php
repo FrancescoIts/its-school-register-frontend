@@ -41,6 +41,7 @@ if (count($corsi) > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Coordinatore</title>
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/navbar.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
@@ -48,7 +49,6 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/courses_admin.css">
     <link rel="stylesheet" href="../assets/css/view_users.css">
     <link rel="stylesheet" href="../assets/css/create_user.css">
-    <link rel="stylesheet" href="../assets/css/newsboard.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -72,19 +72,48 @@ if (count($corsi) > 0) {
   <i class="fas fa-arrow-up"></i>
 </button>
 <!-- Navbar -->
-<div class="navbar">
+<div class="navbar" id="sticky">
     <div class="logo">
         <a href="https://www.itssmart.it/">
             <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
         </a>
     </div>
-    <div class="navbar-title">
-     
-    </div>
-    <a class="logout" href="../utils/logout.php">Logout</a>
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
-</div>
+        <div class="navbar-links">
+            <a href="#calendarAdmin" class="nav-item" data-label="Calendario">
+                <i class="fas fa-calendar-alt"></i>
+            </a>
+            <a href="#attendanceAdmin" class="nav-item" data-label="Lezione di Oggi">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </a>
+            <a href="#statistiche" class="nav-item" data-label="Statistiche">
+                <i class="fas fa-chart-bar"></i>
+            </a>
+            <a href="#Panoramica" class="nav-item" data-label="Panoramica Assenze">
+                <i class="fas fa-user-times"></i>
+            </a>
+            <a href="#courseSettings" class="nav-item" data-label="Impostazioni Corso">
+                <i class="fas fa-cogs"></i>
+            </a>
+            <a href="#viewUsers" class="nav-item" data-label="Mostra Utenti">
+                <i class="fas fa-users"></i>
+            </a>
+            <a href="#createUser" class="nav-item" data-label="Crea Utente">
+                <i class="fas fa-user-plus"></i>
+            </a>
+            <a href="#abencesAdmin" class="nav-item" data-label="Calendario Assenze Studenti">
+                <i class="fas fa-calendar-times"></i>
+            </a>
+            <a href="#personal" class="nav-item" data-label="Informazioni Personali">
+            <i class="fas fa-info"></i>
+            </a>
+        </div>
 
+    <div class="navbar-actions">
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <a class="logout" href="../utils/logout.php">Logout</a>
+    </div>
+</div>
+<div class="navbar-placeholder"></div>
 <!-- Sezione Corsi -->
 <div class="dashboard">
     <h3 class="">Corsi</h3>
@@ -135,7 +164,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Statistiche -->
-<div class="dashboard" data-section="events">
+<div class="dashboard" data-section="events" id="statistiche">
 <div class="dashboard-header">
     <h3>Statistiche Studenti</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -186,7 +215,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Crezione Utenti -->
-<div class="dashboard" data-section="createUser">
+<div class="dashboard" data-section="createUser" id="createUser">
 <div class="dashboard-header">
     <h3>Crezione Utenti</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -221,7 +250,7 @@ if (count($corsi) > 0) {
 </div>
 
 <!-- Sezione Informazioni personali -->
-<div class="dashboard">
+<div class="dashboard" id="personal">
     <h3 class="">Le tue informazioni</h3>
     <div class="courses">
         <div class="course-card info">

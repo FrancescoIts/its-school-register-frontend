@@ -31,6 +31,7 @@ if (!file_exists($corso_img)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Studente</title>
+    <link rel="stylesheet" href="../assets/css/navbar.css"> 
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -38,6 +39,13 @@ if (!file_exists($corso_img)) {
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/courses_admin.css">
+    <link rel="stylesheet" href="../assets/css/view_users.css">
+    <link rel="stylesheet" href="../assets/css/create_user.css">
+    <link rel="stylesheet" href="../assets/css/manage_attendance.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/checkbox.css">
+    <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
@@ -52,18 +60,36 @@ if (!file_exists($corso_img)) {
         >
   <i class="fas fa-arrow-up"></i>
 </button>
+
+
 <!-- Navbar -->
-<div class="navbar">
+<div class="navbar" id="sticky">
     <div class="logo">
         <a href="https://www.itssmart.it/">
             <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
         </a>
     </div>
-    <div class="navbar-title">
-    </div>
-    <a class="logout" href="../utils/logout.php">Logout</a>
+        <div class="navbar-links">
+            <a href="#lezioni" class="nav-item" data-label="Calendario">
+                <i class="fas fa-calendar-alt"></i>
+            </a>
+            <a href="#stats" class="nav-item" data-label="Statistiche">
+                <i class="fas fa-chart-bar"></i>
+            </a>
+            <a href="#abences" class="nav-item" data-label="Assenze">
+                <i class="fas fa-calendar-times"></i>
+            </a>
+            <a href="#personal" class="nav-item" data-label="Informazioni Personali">
+            <i class="fas fa-info"></i>
+            </a>
+        </div>
+
+    <div class="navbar-actions">
     <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <a class="logout" href="../utils/logout.php">Logout</a>
+    </div>
 </div>
+<div class="navbar-placeholder"></div>
 
 
 <!-- Sezione Corso -->
@@ -76,7 +102,7 @@ if (!file_exists($corso_img)) {
 </div>
 
 <!-- Sezione Calendario con Eventi -->
-<div class="dashboard" data-section="calendario_eventi">
+<div class="dashboard" data-section="calendario_eventi" id="lezioni">
     <div class="dashboard-header">
         <h3>Calendario Eventi</h3>
         <span class="toggle-icon">&#9660;</span>
@@ -93,7 +119,7 @@ if (!file_exists($corso_img)) {
 
 
 <!-- Sezione Statistiche -->
-<div class="dashboard"  data-section="stats">
+<div class="dashboard"  data-section="stats" id="stats">
     <div class="dashboard-header">
     <h3>Le tue statistiche</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -210,7 +236,7 @@ if (!file_exists($corso_img)) {
 </div>
 
 <!-- Sezione Calendario con Assenze -->
-<div class="dashboard"  data-section="absences">
+<div class="dashboard"  data-section="absences" id="abences">
 <div class="dashboard-header">
     <h3 class="">Calendario Assenze</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -225,7 +251,7 @@ if (!file_exists($corso_img)) {
 </div>
 
 <!-- Sezione Informazioni personali -->
-<div class="dashboard">
+<div class="dashboard" id="personal">
     <h3 class="">Le tue informazioni</h3>
     <div class="courses">
         <div class="course-card info">

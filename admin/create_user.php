@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user'])) {
 <div class="scrollable-table">
 <div class="create-user-container">
     <?php echo $message; ?>
-    <form method="POST" action="" class="create-user-form">
+    <form method="POST" action="#createUser" class="create-user-form">
         <div class="form-group">
             <label for="email">Email istituzionale:</label>
             <input type="email" name="email" class="form-control" required placeholder="esempio@itssmartacademy.it">
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user'])) {
                 </select>
             </div>
         </div>
-        <button type="submit" name="create_user" class="btn btn-primary btn-block">Crea Utente</button>
+        <button type="submit" name="create_user" class="btn btn-info create-user-button">Crea Utente</button>
     </form>
 </div>
 </div>

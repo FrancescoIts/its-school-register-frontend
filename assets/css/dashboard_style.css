@@ -1,56 +1,4 @@
-/* Stili per la navbar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
 
-.navbar .logo {
-    flex: 1;
-    text-align: left;
-}
-
-.navbar .logo img {
-    margin-top: 10px;
-    width: 90px;
-    height: auto;
-}
-
-body.dark-mode .navbar .logo img {
-    display: none;
-}
-
-
-.navbar .actions {
-    display: flex;
-    gap: 10px;
-}
-
-.navbar .actions button {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
-    transition: background 0.3s, transform 0.2s;
-    
-}
-
-.navbar a {
-    text-decoration: none;
-}
-.navbar .actions button:hover {
-    background: #555;
-    transform: scale(1.05);
-}
 
 /* Stili per ogni dashboard nella pagina */
 .dashboard {
@@ -185,59 +133,6 @@ body.dark-mode .navbar .logo img {
   
 /* Responsività */
 @media (max-width: 400px) {
-/* Stili per la navbar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.navbar .logo {
-    flex: 1;
-    text-align: left;
-}
-
-.navbar .logo img {
-    margin-top: 10px;
-    width: 90px;
-    height: auto;
-}
-
-body.dark-mode .navbar .logo img {
-    display: none;
-}
-
-
-.navbar .actions {
-    display: flex;
-    gap: 10px;
-}
-
-.navbar .actions button {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
-    transition: background 0.3s, transform 0.2s;
-    
-}
-
-.navbar a {
-    text-decoration: none;
-}
-.navbar .actions button:hover {
-    background: #555;
-    transform: scale(1.05);
-}
 
 /* Stili per ogni dashboard nella pagina */
 .dashboard {

@@ -1,0 +1,241 @@
+/* Placeholder per la navbar */
+.navbar-placeholder {
+    height: 60px !important;
+}
+
+/* Riserva dello spazio per la navbar fissa */
+body {
+    padding-top: 60px !important;
+}
+
+/* Stili generali della navbar */
+.navbar {
+    position: relative; /* Necessario per eventuali posizionamenti interni */
+    color: white;
+    padding: 10px 20px;
+    top: 0;
+    width: 100%;
+    justify-content: center;
+    justify-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar fissa */
+#sticky {
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    border-radius: 0px !important;
+    top: 0;
+    z-index: 1000;
+}
+#sticky:hover {
+    background-color: #222;
+    transition: 500ms;
+}
+
+/* Contenitore per i link della navbar */
+.navbar-links {
+    display: flex;
+    gap: 20px;
+}
+
+/* Struttura di ogni voce con icona e freccia disposte in colonna */
+.navbar-links .nav-item {
+    position: relative; /* Per il posizionamento interno, se necessario */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;  /* Padding minimo per la voce */
+    font-size: 16px;
+    transition: background 0.3s, padding 0.3s;
+    overflow: visible; /* Assicura che eventuali elementi non vengano tagliati */
+    z-index: 1; /* z-index di base */
+}
+
+/* Quando si passa sopra, porta l'elemento in primo piano */
+.navbar-links .nav-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 7px 10px;  /* Leggero aumento del padding */
+    z-index: 10; /* L'elemento hover viene portato davanti agli altri */
+}
+
+/* Icona: più grande */
+.navbar-links .nav-item i {
+    font-size: 24px;
+    transition: color 0.3s;
+}
+
+/* Freccia: posizionata subito sotto l'icona, colore fisso #FFF */
+.navbar-links .nav-item .arrow {
+    display: block;
+    margin-top: 2px;
+    transition: transform 0.3s ease;
+}
+.navbar-links .nav-item .arrow i {
+    font-size: 14px;
+    color: #fff;
+}
+
+.navbar-links .nav-item:hover::after {
+    content: attr(data-label);
+    /* Usando position: fixed per far apparire il tooltip in un punto fisso della viewport,
+       puoi regolare left e top in base al layout desiderato */
+    position: fixed;
+    left: 430px;   /* Regola questo valore per posizionare il tooltip in modo fisso */
+    top: 50px;     /* Regola questo valore per posizionarlo verticalmente nella navbar */
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 14px;
+    color: #fff;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Esempio di colori distinti per ogni voce (se desiderato) */
+.navbar-links .nav-item:nth-child(1) i { color: #ff5722; }   /* Arancione */
+.navbar-links .nav-item:nth-child(2) i { color: #30db36; }   /* Verde */
+.navbar-links .nav-item:nth-child(3) i { color: #2196f3; }   /* Blu */
+.navbar-links .nav-item:nth-child(4) i { color: #9c27b0; }   /* Viola */
+.navbar-links .nav-item:nth-child(5) i { color: #ffc107; }   /* Ambra */
+.navbar-links .nav-item:nth-child(6) i { color: #e91e63; }   /* Rosa */
+.navbar-links .nav-item:nth-child(7) i { color: #d400c9; }   /* Ciano */
+.navbar-links .nav-item:nth-child(8) i { color: #795548; }   /* Marrone */
+
+/* Titolo della navbar */
+.navbar-title {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 2.2em;
+}
+
+/* Logo */
+.navbar .logo {
+    text-align: left;
+}
+.navbar .logo img {
+    margin-top: 10px;
+    width: 90px;
+    height: auto;
+}
+body.dark-mode .navbar .logo img {
+    display: none;
+}
+
+/* Stili per i pulsanti (es. tema e logout) */
+.navbar .actions button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
+    transition: background 0.3s, transform 0.2s;
+}
+.navbar a {
+    text-decoration: none;
+}
+.navbar .actions button:hover {
+    background: #555;
+    transform: scale(1.05);
+}
+
+/* Media Query per dispositivi piccoli */
+@media (max-width: 400px) {
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .navbar .logo {
+        flex: 1;
+        text-align: left;
+    }
+    .navbar .logo img {
+        margin-top: 10px;
+        width: 90px;
+        height: auto;
+    }
+    body.dark-mode .navbar .logo img {
+        display: none;
+    }
+    
+    .navbar .actions {
+        display: flex;
+    }
+    
+    .navbar .actions button {
+        background: #333;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 8px;
+        box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
+        transition: background 0.3s, transform 0.2s;
+    }
+    
+    .navbar a {
+        text-decoration: none;
+    }
+    .navbar .actions button:hover {
+        background: #555;
+        transform: scale(1.05);
+    }
+}
+
+/* Pulsante Tema Scuro */
+.theme-toggle {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
+    transition: background 0.3s, color 0.3s;
+}
+
+.logout {
+    background: #a31a1a;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
+    transition: background 0.3s, color 0.3s;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.theme-toggle:hover {
+    background: #ddd;
+}
+
+.logout:hover {
+    background: #ddd;
+    text-decoration: none;
+}

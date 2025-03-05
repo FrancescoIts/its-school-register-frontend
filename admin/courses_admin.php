@@ -64,7 +64,7 @@ $stmt->close();
     <p>Non hai corsi associati.</p>
 <?php else: ?>
     <div class="scrollable-table">
-        <form method="POST" action="">
+        <form method="POST" action="#courseSettings">
             <label for="course_id"></label>
             <select name="course_id" id="course_id" onchange="this.form.submit()" required>
                 <option value="">Seleziona un corso</option>
