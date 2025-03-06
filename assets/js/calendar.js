@@ -1,39 +1,83 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Gestiamo sia gli elementi con classe '.calendar-event' che quelli con il template '.c-cal__cel.event'
-    const eventElements = document.querySelectorAll('.calendar-event, .c-cal__cel.event');
-    
-    eventElements.forEach(day => {
-        day.addEventListener('click', function () {
-            let eventText = this.getAttribute('data-event') || "";
-            let creatorName = this.getAttribute('data-creator') || "Nessun creatore";
-            let clickedDate = this.getAttribute('data-day'); // utilizziamo data-day, usato nel template
-
-            // Suddividiamo la data in anno, mese, giorno
-            let parts = clickedDate.split('-');
-            let year = parseInt(parts[0]);
-            let month = parseInt(parts[1]) - 1; // mesi 0-based in JS
-            let dayNum = parseInt(parts[2]);
-
-            // Creiamo la data a mezzogiorno per evitare slittamenti
-            let dateObject = new Date(year, month, dayNum, 12, 0, 0, 0);
-
-            const opzioni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            const dataItaliana = dateObject.toLocaleDateString('it-IT', opzioni);
-
-            // Se non c'è evento, mostriamo una gif
-            let content = eventText.trim()
-                ? `<p><strong>Creato da:</strong> ${creatorName}</p><p>${eventText}</p>` 
-                : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?cid=790b7611xn5dg1mlcc0g7hk6hdo94xtx3dqtpotmlk4uez7b&ep=v1_gifs_search&rid=giphy.gif&ct=g" width="250" alt="Nessun evento">`;
-
-            Swal.fire({
-                title: dataItaliana,
-                html: content,
-                icon: eventText.trim() ? 'info' : null,
-                confirmButtonText: 'Chiudi',
-                showCloseButton: true,
-                background: '#fff',
-                backdrop: 'rgba(0, 0, 0, 0.5)',
-            });
+    // Recupera i valori da data attributes nel body
+    let currentMonth = parseInt(document.body.dataset.month);
+    let currentYear  = parseInt(document.body.dataset.year);
+  
+    // Funzione per aggiornare il testo dell'intestazione del calendario
+    function updateHeader() {
+      const mesiItaliani = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+      document.getElementById('currentMonth').textContent = mesiItaliani[currentMonth - 1].toUpperCase() + " " + currentYear;
+    }
+  
+    function loadCalendar(month, year) {
+        fetch(`../utils/calendar_partial.php?month1=${month}&year1=${year}`)
+          .then(response => {
+            if (!response.ok) throw new Error("Errore di rete");
+            return response.text();
+          })
+          .then(html => {
+            document.getElementById('calendarContent').innerHTML = html;
+            attachCalendarEvents();
+          })
+          .catch(error => console.error("Errore nel caricamento del calendario:", error));
+      }
+      
+  
+    // Funzione per gestire il click sulle celle del calendario
+    function attachCalendarEvents() {
+      document.querySelectorAll('.c-cal__cel').forEach(cell => {
+        cell.addEventListener('click', function() {
+          let dateStr   = this.getAttribute('data-day');
+          let eventData = this.getAttribute('data-event');
+          let creator   = this.getAttribute('data-creator');
+          let dateObj   = new Date(dateStr);
+          let options   = { day: 'numeric', month: 'long', year: 'numeric' };
+          let dateStrIta = dateObj.toLocaleDateString('it-IT', options);
+          let msg = eventData 
+                    ? `<strong>Evento:</strong> ${eventData}<br><strong>Creato da:</strong> ${creator}` 
+                    : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?width=250" alt="GIF">`;
+          Swal.fire({
+            title: `Dettagli: ${dateStrIta}`,
+            html: msg,
+            icon: 'info',
+            confirmButtonText: 'OK',
+            backdrop: 'rgba(0, 0, 0, 0.5)',
+          });
         });
+      });
+    }
+  
+    // Gestione dei pulsanti di navigazione
+    document.getElementById('prevBtn').addEventListener('click', function() {
+      // Calcola il mese precedente
+      let newMonth = currentMonth - 1;
+      let newYear  = currentYear;
+      if (newMonth < 1) {
+        newMonth = 12;
+        newYear--;
+      }
+      currentMonth = newMonth;
+      currentYear  = newYear;
+      updateHeader();
+      loadCalendar(currentMonth, currentYear);
     });
-});
+  
+    document.getElementById('nextBtn').addEventListener('click', function() {
+      // Calcola il mese successivo
+      let newMonth = currentMonth + 1;
+      let newYear  = currentYear;
+      if (newMonth > 12) {
+        newMonth = 1;
+        newYear++;
+      }
+      currentMonth = newMonth;
+      currentYear  = newYear;
+      updateHeader();
+      loadCalendar(currentMonth, currentYear);
+    });
+  
+    // Aggiorna l'intestazione inizialmente e collega gli eventi
+    updateHeader();
+    attachCalendarEvents();
+  });
+  

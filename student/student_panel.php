@@ -52,6 +52,7 @@ if (!file_exists($corso_img)) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar.js" defer></script>
+<script src="../assets/js/calendar_absences.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -119,7 +120,7 @@ if (!file_exists($corso_img)) {
 
 
 <!-- Sezione Statistiche -->
-<div class="dashboard"  data-section="stats" id="stats">
+<div class="dashboard"  data-section="stats" id="stats">    
     <div class="dashboard-header">
     <h3>Le tue statistiche</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -137,10 +138,8 @@ if (!file_exists($corso_img)) {
                 </div>
                 <div class="absence-percentage" id="percent"></div>
             </div>
-
             <br>
             <br>
-
             <!-- Grafico Giorni della Settimana con più Assenze -->
             <div class="chart-container">
                 <h3>Assenze per giorno della settimana</h3>
@@ -236,31 +235,33 @@ if (!file_exists($corso_img)) {
 </div>
 
 <!-- Sezione Calendario con Assenze -->
-<div class="dashboard"  data-section="absences" id="abences">
-<div class="dashboard-header">
-    <h3 class="">Calendario Assenze</h3>
-    <span class="toggle-icon">&#9660;</span>
-    </div>
-    <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card" id="calendar-absences">
-            <?php require_once '../utils/calendar_absences.php';?>
-        </div>
-    </div>
-    </div>
+<div class="dashboard" data-section="absences" id="abences">
+  <div class="dashboard-header">
+      <h3>Calendario Assenze</h3>
+      <span class="toggle-icon">&#9660;</span>
+  </div>
+  <div class="dashboard-content">
+      <div class="courses">
+          <div class="course-card" id="calendar-absences-content">
+              <?php require_once '../utils/calendar_absences_partial.php'; ?>
+          </div>
+      </div>
+  </div>
 </div>
 
-<!-- Sezione Informazioni personali -->
+
+<!-- Sezione Informazioni personali (assicurati che sia fuori dal contenitore sopra) -->
 <div class="dashboard" id="personal">
-    <h3 class="">Le tue informazioni</h3>
-    <div class="courses">
-        <div class="course-card info">
-            <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
-            <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
-            <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-            <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
-        </div>
-    </div>
-</div>  
+  <h3>Le tue informazioni</h3>
+  <div class="courses">
+      <div class="course-card info">
+          <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
+          <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
+          <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+          <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+      </div>
+  </div>
+</div>
+
 </body>
 </html>
