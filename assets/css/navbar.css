@@ -53,6 +53,10 @@ body {
     z-index: 1; /* z-index di base */
 }
 
+.dark-mode .navbar-links{
+    margin-left: 65px;
+}
+
 /* Quando si passa sopra, porta l'elemento in primo piano */
 .navbar-links .nav-item:hover {
     background: rgba(255, 255, 255, 0.2);

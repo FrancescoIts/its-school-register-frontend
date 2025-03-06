@@ -30,10 +30,10 @@ if (!$studentCourse) {
 }
 
 /**
- * Funzione per ottenere il codice HTML del calendario
+ * Funzione per ottenere il codice HTML
  */
-function getCalendar($month, $year, $conn, $id_course)
-{
+function getCalendar($month, $year, $conn, $id_course) {
+    // Recupera gli eventi dal database per il mese
     $stmt = $conn->prepare("
         SELECT 
             c.date, 
@@ -51,14 +51,13 @@ function getCalendar($month, $year, $conn, $id_course)
     $stmt->bind_param("iii", $month, $year, $id_course);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     $eventData = [];
     while ($row = $result->fetch_assoc()) {
         $creator_name = trim($row['firstname'] . ' ' . $row['lastname']);
         if (empty($creator_name)) {
             $creator_name = "Sconosciuto";
         }
-
         if (!empty($row['event'])) {
             $eventData[$row['date']] = [
                 'event'        => $row['event'],  
@@ -68,70 +67,84 @@ function getCalendar($month, $year, $conn, $id_course)
     }
     $stmt->close();
 
-    // Numero di giorni nel mese
+    // Calcola il numero di giorni nel mese e il giorno della settimana del 1° (0 = domenica, 6 = sabato)
     $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    $firstDayTimestamp = strtotime("$year-$month-01");
+    $firstWeekday = date('N', $firstDayTimestamp) - 1;
 
-    // Costruzione tabella del calendario
-    $calendar = '<table class="calendar-table"><thead><tr>';
+    $html = "";
+    $dayNames = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+    $html .= '<div class="c-cal__row">';
+    foreach ($dayNames as $dName) {
+        $html .= "<div class='c-cal__col'>{$dName}</div>";
+    }
+    $html .= '</div>';
+
+    // Inizia la prima riga dei giorni
+    $html .= '<div class="c-cal__row">';
+    // Celle vuote (se il mese non inizia di domenica)
+    for ($i = 0; $i < $firstWeekday; $i++){
+        $html .= '<div class="c-cal__cel"></div>';
+    }
     
-    $daysOfWeek = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
-    foreach ($daysOfWeek as $day) {
-        $calendar .= "<th>{$day}</th>";
-    }
-    $calendar .= '</tr></thead><tbody><tr>';
-
-    // Giorno della settimana del primo giorno (1 = Lun, ... 7 = Dom)
-    $firstDayOfMonth = date('N', strtotime("$year-$month-01"));
-
-    // Celle vuote prima del giorno 1
-    for ($i = 1; $i < $firstDayOfMonth; $i++) {
-        $calendar .= '<td></td>';
-    }
-
-    // Creazione delle celle del calendario
-    for ($day = 1; $day <= $daysInMonth; $day++) {
-        $date = sprintf('%04d-%02d-%02d', $year, $month, $day);
-
-        $hasEvent    = isset($eventData[$date]);
-        $eventText   = $hasEvent ? htmlspecialchars($eventData[$date]['event'], ENT_QUOTES, 'UTF-8') : "";
-        $creatorName = $hasEvent ? htmlspecialchars($eventData[$date]['creator_name'], ENT_QUOTES, 'UTF-8') : "Nessun creatore";
-
-        $calendar .= "<td class='calendar-event'
-                           data-date='{$date}' 
-                           data-event='{$eventText}' 
-                           data-creator='{$creatorName}'>";
-
-        $calendar .= "<strong>{$day}</strong>";
-        if ($hasEvent) {
-            // Mostra un pallino se c’è un evento
-            $calendar .= "<div class='event-dot'></div>";
-        }
-        $calendar .= "</td>";
-
-        // A capo dopo la domenica
-        if (date('N', strtotime($date)) == 7) {
-            $calendar .= '</tr><tr>';
+    $currentDay = 1;
+    // Prima settimana (fino a sabato)
+    for ($i = $firstWeekday; $i < 7; $i++){
+        if($currentDay <= $daysInMonth) {
+            $dateStr = sprintf('%04d-%02d-%02d', $year, $month, $currentDay);
+            $hasEvent = isset($eventData[$dateStr]);
+            $eventAttributes = "";
+            if ($hasEvent) {
+                // Aggiungiamo data-event e data-creator se c'è un evento
+                $eventText = htmlspecialchars($eventData[$dateStr]['event'], ENT_QUOTES, 'UTF-8');
+                $creatorName = htmlspecialchars($eventData[$dateStr]['creator_name'], ENT_QUOTES, 'UTF-8');
+                $eventAttributes = " data-event='{$eventText}' data-creator='{$creatorName}'";
+            }
+            $extraClass = $hasEvent ? ' event' : '';
+            $html .= "<div class='c-cal__cel{$extraClass}' data-day='{$dateStr}'{$eventAttributes}><p>{$currentDay}</p></div>";
+            $currentDay++;
+        } else {
+            $html .= '<div class="c-cal__cel"></div>';
         }
     }
+    $html .= '</div>';
 
-    $calendar .= '</tr></tbody></table>';
-
-    return $calendar;
+    // Le righe successive
+    while($currentDay <= $daysInMonth) {
+        $html .= '<div class="c-cal__row">';
+        for($i = 0; $i < 7; $i++){
+            if($currentDay <= $daysInMonth){
+                $dateStr = sprintf('%04d-%02d-%02d', $year, $month, $currentDay);
+                $hasEvent = isset($eventData[$dateStr]);
+                $eventAttributes = "";
+                if ($hasEvent) {
+                    $eventText = htmlspecialchars($eventData[$dateStr]['event'], ENT_QUOTES, 'UTF-8');
+                    $creatorName = htmlspecialchars($eventData[$dateStr]['creator_name'], ENT_QUOTES, 'UTF-8');
+                    $eventAttributes = " data-event='{$eventText}' data-creator='{$creatorName}'";
+                }
+                $extraClass = $hasEvent ? ' event' : '';
+                $html .= "<div class='c-cal__cel{$extraClass}' data-day='{$dateStr}'{$eventAttributes}><p>{$currentDay}</p></div>";
+                $currentDay++;
+            } else {
+                $html .= '<div class="c-cal__cel"></div>';
+            }
+        }
+        $html .= '</div>';
+    }
+    return $html;
 }
 
-
-// Se non ci sono parametri GET, prendiamo il mese e l'anno attuali
+// Se non ci sono parametri GET, usiamo il mese e l'anno attuali
 $month = isset($_GET['month']) ? (int)$_GET['month'] : date('n');
 $year  = isset($_GET['year'])  ? (int)$_GET['year']  : date('Y');
 
-// Calcoliamo il prossimo e il precedente mese
+// Calcola mese successivo e precedente (per la navigazione)
 $nextMonth = $month + 1;
 $nextYear  = $year;
 if ($nextMonth > 12) {
     $nextMonth = 1;
     $nextYear++;
 }
-
 $prevMonth = $month - 1;
 $prevYear  = $year;
 if ($prevMonth < 1) {
@@ -139,18 +152,9 @@ if ($prevMonth < 1) {
     $prevYear--;
 }
 
-// Prepariamo l'HTML del calendario per il mese/anno richiesto
+// Genera l'HTML del calendario per il mese/anno richiesti
 $calendarHtml = getCalendar($month, $year, $conn, $studentCourse);
 
-// Formattiamo il nome del mese e anno in italiano (es. marzo 2025)
-$nomeMeseCorrente = date('F Y', strtotime("$year-$month-01"));
-
-?>
-
-
-
-
-<?php
 // Array dei nomi dei mesi in italiano
 $mesiItaliani = [
     1 => "Gennaio", 2 => "Febbraio", 3 => "Marzo", 4 => "Aprile",
@@ -158,30 +162,24 @@ $mesiItaliani = [
     9 => "Settembre", 10 => "Ottobre", 11 => "Novembre", 12 => "Dicembre"
 ];
 
-// Recuperiamo i nomi dei mesi precedente e successivo
 $nomeMeseCorrente = $mesiItaliani[$month] . " " . $year;
 $nomeMesePrecedente = $mesiItaliani[$prevMonth];
 $nomeMeseSuccessivo = $mesiItaliani[$nextMonth];
+$nomeMeseCorrente = strtoupper($nomeMeseCorrente)
 ?>
-
-<div class="calendar-container scrollable-table">
-<strong><?php echo $nomeMeseCorrente; ?></strong>
-    <?php echo $calendarHtml; ?>
-</div>
-<div class="navigation">
-    <form method="GET" style="display: inline;">
-        <button type="submit" name="month" value="<?php echo $prevMonth; ?>" 
-                formaction="?year=<?php echo $prevYear; ?>" class="month-nav">
-             <?php echo $nomeMesePrecedente; ?>
-        </button>
-    </form>
-
-    <form method="GET" style="display: inline;">
-        <button type="submit" name="month" value="<?php echo $nextMonth; ?>" 
-                formaction="?year=<?php echo $nextYear; ?>" class="month-nav">
-            <?php echo $nomeMeseSuccessivo; ?> 
-        </button>
-    </form>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Header del calendario con tasti per cambiare mese e visualizzazione mese/anno -->
+<div class="calendar-header" style="text-align:center; margin-bottom:10px;">
+  <button class="prev-month o-btn" onclick="location.href='?month=<?php echo $prevMonth; ?>&year=<?php echo $prevYear; ?>'"><strong>&#8810;</strong></button>
+  <span class="current-month" style="font-size:1.2em; font-weight:bold; margin: 0 10px;"><?php echo $nomeMeseCorrente; ?></span>
+  <button class="next-month o-btn" onclick="location.href='?month=<?php echo $nextMonth; ?>&year=<?php echo $nextYear; ?>'"><strong>&#8811;</strong></button>
 </div>
 
-
+<div class="wrapper">
+  <div class="c-calendar">
+    <!-- Calendario -->
+    <div class="c-cal__container c-calendar__style">
+      <?php echo $calendarHtml; ?>
+    </div>
+  </div>
+</div>

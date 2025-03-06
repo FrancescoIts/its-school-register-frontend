@@ -166,7 +166,7 @@ $stmtA->close();
 
 <!-- 5) Form per la scelta del corso (compare se c’è più di un corso) -->
 <?php if (count($courseList) > 1): ?>
-<div id="course-select-form" class="scrollable-table">
+<div id="course-select-form" class=">
     <form method="GET" action="">
         <label for="course_id">Seleziona il corso:</label>
         <select name="course_id" id="course_id" onchange="redirectWithAnchor()">
@@ -202,7 +202,7 @@ function renderCalendar(month, year) {
                        'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 
     let monthName = monthsIta[month - 1] || '??';
-    let html = `<div class="calendar-container scrollable-table">
+    let html = `<div class="calendar-container">
                   <div class="calendar-header"><h3>${monthName} ${year}</h3></div>
                   <table class="calendar-table"><thead><tr>`;
 

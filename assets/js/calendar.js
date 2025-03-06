@@ -1,17 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.calendar-event').forEach(day => {
+    // Gestiamo sia gli elementi con classe '.calendar-event' che quelli con il template '.c-cal__cel.event'
+    const eventElements = document.querySelectorAll('.calendar-event, .c-cal__cel.event');
+    
+    eventElements.forEach(day => {
         day.addEventListener('click', function () {
             let eventText = this.getAttribute('data-event') || "";
             let creatorName = this.getAttribute('data-creator') || "Nessun creatore";
-            let clickedDate = this.getAttribute('data-date');
+            let clickedDate = this.getAttribute('data-day'); // utilizziamo data-day, usato nel template
 
             // Suddividiamo la data in anno, mese, giorno
             let parts = clickedDate.split('-');
             let year = parseInt(parts[0]);
-            let month = parseInt(parts[1]) - 1; // Mesi 0-based in JS
+            let month = parseInt(parts[1]) - 1; // mesi 0-based in JS
             let dayNum = parseInt(parts[2]);
 
-            // Creiamo la data in locale, a mezzogiorno, per evitare slittamenti
+            // Creiamo la data a mezzogiorno per evitare slittamenti
             let dateObject = new Date(year, month, dayNum, 12, 0, 0, 0);
 
             const opzioni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };

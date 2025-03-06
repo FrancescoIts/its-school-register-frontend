@@ -1,107 +1,157 @@
-.calendar-day {
+@import url('https://fonts.googleapis.com/css?family=Lato:300,300i,900,900i');
+
+.wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px; /* ridotto il padding */
+}
+
+.c-month {
+  position: relative;
+  height: 60px; /* ridotto da 80px */
+  line-height: 60px;
+}
+
+.c-paginator__month {
+  display: inline-block;
+  margin: 0 5px; /* margine ridotto */
+  text-transform: uppercase;
+}
+
+.c-paginator__year {
+  margin-left: 10px;
+}
+
+.o-btn {
+  background: #00548e;
+  padding: 3px 8px; /* dimensioni ridotte */
+  border-radius: 20px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #ffffff;
+  margin: 0 3px;
+}
+
+/* Stili per il calendario */
+.c-calendar {
+  display: flex;
+  justify-items: center; /* CENTRAGGIO */
+}
+
+.c-calendar__style {
+  background: #00407b;
+  margin: 10px; /* margine ridotto */
+  padding: 5px; /* padding ridotto */
+  border-radius: 6px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.2);
+}
+
+/* Contenitore calendario */
+.c-cal__container {
+  width: 900px;
+  height: auto;
+  position: relative;
+  margin: 0 auto; 
+}
+
+/* Righe dei giorni */
+.c-cal__row {
+  display: flex;
+  justify-content: center;
+}
+
+/* Intestazione giorni */
+.c-cal__col {
+  width: 10%;
+  text-align: center;
+  padding: 20px 0;
+  text-transform: uppercase;
+  font-size: 1em; /* ridotto */
+  background: #00548e;
+  border-radius: 4px;
+  margin: 1px;
+}
+
+.c-cal__cel {
     position: relative;
-    cursor: pointer;
-    padding: 10px;
+    width: 10%;
+    padding-top: 10%;
+    margin: 5px;
     text-align: center;
-}
-
-.calendar-day.has-event {
-    font-weight: bold;
-}
-
-.event-dot {
-    width: 6px;
-    height: 6px;
-    background-color: rgba(255, 17, 0, 0.986);
-    border-radius: 50%;
-    margin: 4px auto;
-}
-.navMonths {
-    border-radius: 10px;
-}
-.calendar-table {
-width: 100%;
-border-collapse: collapse;
-text-align: center;
-border-radius: 20px;
-}
-
-.calendar-table td {
-padding: 10px;
-border: 1px solid #ffffff;
-min-width: 50px;
-vertical-align: top;
-color: #FFF;
-background: #38A5DD;
-cursor: pointer;
-}
-.calendar-table th {
-padding: 10px;
-border: 1px solid #ffffff;
-background: rgb(173, 25, 241);
-min-width: 50px;
-vertical-align: top;
-color: #FFF;
-}
-
-/* Stili dark mode */
-.dark-mode .calendar-day {
-    background: #333; /* Sfondo più scuro */
-    color: #f1f1f1; /* Testo più chiaro per visibilità */
-    border: 1px solid #444; /* Bordo più scuro */
-}
-
-.dark-mode .calendar-day.has-event {
-    font-weight: bold;
-    color: #ff6b6b; /* Un colore che risalta per gli eventi */
-}
-
-.dark-mode .event-dot {
-    background-color: #e74c3c; /* Cambia colore del pallino evento */
-}
-
-.dark-mode .calendar-table {
-    background: #222; /* Sfondo generale della tabella */
-    border: 1px solid #444;
-}
-
-.dark-mode .calendar-table td {
-    padding: 10px;
-    border: 1px solid #555;
-    color: #f1f1f1; /* Testo bianco */
-    background: #333; /* Celle scure */
+    font-size: 25px;
     cursor: pointer;
+    border-radius: 50%;
+    background-color: #00407b;
+    transition: background 0.4s;
+    box-sizing: border-box; /* Evita che i bordi allunghino la cella */
+  }
+  
+  .c-cal__cel.event {
+    box-shadow: inset 0 0 0 10px solid #FACC2E; /* Usa outline invece del bordo */
+    animation: pulsate 1.5s infinite ease-in-out;
+  }
+  .c-cal__cel.event p {
+    animation: pulsate-text 1.5s infinite ease-in-out;
+  }
+  
+  /* Definizione dell'animazione pulsante sul bordo */
+  @keyframes pulsate {
+    0% {
+      box-shadow: 0 0 0 0 rgba(250, 204, 46, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(250, 204, 46, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(250, 204, 46, 0);
+    }
+  }
+  @keyframes pulsate-text {
+    0% {
+      color: #FACC2E; /* Giallo */
+    }
+    50% {
+      color: #ffffff; /* Bianco */
+    }
+    100% {
+      color: #FACC2E; /* Giallo */
+    }
+  }
+  .c-cal__cel:hover{
+    color: #00407b!important;
+  }
+
+  .c-cal__cel.event{
+    color: #fff;
+  }
+.c-cal__cel p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: 100%;
+  font-weight: 900;
+  font-size: 0.8em; /* ridotto */
+
 }
 
-.dark-mode .calendar-table th {
-    padding: 10px;
-    border: 1px solid #555;
-    background: #444; /* Intestazione più scura */
-    color: #f1f1f1; /* Testo bianco */
-    font-weight: bold;
-}
-/* Aggiungi questa classe alle tabelle che devono essere scorrevoli orizzontalmente */
-.scrollable-table {
-    overflow-x: auto;
-    white-space: nowrap;
+/* Stato hover */
+.c-cal__cel:hover {
+  background: #fded07d0;
+  color: #00407b;
 }
 
-/* Mobile Styles */
-@media (max-width: 400px) {
-    .calendar-container {
-        overflow-x: auto;
-        display: block;
-        width: 100%;
-    }
+/* Evento - rimuoviamo il vecchio pallino giallo e aggiungiamo il bordo pulsante */
+.c-cal__cel.event:before {
+  content: none; /* disattivato il cerchietto nell'angolo */
+}
 
-    .calendar-table {
-        width: 350px; /* Permette di scorrere la tabella */
-        min-width: 100%;
-    }
 
-    .calendar-table td, .calendar-table th {
-        padding: 3px; /* Ulteriore riduzione */
-        min-width: 35px; /* Celle più piccole */
-        font-size: 10px; /* Testo più piccolo per adattarsi */
-    }
+/* Responsive */
+@media (max-width: 600px) {
+  .c-cal__col,
+  .c-cal__cel {
+    font-size: 0.7em;
+  }
 }
