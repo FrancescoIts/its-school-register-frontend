@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Oswald:400);
+
 /* Placeholder per la navbar */
 .navbar-placeholder {
     height: 60px !important;
@@ -30,7 +32,7 @@ body {
     z-index: 1000;
 }
 #sticky:hover {
-    background-color: #222;
+    background-color: #222222d0;
     transition: 500ms;
 }
 
@@ -206,10 +208,10 @@ body.dark-mode .navbar .logo img {
 
 /* Pulsante Tema Scuro */
 .theme-toggle {
-    background: #333;
+    background-color: #ffffffdc ;
     color: #fff;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 15px; 
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
@@ -217,18 +219,8 @@ body.dark-mode .navbar .logo img {
     box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
     transition: background 0.3s, color 0.3s;
 }
-
-.logout {
-    background: #a31a1a;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(46, 45, 45, 0.2);
-    transition: background 0.3s, color 0.3s;
+.theme-toggle:hover {
+    background-color: #333!important;
 }
 
 a {
@@ -239,7 +231,60 @@ a {
     background: #ddd;
 }
 
-.logout:hover {
-    background: #ddd;
-    text-decoration: none;
+
+.dark-mode .theme-toggle {
+    background-color: #333;
 }
+.dark-mode .theme-toggle:hover {
+    background-color: #ffffffdc;
+}
+
+  
+  .logout::before {
+    content: "\f2f5"; /* codice FontAwesome per il lucchetto chiuso */
+    font-family: "Font Awesome 5 Free"; /* Assicurati che questa famiglia sia caricata */
+    font-weight: 900;
+    font-size: 1.5rem;
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+    
+  .logout span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Al passaggio del mouse, l'icona scorre via e compare la scritta */
+  .logout:hover::before {
+    transform: translateX(-150%);
+    opacity: 0;
+    color: #fff;
+  }
+  
+  .logout:hover span {
+    opacity: 1;
+    color: #fff;
+  }
+  .logout {
+    position: relative;
+    display: inline-block;
+    border-radius: 20px;
+    padding: 5px 20px;
+    background: #00548e;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: background 0.3s ease;
+  }
+  
+  .dark-mode .logout {
+    background-color: #333;
+  }
+    

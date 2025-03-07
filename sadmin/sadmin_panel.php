@@ -15,6 +15,7 @@ ini_set('display_errors', 1);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Super Admin</title>
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/view_users.css">
@@ -46,8 +47,11 @@ ini_set('display_errors', 1);
     <div class="navbar-title">
      
     </div>
+    <input type="checkbox" class="sr-only" id="darkmode-toggle">
+    <label for="darkmode-toggle" class="toggle">
+    <span></span>
+    </label>
     <a class="logout" href="../utils/logout.php">Logout</a>
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
 </div>
 
 

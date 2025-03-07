@@ -42,6 +42,7 @@ if (count($corsi) > 0) {
     <title>Dashboard Coordinatore</title>
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
     <link rel="stylesheet" href="../assets/css/navbar.css"> 
+    <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
@@ -109,7 +110,10 @@ if (count($corsi) > 0) {
         </div>
 
     <div class="navbar-actions">
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <input type="checkbox" class="sr-only" id="darkmode-toggle">
+    <label for="darkmode-toggle" class="toggle">
+    <span></span>
+    </label>
     <a class="logout" href="../utils/logout.php">Logout</a>
     </div>
 </div>

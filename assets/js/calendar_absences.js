@@ -54,7 +54,7 @@ function loadAbsencesCalendar(month, year) {
             let dateStrIta = dateObj.toLocaleDateString('it-IT', options);
             let msg = absenceH 
                       ? `Ore di assenza: ${absenceH}` 
-                      : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?width=250" alt="GIF">`;
+                      : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif" alt="GIF">`;
             Swal.fire({
               title: `Dettagli: ${dateStrIta}`,
               html: msg,

@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
           let dateStrIta = dateObj.toLocaleDateString('it-IT', options);
           let msg = eventData 
                     ? `<strong>Evento:</strong> ${eventData}<br><strong>Creato da:</strong> ${creator}` 
-                    : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?width=250" alt="GIF">`;
+                    : `<img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif" alt="GIF" style="justify-items=center;">`;
           Swal.fire({
             title: `Dettagli: ${dateStrIta}`,
             html: msg,

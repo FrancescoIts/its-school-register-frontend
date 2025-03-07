@@ -105,7 +105,7 @@ $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
 
 // Costruzione dell'HTML del calendario delle assenze
 $html = '';
-
+$monthName = strtoupper($monthName);
 // Header con navigazione (utilizziamo button)
 $html .= '<div class="calendar-header" style="text-align:center; margin-bottom:10px;">';
 $html .= '<button type="button" id="prevAbsencesBtn" class="prev-month o-btn" onclick="loadAbsencesCalendar(' . ($currentMonth == 1 ? 12 : $currentMonth - 1) . ', ' . ($currentMonth == 1 ? $currentYear - 1 : $currentYear) . ')"><strong>&#8810;</strong></button>';

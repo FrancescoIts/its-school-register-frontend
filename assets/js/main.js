@@ -1,41 +1,40 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const themeToggle = document.getElementById("theme-toggle");
+    const themeToggle = document.getElementById("darkmode-toggle");
     const body = document.body;
 
-    
+    // Controllo dello stato del tema in localStorage
     if (localStorage.getItem("darkMode") === "enabled") {
         body.classList.add("dark-mode");
-        themeToggle.textContent = "☀️";
+     
     } else {
-       
-        themeToggle.textContent = "🌙";
+     
     }
 
     themeToggle.addEventListener("click", function () {
-        // aggiungo classe
+        // Aggiungo una classe per la transizione del tema
         body.classList.add("theme-transition");
 
         setTimeout(() => {
-            // alterno classe
+            // Alterno la classe dark-mode
             body.classList.toggle("dark-mode");
 
-            // uso localStorage per salvare
+            // Aggiorno localStorage e l'icona in base allo stato
             if (body.classList.contains("dark-mode")) {
                 localStorage.setItem("darkMode", "enabled");
-                themeToggle.textContent = "☀️";
-            } else {
                
+            } else {
                 localStorage.setItem("darkMode", "disabled");
-                themeToggle.textContent = "🌙";
+              
             }
 
-            // finisce la transizione
+            // Rimuovo la classe di transizione dopo 500ms
             setTimeout(() => {
                 body.classList.remove("theme-transition");
-            }, 500); 
+            }, 500);
         }, 10);
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", function () {
     let image = document.getElementById("rotateImage");

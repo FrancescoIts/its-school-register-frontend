@@ -31,12 +31,18 @@ if (isset($_SESSION['user'])) {
         <meta name="keywords" content="registro, its, smart academy, its smart academy">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./assets/css/login.css">
-        <link rel="stylesheet" href="./assets/css/popup.css">
+        <link rel="stylesheet" href="./assets/css/dark_mode.css">
         <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="shortcut icon" href="./assets/img/favicon.ico">  
     </head>
     <body>
+        <style>
+            .toggle {
+                left: 1600px;
+                top: -90px;
+            }
+        </style>
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -44,7 +50,10 @@ if (isset($_SESSION['user'])) {
             <img src="./assets/img/logo.png" alt="Logo" id="rotateImage">
         </div>
 
-        <button id="theme-toggle" class="theme-toggle">🌙</button>
+        <input type="checkbox" class="sr-only" id="darkmode-toggle">
+        <label for="darkmode-toggle" class="toggle">
+        <span></span>
+        </label>
 
         <div class="container">
             <div class="screen">

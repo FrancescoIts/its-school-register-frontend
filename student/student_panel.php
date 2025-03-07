@@ -32,6 +32,7 @@ if (!file_exists($corso_img)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Studente</title>
     <link rel="stylesheet" href="../assets/css/navbar.css"> 
+    <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -86,9 +87,14 @@ if (!file_exists($corso_img)) {
         </div>
 
     <div class="navbar-actions">
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
-    <a class="logout" href="../utils/logout.php">Logout</a>
+    <input type="checkbox" class="sr-only" id="darkmode-toggle">
+    <label for="darkmode-toggle" class="toggle">
+    <span></span>
+    </label>
+    <a class="logout" href="../utils/logout.php"><span>Logout</span></a>
     </div>
+    
+
 </div>
 <div class="navbar-placeholder"></div>
 
@@ -250,7 +256,7 @@ if (!file_exists($corso_img)) {
 </div>
 
 
-<!-- Sezione Informazioni personali (assicurati che sia fuori dal contenitore sopra) -->
+<!-- Sezione Informazioni personali -->
 <div class="dashboard" id="personal">
   <h3>Le tue informazioni</h3>
   <div class="courses">

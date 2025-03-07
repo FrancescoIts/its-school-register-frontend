@@ -1,0 +1,87 @@
+.toggle {
+    font-size: 1.2rem; 
+    border: .125em solid #fff;
+    border-radius: 2em;
+    cursor: pointer;
+    display: inline-block;
+    height: 1.9em;
+    position: relative;
+    width: 4em;
+    margin-right: 20px;
+    top: 2px;
+    background-color: transparent;
+  }
+  
+  .toggle span {
+    background-color: #fff; /* pallina bianca di default */
+    border-radius: 3em;
+    display: block;
+    height: 1.5em;
+    left: .25em;
+    overflow: hidden;
+    position: absolute;
+    top: .09em;
+    text-indent: -9999px;
+    transition: left .25s, background-color .25s;
+    width: 1.5em;
+    z-index: 2;
+  }
+  
+  /* Il pseudo-elemento ::after della pallina viene creato solo in stato checked */
+  input:checked ~ .toggle span::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #6a4be9;
+    border-radius: inherit;
+  }
+  
+  /* Pseudo-elementi per lo sfondo decorativo del toggle */
+  .toggle::before,
+  .toggle::after {
+    content: '';
+    display: block;
+    border-radius: 1em;
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .toggle::after {
+    box-shadow: .25em .25em #eeca50;
+    height: 1.125em;
+    right: .9em;
+    top: 1px;
+    width: 1.125em;
+  }
+  
+  .toggle::before {
+    background-color: #ffc409;
+    height: .625em;
+    outline: .25em dotted #ffc409;
+    outline-offset: .125em;
+    left: .7em;
+    top: 11px;
+    width: .625em;
+  }
+  
+  /* Stato checked: la pallina si sposta e diventa scura */
+  input:checked ~ .toggle span {
+    left: 2em;
+    background-color: #6a4be9;
+  }
+  
+  /* Stato checked: anche il toggle cambia colore */
+  input:checked ~ .toggle {
+    border-color: #6a4be9;
+    
+  }
+  
+  .sr-only {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+  

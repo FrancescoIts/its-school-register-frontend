@@ -44,6 +44,7 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/dark_mode.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/stats_total.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
@@ -60,7 +61,6 @@ if (count($corsi) > 0) {
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/main.js" defer></script>
-<script src="../assets/js/calendar_admin.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -95,7 +95,10 @@ if (count($corsi) > 0) {
         </div>
 
     <div class="navbar-actions">
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
+    <input type="checkbox" class="sr-only" id="darkmode-toggle">
+    <label for="darkmode-toggle" class="toggle">
+    <span></span>
+    </label>
     <a class="logout" href="../utils/logout.php">Logout</a>
     </div>
 </div>
