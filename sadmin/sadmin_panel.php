@@ -14,7 +14,9 @@ ini_set('display_errors', 1);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Super Admin</title>
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/loader.css">
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/overflow.css">
@@ -29,6 +31,8 @@ ini_set('display_errors', 1);
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
 <script src="../assets/js/view_users.js" defer></script>
+<script src="../assets/js/calendar_admin.js" defer></script>
+<script src="../assets/js/loader.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -38,21 +42,30 @@ ini_set('display_errors', 1);
   <i class="fas fa-arrow-up"></i>
 </button>
 <!-- Navbar -->
-<div class="navbar">
+<div class="navbar" id="sticky">
     <div class="logo">
         <a href="https://www.itssmart.it/">
             <img src="../assets/img/logo.png" alt="Logo" id="rotateImage">
         </a>
     </div>
-    <div class="navbar-title">
-     
-    </div>
+        <div class="navbar-links">
+            <a href="#viewUsers" class="nav-item" data-label="Mostra Utenti">
+                <i class="fas fa-users"></i>
+            </a>
+            <a href="#createUser" class="nav-item" data-label="Crea Utente">
+                <i class="fas fa-user-plus"></i>
+            </a>
+        </div>
+
+    <div class="navbar-actions">
     <input type="checkbox" class="sr-only" id="darkmode-toggle">
     <label for="darkmode-toggle" class="toggle">
     <span></span>
     </label>
     <a class="logout" href="../utils/logout.php"><span>Logout</span></a>
+    </div>
 </div>
+<div class="navbar-placeholder"></div>
 
 
 <!-- Sezione Mostra Utenti -->
@@ -73,7 +86,7 @@ ini_set('display_errors', 1);
 </div>
 
 <!-- Sezione Crezione Utenti -->
-<div class="dashboard" data-section="createUser">
+<div class="dashboard" data-section="createUser" id="createUser">
 <div class="dashboard-header">
     <h3>Crezione Admin di Corso</h3>
     <span class="toggle-icon">&#9660;</span>
@@ -88,5 +101,6 @@ ini_set('display_errors', 1);
     </div>
 </div>
 </div>
+<?php require('../utils/loader.php'); ?>
 </body>
 </html>

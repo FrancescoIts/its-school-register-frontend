@@ -168,7 +168,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   
+  
   document.addEventListener('DOMContentLoaded', function() {
+
     function validateForm(event, formType) {
         let errorFound = false;
         const form = event.target; // Riferimento al form che ha attivato il submit
@@ -214,3 +216,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+ // Hover icona 
+ function toggleIcon(element, isHover) {
+    let icon = element.querySelector("i");
+    if (isHover) {
+        icon.classList.remove("fa-google");
+        icon.classList.add("fa-google");
+        icon.style.color = "#ffffff";
+    } else {
+        icon.classList.remove("fa-google");
+        icon.classList.add("fa-google");
+        icon.style.color = "#7875b5";
+    }
+}

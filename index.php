@@ -31,6 +31,7 @@ if (isset($_SESSION['user'])) {
         <meta name="keywords" content="registro, its, smart academy, its smart academy">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./assets/css/login.css">
+        <link rel="stylesheet" href="./assets/css/loader.css">
         <link rel="stylesheet" href="./assets/css/dark_mode.css">
         <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -60,7 +61,7 @@ if (isset($_SESSION['user'])) {
                 <div class="screen__content">
                     <h1 class="login-title">Registro Elettronico</h1>
 
-                    <form class="login" action="./login/process_login.php" method="POST">
+                    <form class="login" action="./login/process_login.php" method="POST" id="login">
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
                             <input type="text" name="email" class="login__input" placeholder="Email Scolastica" required>
@@ -90,22 +91,8 @@ if (isset($_SESSION['user'])) {
                 </div>
             </div>
         </div>
-
+        <?php require('./utils/loader.php'); ?>
         <script>
-            // Hover icona 
-            function toggleIcon(element, isHover) {
-                let icon = element.querySelector("i");
-                if (isHover) {
-                    icon.classList.remove("fa-google");
-                    icon.classList.add("fa-google");
-                    icon.style.color = "#ffffff";
-                } else {
-                    icon.classList.remove("fa-google");
-                    icon.classList.add("fa-google");
-                    icon.style.color = "#7875b5";
-                }
-            }
-
             // Mostra/Nasconde la password
             document.getElementById("togglePassword").addEventListener("click", function () {
                 var passwordField = document.getElementById("password");
@@ -119,6 +106,13 @@ if (isset($_SESSION['user'])) {
                     this.classList.add("fa-eye");
                 }
             });
+            // Attacca il listener al form per mostrare l'overlay
+            const form = document.getElementById('login');
+            const overlay = document.getElementById('loginLoaderOverlay');
+            form.addEventListener('submit', function() {
+                overlay.style.display = 'flex';  // Imposta l'overlay a flex per renderlo visibile
+            });
+                    
         </script>
 
         <?php

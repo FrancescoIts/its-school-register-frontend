@@ -2,13 +2,12 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
-// Impostiamo il fuso orario
 date_default_timezone_set('Europe/Rome');
 
 $user = checkSession();
 $id_user = $user['id_user'];
 
-// Preleva il corso dello studente
+// Corso dello studente
 $stmt = $conn->prepare("
     SELECT id_course 
     FROM user_role_courses 
@@ -28,6 +27,15 @@ if (!$studentCourse) {
  * Funzione per ottenere il codice HTML del calendario eventi
  */
 function getCalendar($month, $year, $conn, $id_course) {
+
+    // Validazione dei parametri mese e anno
+    if ($month < 1 || $month > 12) {
+        $month = (int)date('n');
+    }
+    if ($year < 1) {
+        $year = (int)date('Y');
+    }
+    
     // Recupera gli eventi dal database per il mese
     $stmt = $conn->prepare("
         SELECT 
@@ -133,4 +141,3 @@ $month = isset($_GET['month1']) ? (int)$_GET['month1'] : date('n');
 $year  = isset($_GET['year1'])  ? (int)$_GET['year1']  : date('Y');
 echo getCalendar($month, $year, $conn, $studentCourse);
 exit;
-

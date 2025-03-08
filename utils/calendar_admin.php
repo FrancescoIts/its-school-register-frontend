@@ -227,6 +227,17 @@ $stmt->close();
     </div>
 </div>
 <script>
+function clearUrl() {
+  if (window.location.search) {
+    history.replaceState(null, '', window.location.pathname);
+  }
+}
+clearUrl();
+
+
+
+</script>
+<script>
     function changeCourse(courseId) {
         let url = new URL(window.location.href);
         url.searchParams.set('id_course', courseId);

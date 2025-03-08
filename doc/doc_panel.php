@@ -49,6 +49,7 @@ if (count($corsi) > 0) {
     <link rel="stylesheet" href="../assets/css/stats_total.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
     <link rel="stylesheet" href="../assets/css/checkbox.css">
+    <link rel="stylesheet" href="../assets/css/loader.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -60,6 +61,7 @@ if (count($corsi) > 0) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
+<script src="../assets/js/loader.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -180,5 +182,7 @@ if (count($corsi) > 0) {
         </div>
     </div>
 </div>  
+
+<?php require('../utils/loader.php'); ?>
 </body>
 </html>

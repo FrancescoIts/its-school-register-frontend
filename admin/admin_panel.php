@@ -42,6 +42,7 @@ if (count($corsi) > 0) {
     <title>Dashboard Coordinatore</title>
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
+    <link rel="stylesheet" href="../assets/css/loader.css">
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -65,6 +66,7 @@ if (count($corsi) > 0) {
 <script src="../assets/js/calendar_admin.js" defer></script>
 <script src="../assets/js/calendar_absences_admin.js" defer></script>
 <script src="../assets/js/view_users.js" defer></script>
+<script src="../assets/js/loader.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -266,5 +268,6 @@ if (count($corsi) > 0) {
         </div>
     </div>
 </div>  
+<?php require('../utils/loader.php'); ?>
 </body>
 </html>

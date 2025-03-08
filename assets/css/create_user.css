@@ -50,12 +50,12 @@
 .create-user-button {
     width: 100%;
     padding: 15px;
-    color: white;
+    color: white !important;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease !important;
 }
 
 
@@ -103,23 +103,48 @@
 }
 
 .dark-mode .create-user-button {
-    background-color: #444;
-    color: white;
-    border: 1px solid #555;
+    background-color: #444 !important;
+    color: white !important;
+    border: 1px solid #555 !important;
 }
 
 .dark-mode .create-user-button:hover {
-    background-color: #666; /* Leggero contrasto al passaggio del mouse */
+    background-color: #666 !important; 
 }
 
 .dark-mode .create-user-message.success {
-    background-color: #2d8659;
-    color: #aaffaa;
-    border: 1px solid #3ca76f;
+    background-color: #2d8659 !important;
+    color: #aaffaa !important;
+    border: 1px solid #3ca76f !important;
 }
 
 .dark-mode .create-user-message.error {
-    background-color: #552222;
-    color: #ffaaaa;
-    border: 1px solid #aa4444;
+    background-color: #552222 !important;
+    color: #ffaaaa !important;
+    border: 1px solid #aa4444 !important;
+}
+
+.dark-mode #generatePassword {
+    background-color: #1d7fa5b4;
+    border-color: #1d7fa5b4;
+}
+.dark-mode #generatePassword:hover {
+    background-color: #1d7ea5;
+}
+.dark-mode #createButton {
+    background-color: #1d7fa5b4;
+    border-color: #1d7fa5b4;
+}
+.dark-mode #createButton:hover {
+    background-color: #1d7ea5;
+}
+
+#createButton:hover {
+    background-color: #138cc4bd !important;
+    border-color: #138cc4bd !important;
+}
+
+#createButton{
+    background-color: #0e6d9977 !important;
+    border-color: #0e6d9977!important;
 }

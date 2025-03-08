@@ -169,16 +169,16 @@ $mesiItaliani = [
 ];
 $nomeMeseCorrente = strtoupper($mesiItaliani[$month] . " " . $year);
 ?>
-  <!-- Header del calendario con navigazione asincrona -->
-  <div class="calendar-header" style="text-align:center; margin-bottom:10px;" data-month="<?php echo $month; ?>" data-year="<?php echo $year; ?>">
-    <button id="prevBtn" class="prev-month o-btn">
-      <strong>&#8810;</strong>
-    </button>
-    <span id="currentMonth" class="current-month" style="font-size:1.2em; font-weight:bold; margin: 0 10px;"><?php echo $nomeMeseCorrente; ?></span>
-    <button id="nextBtn" class="next-month o-btn">
-      <strong>&#8811;</strong>
-    </button>
-  </div>
+<!-- Header del calendario con navigazione asincrona -->
+<div id="calendarHeader" class="calendar-header" style="text-align:center; margin-bottom:10px;" data-month="<?php echo $month; ?>" data-year="<?php echo $year; ?>">
+  <button id="prevBtn" class="prev-month o-btn">
+    <strong>&#8810;</strong>
+  </button>
+  <span id="currentMonth" class="current-month" style="font-size:1.2em; font-weight:bold; margin: 0 10px;"><?php echo $nomeMeseCorrente; ?></span>
+  <button id="nextBtn" class="next-month o-btn">
+    <strong>&#8811;</strong>
+  </button>
+</div>
 
   <div class="wrapper">
     <div class="c-calendar">

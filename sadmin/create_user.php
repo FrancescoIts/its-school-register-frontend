@@ -117,6 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" name="create_user" class="btn btn-primary btn-block">Crea Admin</button>
+        <button type="submit" name="create_user" class="btn btn-primary btn-block" id="createButton">Crea Admin</button>
     </form>
 </div>
