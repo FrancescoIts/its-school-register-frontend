@@ -2,16 +2,23 @@
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
-
 $user = checkSession(true, ['sadmin']);
 
-// Recupero tutti gli utenti con ruolo 'admin'
+// Recupero tutti gli utenti con ruolo 'admin' (sadmin)
 $query = "
-    SELECT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, c.name AS course_name
+    SELECT 
+        u.id_user, 
+        u.firstname, 
+        u.lastname, 
+        u.email, 
+        u.phone, 
+        u.active, 
+        GROUP_CONCAT(DISTINCT c.name ORDER BY c.name SEPARATOR ', ') AS courses
     FROM users u
     JOIN user_role_courses urc ON u.id_user = urc.id_user
     JOIN courses c ON urc.id_course = c.id_course
     WHERE urc.id_role = 3
+    GROUP BY u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active
 ";
 $stmt = $conn->prepare($query);
 $stmt->execute();
@@ -61,7 +68,7 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
                 <th>Cognome</th>
                 <th>Email</th>
                 <th>Telefono</th>
-                <th>Corso</th>
+                <th>Corsi</th>
                 <th>Stato</th>
                 <th>Azioni</th>
             </tr>
@@ -74,16 +81,22 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
                     <td><?php echo htmlspecialchars($user['lastname']); ?></td>
                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                     <td><?php echo htmlspecialchars($user['phone']); ?></td>
-                    <td><?php echo htmlspecialchars($user['course_name']); ?></td>
+                    <td><?php echo htmlspecialchars($user['courses']); ?></td>
                     <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
                     <td>
                         <div class="view-users-actions">
                             <?php if ($user['active']): ?>
-                                <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive">Disattiva</a>
+                                <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive" onclick="return confirmDeactivate(this);">
+                                    Disattiva
+                                </a>
                             <?php else: ?>
-                                <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button active">Attiva</a>
+                                <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button active" onclick="return confirmActivate(this);">
+                                    Attiva
+                                </a>
                             <?php endif; ?>
-                            <button class="view-users-button delete" onclick="confirmDelete(<?php echo $user['id_user']; ?>)">Elimina</button>
+                            <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" class="view-users-button delete" onclick="return confirmDelete(this);">
+                                Elimina
+                            </a>
                         </div>
                     </td>
                 </tr>
