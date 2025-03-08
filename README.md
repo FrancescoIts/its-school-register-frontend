@@ -8,7 +8,7 @@
 
 ### 100% PANNELLO DOCENTI
 
-### 90% PANNELLO ADMIN
+### 100% PANNELLO ADMIN
 
 ## Fixes
 1. Nuova gestione moduli (altre informazioni per la lezione da inserire oltre le presenze)
