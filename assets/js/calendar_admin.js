@@ -1,115 +1,111 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let events = calendarData.filter(e => e.event != null && e.created_by != null);
+    let events = calendarData.filter(e => e.event && e.created_by);
 
-    // Render del calendario
     function renderCalendar() {
-        let tbody = document.querySelector('.calendar-table tbody');
-        tbody.innerHTML = '';
+        let container = document.getElementById('calendarContent');
+        container.innerHTML = '';
 
-        // Usiamo i valori passati da PHP per anno e mese.
-        let jsYear  = phpYear;           
-        let jsMonth = phpMonth - 1;    
+        let jsYear  = phpYear;
+        let jsMonth = phpMonth - 1;
 
-        // Primo giorno del mese
         let firstDayDate = new Date(jsYear, jsMonth, 1);
-        let firstDay = firstDayDate.getDay(); // Domenica=0, Lunedì=1, etc.
-
-        // Numero di giorni nel mese
+        let firstDay = firstDayDate.getDay(); // Domenica=0, Lunedi=1, etc.
         let daysInMonth = new Date(jsYear, jsMonth + 1, 0).getDate();
-
-        let weekRow = document.createElement('tr');
-
-        // Calcola quanti giorni "vuoti" prima del Lunedì (colonna 1).
-        // Se firstDay=0 => Domenica => mettiamo 6 blank; se firstDay=1 => 0 blank...
         let blankDays = (firstDay === 0) ? 6 : (firstDay - 1);
 
+        // Header dei giorni della settimana
+        let headerRow = document.createElement('div');
+        headerRow.className = 'c-cal__row';
+        let dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+        dayNames.forEach(dayName => {
+            let col = document.createElement('div');
+            col.className = 'c-cal__col';
+            col.innerText = dayName;
+            headerRow.appendChild(col);
+        });
+        container.appendChild(headerRow);
+
+        let weekRow = document.createElement('div');
+        weekRow.className = 'c-cal__row';
         for (let i = 0; i < blankDays; i++) {
-            let emptyTd = document.createElement('td');
-            emptyTd.style.border = "1px solid #ccc";
-            emptyTd.style.padding = "8px";
-            weekRow.appendChild(emptyTd);
+            let emptyCell = document.createElement('div');
+            emptyCell.className = 'c-cal__cel';
+            weekRow.appendChild(emptyCell);
         }
 
-        // Creiamo le celle con i giorni
         for (let day = 1; day <= daysInMonth; day++) {
             let currentDate = new Date(jsYear, jsMonth, day);
-
-            // Costruiamo la stringa YYYY-MM-DD senza usare toISOString()
             let yyyy = currentDate.getFullYear();
             let mm   = String(currentDate.getMonth() + 1).padStart(2, '0');
             let dd   = String(currentDate.getDate()).padStart(2, '0');
             let dateString = `${yyyy}-${mm}-${dd}`;
 
-            // Trova se c'è un evento esistente in calendarData
             let existingEvent = events.find(e => e.date === dateString);
 
-            let td = document.createElement('td');
-            td.style.border = "1px solid #ccc";
-            td.style.padding = "8px";
-
-            // Se esiste un evento, mostriamo un "pallino"
-            let content = `<strong>${day}</strong>`;
+            let cell = document.createElement('div');
+            cell.className = 'c-cal__cel';
             if (existingEvent) {
-                content += ' <div class="event-dot" style="display:inline-block; width:8px; height:8px; background-color:red; border-radius:50%; margin-left:5px;"></div>';
+                cell.classList.add('event');
+                cell.setAttribute('data-event', existingEvent.event);
             }
+            cell.setAttribute('data-day', dateString);
+            cell.dataset.eventId = existingEvent ? existingEvent.id : '';
+            cell.dataset.createdBy = existingEvent ? existingEvent.created_by : '';
 
-            td.innerHTML = content;
+            cell.innerHTML = `<p><strong>${day}</strong></p>`;
+            cell.addEventListener('click', () => manageEvent(cell));
 
-            // Aggiungiamo dataset utili
-            td.dataset.date      = dateString;
-            td.dataset.eventId   = existingEvent ? existingEvent.id : '';
-            td.dataset.createdBy = existingEvent ? existingEvent.created_by : '';
+            weekRow.appendChild(cell);
 
-            // Click sul giorno
-            td.addEventListener('click', () => manageEvent(td));
-
-            weekRow.appendChild(td);
-
-            // Se Domenica (getDay()=0), chiudiamo la riga
             if (currentDate.getDay() === 0) {
-                tbody.appendChild(weekRow);
-                weekRow = document.createElement('tr');
+                container.appendChild(weekRow);
+                weekRow = document.createElement('div');
+                weekRow.className = 'c-cal__row';
             }
         }
 
-        // Se rimangono celle nell'ultima riga, la completiamo
-        if (weekRow.children.length > 0) {
-            tbody.appendChild(weekRow);
+        while (weekRow.childElementCount < 7) {
+            let emptyCell = document.createElement('div');
+            emptyCell.className = 'c-cal__cel';
+            weekRow.appendChild(emptyCell);
         }
+        container.appendChild(weekRow);
     }
 
-
-    function manageEvent(td) {
-        let dateString = td.dataset.date;             // es. "2025-04-10"
-        let [year, month, day] = dateString.split('-'); 
+    function manageEvent(cell) {
+        let dateString = cell.dataset.day;
+        let [year, month, day] = dateString.split('-');
         let dateItalianFormat = `${day}/${month}/${year}`;
-        let eventId   = td.dataset.eventId;
-        let createdBy = td.dataset.createdBy;
+        let eventId = cell.dataset.eventId;
+        let createdBy = cell.dataset.createdBy;
 
-        // Troviamo l'evento corrispondente
         let existingEvent = calendarData.find(e => e.id == eventId) || null;
-
         let creatorName = "Sconosciuto";
-        let eventText   = "Nessun dettaglio disponibile.";
+        let eventText = "Nessun dettaglio disponibile.";
 
         if (existingEvent) {
             creatorName = existingEvent.creator_name || "Sconosciuto";
-            eventText   = existingEvent.event || "Nessun dettaglio disponibile.";
+            eventText = existingEvent.event || "Nessun dettaglio disponibile.";
         }
 
-        // Se non è admin e non è creatore dell'evento, mostra solo lettura
-        if (existingEvent && !isAdmin && parseInt(createdBy) !== parseInt(userId)) {
+        /* 
+           Se esiste un evento e l'evento NON è gestibile (ossia l'utente NON è admin 
+           oppure, se admin, non è il creatore), mostriamo un pop up in sola lettura 
+           con i dettagli, in stile SweetAlert come nel calendario utente.
+        */
+        if (existingEvent && (!isAdmin || (isAdmin && parseInt(createdBy) !== parseInt(userId)))) {
             Swal.fire({
-                title: `Evento del ${dateItalianFormat}`,
-                html: `<p><strong>Creato da:</strong> ${creatorName}</p><p>${eventText}</p>`,
+                title: `Dettagli: ${dateItalianFormat}`,
+                html: `<strong>Evento:</strong> ${eventText}<br><strong>Creato da:</strong> ${creatorName}`,
                 icon: "info",
-                confirmButtonText: "Chiudi"
+                confirmButtonText: "OK",
+                backdrop: 'rgba(0, 0, 0, 0.5)'
             });
             return;
         }
 
-        // Per admin o creatore, gestiamo aggiunta/modifica
-        let title      = existingEvent ? 'Gestione Evento' : 'Aggiungi Nuovo Evento';
+        // Se non esiste l'evento oppure l'utente può gestirlo (admin e creatore), permettiamo l'aggiunta/modifica
+        let title = existingEvent ? 'Gestione Evento' : 'Aggiungi Nuovo Evento';
         let inputValue = existingEvent ? existingEvent.event : '';
 
         let swalOptions = {
@@ -122,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelButtonText: 'Annulla'
         };
 
-        // Se l'evento esiste, mostriamo anche il bottone di eliminazione
         if (existingEvent) {
             swalOptions.showDenyButton = true;
             swalOptions.denyButtonText = 'Elimina';
@@ -130,18 +125,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         Swal.fire(swalOptions).then((result) => {
             if (result.isConfirmed) {
-                // Salvataggio/aggiornamento evento
                 saveEvent(eventId, dateString, result.value);
             } else if (result.isDenied && existingEvent) {
-                // Eliminazione evento
                 deleteEvent(eventId);
             }
         });
     }
 
-    /**
-     * Salva o modifica l'evento su manage_calendar.php
-     */
     function saveEvent(eventId, date, eventText) {
         let action = eventId ? 'edit' : 'add';
 
@@ -151,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify({
                 action: action,
                 event_id: eventId,
-                date: date,        
+                date: date,
                 event: eventText,
                 id_course: idCourse
             })
@@ -170,9 +160,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /**
-     * Elimina l'evento
-     */
     function deleteEvent(eventId) {
         fetch('../utils/manage_calendar.php', {
             method: 'POST',

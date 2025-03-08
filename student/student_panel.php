@@ -39,18 +39,14 @@ if (!file_exists($corso_img)) {
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/courses_admin.css">
-    <link rel="stylesheet" href="../assets/css/view_users.css">
-    <link rel="stylesheet" href="../assets/css/create_user.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/checkbox.css">
-    <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar.js" defer></script>
 <script src="../assets/js/calendar_absences.js" defer></script>

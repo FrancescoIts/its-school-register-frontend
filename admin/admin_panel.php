@@ -40,8 +40,8 @@ if (count($corsi) > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Coordinatore</title>
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
-    <link rel="stylesheet" href="../assets/css/navbar.css"> 
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -63,6 +63,7 @@ if (count($corsi) > 0) {
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
+<script src="../assets/js/calendar_absences_admin.js" defer></script>
 <script src="../assets/js/view_users.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
@@ -114,7 +115,7 @@ if (count($corsi) > 0) {
     <label for="darkmode-toggle" class="toggle">
     <span></span>
     </label>
-    <a class="logout" href="../utils/logout.php">Logout</a>
+    <a class="logout" href="../utils/logout.php"><span>Logout</span></a>
     </div>
 </div>
 <div class="navbar-placeholder"></div>

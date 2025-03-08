@@ -40,6 +40,7 @@ body {
 .navbar-links {
     display: flex;
     gap: 20px;
+    margin-left: 100px;
 }
 
 /* Struttura di ogni voce con icona e freccia disposte in colonna */
@@ -56,7 +57,7 @@ body {
 }
 
 .dark-mode .navbar-links{
-    margin-left: 65px;
+    margin-left: 200px;
 }
 
 /* Quando si passa sopra, porta l'elemento in primo piano */
@@ -265,6 +266,9 @@ a {
     opacity: 0;
     color: #fff;
   }
+  .logout:hover {
+    background: #e71919c7;
+  }
   
   .logout:hover span {
     opacity: 1;
@@ -275,7 +279,7 @@ a {
     display: inline-block;
     border-radius: 20px;
     padding: 5px 20px;
-    background: #00548e;
+    background: #e71919;
     color: #fff;
     text-decoration: none;
     font-weight: bold;

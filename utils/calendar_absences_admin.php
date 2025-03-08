@@ -2,40 +2,31 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
+// Controllo sessione e ruolo admin
 $user = checkSession(true, ['admin']);
-
-
 $id_admin = $user['id_user'] ?? 0;
-
 
 $idRoleAdmin    = 3;
 $idRoleStudente = 1;
 
-// Funzione per recuperare gli orari effettivi del giorno (es. "monday") dal DB
-function getTimes($conn, $idCourse, $theDate) {
-    // Ricava il giorno in inglese minuscolo (monday, tuesday, ...)
-    $dayOfWeek = strtolower(date('l', strtotime($theDate)));
-
-    // Colonne su cui fare la SELECT
-    $startColumn = 'start_time_' . $dayOfWeek;
-    $endColumn   = 'end_time_' . $dayOfWeek;
-
-    $query = "SELECT $startColumn AS start_time, $endColumn AS end_time 
-              FROM courses 
-              WHERE id_course = ?";
+/**
+ * Funzione per ottenere gli orari di inizio/fine corso in base al giorno
+ */
+function getCourseTimes($conn, $id_course, $day_of_week) {
+    $query = "
+        SELECT start_time_{$day_of_week} AS start_time, end_time_{$day_of_week} AS end_time
+        FROM courses
+        WHERE id_course = ?
+    ";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $idCourse);
+    $stmt->bind_param("i", $id_course);
     $stmt->execute();
     $result = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-
-    $startTime = $result['start_time'];
-    $endTime   = $result['end_time'];
-
-    return [$startTime, $endTime];
+    return [$result['start_time'] ?? null, $result['end_time'] ?? null];
 }
 
-// 1) Recupera TUTTI i corsi di competenza di questo admin (id e nome)
+// 1) Recupera TUTTI i corsi di competenza di questo admin
 $sqlCourses = "
     SELECT c.id_course, c.name
     FROM courses c
@@ -48,7 +39,7 @@ $stmtC->bind_param("ii", $id_admin, $idRoleAdmin);
 $stmtC->execute();
 $resC = $stmtC->get_result();
 
-$courseList = []; // Array che conterrà [id_course => course_name]
+$courseList = [];
 while ($r = $resC->fetch_assoc()) {
     $courseList[$r['id_course']] = $r['name'];
 }
@@ -56,19 +47,18 @@ $stmtC->close();
 
 // Se l'admin non ha corsi associati, usciamo
 if (empty($courseList)) {
-    echo "<h3>Nessun corso associato a questo admin</h3>";
-    exit;
+    die("<h3>Nessun corso associato a questo admin</h3>");
 }
 
 // 2) Determiniamo quale corso visualizzare
 if (isset($_GET['course_id']) && array_key_exists($_GET['course_id'], $courseList)) {
     $selectedCourse = (int)$_GET['course_id'];
 } else {
-    // Prendi il primo id_course (chiave dell’array $courseList)
+    // Se non specificato, prendi il primo corso disponibile
     $selectedCourse = array_key_first($courseList);
 }
 
-// 3) Recupero tutti gli studenti iscritti al corso selezionato
+// 3) Recupero tutti gli studenti del corso selezionato
 $sqlStudents = "
     SELECT DISTINCT u.id_user, u.firstname, u.lastname
     FROM user_role_courses urc
@@ -81,95 +71,184 @@ $stmtS->bind_param("ii", $selectedCourse, $idRoleStudente);
 $stmtS->execute();
 $resS = $stmtS->get_result();
 
-$studentIds     = [];
-$studentDetails = [];  // per mappare id_user -> "Nome Cognome"
+$studentIds   = [];
+$studentsMap  = [];  // Per collegare id_user a "Nome Cognome"
 while ($rowS = $resS->fetch_assoc()) {
-    $studentIds[] = $rowS['id_user'];
-    $nomeCompleto = $rowS['firstname'] . " " . $rowS['lastname'];
-    $studentDetails[$rowS['id_user']] = $nomeCompleto;
+    $idU = (int)$rowS['id_user'];
+    $studentIds[]             = $idU;
+    $studentsMap[$idU]        = trim($rowS['firstname'].' '.$rowS['lastname']);
 }
 $stmtS->close();
 
-// Se non ci sono studenti, mostriamo messaggio e usciamo
+// Se non ci sono studenti, usciamo
 if (empty($studentIds)) {
-    echo "<h3>Non ci sono studenti iscritti a questo corso</h3>";
-    exit;
+    die("<h3>Non ci sono studenti iscritti a questo corso</h3>");
 }
 
-// 4) Recupero le assenze per questo elenco di studenti, limitate all'anno corrente
-$year = date('Y'); 
+// 4) Recupero i parametri del calendario (mese/anno correnti o parametri GET)
+$currentMonth = isset($_GET['month2']) ? (int)$_GET['month2'] : date('n');
+$currentYear  = isset($_GET['year2'])  ? (int)$_GET['year2']  : date('Y');
+
+// 5) Recupero le assenze di TUTTI gli studenti di quel corso per l'anno corrente
+//    e le salviamo con il dettaglio per ogni studente
 $inClauseStd = implode(',', array_fill(0, count($studentIds), '?'));
+
 $sqlA = "
     SELECT id_user, date, entry_hour, exit_hour
     FROM attendance
     WHERE id_user IN ($inClauseStd)
-      AND id_course = ?    -- Solo per il corso selezionato
+      AND id_course = ?
       AND YEAR(date) = ?
 ";
 $stmtA = $conn->prepare($sqlA);
 
-// Costruisco i parametri per la query su attendance
-//  (lista di id_user seguita da [id_course, year])
-$typesA = str_repeat('i', count($studentIds)) . 'ii'; 
-$paramsA = array_merge($studentIds, [$selectedCourse, $year]);
-$stmtA->bind_param($typesA, ...$paramsA);
+// Costruiamo i parametri
+$types = str_repeat('i', count($studentIds)) . 'ii'; 
+$params = array_merge($studentIds, [$selectedCourse, $currentYear]);
+$stmtA->bind_param($types, ...$params);
 
 $stmtA->execute();
 $resA = $stmtA->get_result();
 
-// Array delle assenze per data
-$absencesAvanzate = [];
+$absences = []; 
+/*
+   $absences sarà un array associativo con chiave = data (es. '2025-03-15'),
+   e valore = array di record [ 'id_user' => ..., 'student_name' => ..., 'hours' => ... ].
+   In questo modo teniamo traccia di TUTTI gli studenti che hanno assenze in quel giorno.
+*/
 while ($row = $resA->fetch_assoc()) {
-    $idUser = $row['id_user'];
-    $date   = $row['date'];
-    $entry  = $row['entry_hour'] ?? null;
-    $exit   = $row['exit_hour']  ?? null;
+    $date     = $row['date'];
+    $id_user  = (int)$row['id_user'];
+    $entry    = $row['entry_hour'] ?? null;
+    $exit     = $row['exit_hour']  ?? null;
 
-    // Otteniamo gli orari effettivi per il giorno in base al corso
-    list($courseStart, $courseEnd) = getTimes($conn, $selectedCourse, $date);
+    // Ottieni il giorno della settimana in inglese minuscolo (monday, tuesday, ...)
+    $dayOfWeek = strtolower(date('l', strtotime($date)));
+    list($courseStart, $courseEnd) = getCourseTimes($conn, $selectedCourse, $dayOfWeek);
 
-    $courseStartSec = !empty($courseStart) ? strtotime($courseStart) : null;
-    $courseEndSec   = !empty($courseEnd) ? strtotime($courseEnd) : null;
+    // Se il corso non ha orari definiti per quel giorno, skip
+    if (!$courseStart || !$courseEnd) {
+        continue;
+    }
+    $courseStartSec = strtotime($courseStart);
+    $courseEndSec   = strtotime($courseEnd);
 
-    // Se orari non impostati nel DB, usiamo default (14:00-18:00) → già gestito nella funzione
-    // 1) Se non c'è entry o exit => assenza totale: differenza tra orario di fine e inizio
+    $absenceHours = 0;
+    // Se mancano entry/exit => assenza totale per lo studente
     if (!$entry || !$exit) {
-        $absence_hours = ($courseEndSec - $courseStartSec) / 3600; 
+        $absenceHours = ($courseEndSec - $courseStartSec) / 3600;
     } else {
-        $entry_seconds = strtotime($entry);
-        $exit_seconds  = strtotime($exit);
-
-        $absence_hours = 0;
-        // Entrato in ritardo
-        if ($entry_seconds > $courseStartSec) {
-            $absence_hours += ($entry_seconds - $courseStartSec) / 3600;
+        $entrySec = strtotime($entry);
+        $exitSec  = strtotime($exit);
+        // Entrato in ritardo?
+        if ($entrySec > $courseStartSec) {
+            $absenceHours += ($entrySec - $courseStartSec) / 3600;
         }
-        // Uscito prima
-        if ($exit_seconds < $courseEndSec) {
-            $absence_hours += ($courseEndSec - $exit_seconds) / 3600;
+        // Uscito prima?
+        if ($exitSec < $courseEndSec) {
+            $absenceHours += ($courseEndSec - $exitSec) / 3600;
         }
-        $absence_hours = round($absence_hours, 2);
     }
 
-    // Salvo nel mio array solo se c’è assenza > 0
-    if ($absence_hours > 0) {
-        $absencesAvanzate[$date][] = [
-            'id_user'       => $idUser,
-            'student_name'  => $studentDetails[$idUser] ?? ("Studente #$idUser"),
-            'absence_hours' => $absence_hours
+    // Se ci sono ore di assenza (o ritardo/anticipo) da registrare
+    if ($absenceHours > 0) {
+        // Inizializziamo l'array se non esiste
+        if (!isset($absences[$date])) {
+            $absences[$date] = [];
+        }
+        // Aggiungiamo una voce di dettaglio per quello studente
+        $absences[$date][] = [
+            'id_user'      => $id_user,
+            'student_name' => $studentsMap[$id_user] ?? "Studente #$id_user",
+            'hours'        => $absenceHours
         ];
     }
 }
 $stmtA->close();
-?>
-<body id="abencesAdmin">
 
-<!-- 5) Form per la scelta del corso (compare se c’è più di un corso) -->
+// 6) Creiamo il calendario in stile "c-calendar__style"
+$monthsIta    = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+$monthName    = $monthsIta[$currentMonth - 1];
+$firstDay     = date('N', strtotime("$currentYear-$currentMonth-01")); // 1 = Lun, 7 = Dom
+$daysInMonth  = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+$monthNameUp  = strtoupper($monthName);
+
+$html = '';
+
+// Navigazione in alto
+$html .= '<div class="calendar-header" style="text-align:center; margin-bottom:10px;">';
+$html .= '<button type="button" class="prev-month o-btn" onclick="loadAbsencesCalendar('
+        . ($currentMonth == 1 ? 12 : $currentMonth - 1) . ', '
+        . ($currentMonth == 1 ? $currentYear - 1 : $currentYear)
+        . ')"><strong>&#8810;</strong></button>';
+
+$html .= '<span class="current-month" style="font-size:1.2em; font-weight:bold; margin: 0 10px;">'
+       . "$monthNameUp $currentYear"
+       . '</span>';
+
+$html .= '<button type="button" class="next-month o-btn" onclick="loadAbsencesCalendar('
+        . ($currentMonth == 12 ? 1 : $currentMonth + 1) . ', '
+        . ($currentMonth == 12 ? $currentYear + 1 : $currentYear)
+        . ')"><strong>&#8811;</strong></button>';
+$html .= '</div>';
+
+// Calendario con c-calendar__style
+$html .= '<div class="c-calendar__style"><div class="c-cal__container">';
+$html .= '<div class="c-cal__row">';
+foreach (['Lun','Mar','Mer','Gio','Ven','Sab','Dom'] as $dName) {
+    $html .= "<div class='c-cal__col'>{$dName}</div>";
+}
+$html .= '</div>';
+
+// Celle dei giorni
+$totalCells = ($firstDay - 1) + $daysInMonth;
+$totalRows  = ceil($totalCells / 7);
+$dayCounter = 1;
+
+for ($r = 0; $r < $totalRows; $r++) {
+    $html .= '<div class="c-cal__row">';
+    for ($c = 0; $c < 7; $c++) {
+        $cellIndex = $r * 7 + $c + 1;
+        if ($cellIndex < $firstDay || $dayCounter > $daysInMonth) {
+            // Celle vuote
+            $html .= '<div class="c-cal__cel"></div>';
+        } else {
+            // Giorno reale
+            $dayStr    = str_pad($dayCounter, 2, '0', STR_PAD_LEFT);
+            $monthStr  = str_pad($currentMonth, 2, '0', STR_PAD_LEFT);
+            $dateString = "$currentYear-$monthStr-$dayStr";
+            
+            // Recuperiamo i record di assenza
+            $detailAbs = $absences[$dateString] ?? [];
+            // Se c'è almeno un record di assenza
+            $hasAbsence = (count($detailAbs) > 0);
+            $cellClass  = "c-cal__cel" . ($hasAbsence ? " event" : "");
+
+            // Convertiamo l'array di dettagli in JSON, così il JS può leggere tutti gli studenti
+            $jsonDetails = htmlspecialchars(json_encode($detailAbs), ENT_QUOTES, 'UTF-8');
+            
+            $html .= "<div class='{$cellClass}' data-date='{$dateString}' data-absence='{$jsonDetails}'>";
+            $html .= "<p>{$dayCounter}</p>";
+            $html .= "</div>";
+            $dayCounter++;
+        }
+    }
+    $html .= '</div>';
+}
+$html .= '</div></div>';
+
+// Se la richiesta è via AJAX, restituiamo solo il calendario
+if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
+    echo $html;
+    exit;
+}
+?>
+<!-- Form per la scelta del corso -->
 <?php if (count($courseList) > 1): ?>
-<div id="course-select-form" class=">
+<div id="course-select-form">
     <form method="GET" action="">
         <label for="course_id">Seleziona il corso:</label>
-        <select name="course_id" id="course_id" onchange="redirectWithAnchor()">
+        <select name="course_id" id="course_id" onchange="this.form.submit()">
             <?php
             foreach ($courseList as $id_corso => $nome_corso) {
                 $selectedAttr = ($id_corso == $selectedCourse) ? 'selected' : '';
@@ -181,161 +260,12 @@ $stmtA->close();
 </div>
 <br>
 <?php else: ?>
-    <!-- Se c’è un solo corso, mostriamone il nome -->
+    <!-- Se c’è un solo corso -->
     <h3 style="text-align:center;">
         Corso: <?php echo htmlspecialchars($courseList[$selectedCourse]); ?>
     </h3>
 <?php endif; ?>
 
-<div id="calendar"></div>
-
-<script>
-const userAbsences = <?php echo json_encode($absencesAvanzate); ?>;
-
-// Funzione per renderizzare il calendario
-function renderCalendar(month, year) {
-    const firstDayJS   = new Date(year, month - 1, 1).getDay(); // 0 = Domenica
-    const daysInMonth  = new Date(year, month, 0).getDate();
-
-    const daysOfWeek = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
-    const monthsIta = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
-                       'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-
-    let monthName = monthsIta[month - 1] || '??';
-    let html = `<div class="calendar-container">
-                  <div class="calendar-header"><h3>${monthName} ${year}</h3></div>
-                  <table class="calendar-table"><thead><tr>`;
-
-    // Intestazioni giorni della settimana
-    for (let d of daysOfWeek) {
-        html += `<th>${d}</th>`;
-    }
-    html += `</tr></thead><tbody><tr>`;
-
-    // Calcolo l'indice del primo giorno (1 = Lun, 7 = Dom). In JS getDay() 0=Dom
-    let firstDayIndex = firstDayJS === 0 ? 7 : firstDayJS; 
-
-    // Celle vuote prima del primo giorno
-    for (let i = 1; i < firstDayIndex; i++) {
-        html += '<td></td>';
-    }
-
-    // Celle dei giorni del mese
-    for (let day = 1; day <= daysInMonth; day++) {
-        let dayString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        let hasAbsences = (userAbsences[dayString] !== undefined);
-
-        let cellClasses = 'calendar-day';
-        if (hasAbsences) cellClasses += ' absence-day';
-
-        // Metto un dot se c'è almeno un'assenza
-        let dotHTML = hasAbsences ? '<div class="absence-dot"></div>' : '';
-
-        html += `<td class="${cellClasses}" data-date="${dayString}">
-                    <strong>${day}</strong>
-                    ${dotHTML}
-                 </td>`;
-
-        let totalCellsSoFar = (firstDayIndex - 1) + day;
-        if (totalCellsSoFar % 7 === 0) {
-            html += `</tr><tr>`;
-        }
-    }
-
-    html += '</tr></tbody></table>';
-    // Bottoni navigazione mese
-    let prevMonth = (month === 1) ? 12 : (month - 1);
-    let nextMonth = (month === 12) ? 1 : (month + 1);
-    let prevMonthName = monthsIta[prevMonth - 1];
-    let nextMonthName = monthsIta[nextMonth - 1];
-
-    html += `<div class="navigation">
-               <button class="month-nav" data-month="${prevMonth}">${prevMonthName}</button>
-               <button class="month-nav" data-month="${nextMonth}">${nextMonthName}</button>
-             </div>`;
-    html += '</div>';
-
-    document.getElementById('calendar').innerHTML = html;
-    setupListeners();
-}
-
-function redirectWithAnchor() {
-    const form = document.querySelector('#course-select-form form');
-    const selectedCourseId = document.getElementById('course_id').value;
-    form.action = "?course_id=" + selectedCourseId + "#abencesAdmin"; 
-    form.submit();
-}
-
-function setupListeners() {
-    // Click su una cella del calendario
-    document.querySelectorAll('.calendar-day').forEach(cell => {
-        cell.addEventListener('click', function() {
-            let dateStr = this.getAttribute('data-date');
-            if (!userAbsences[dateStr]) {
-                // Nessuna assenza => GIF
-                showNoAbsences(dateStr);
-            } else {
-                // Mostriamo la lista assenti
-                showAbsences(dateStr, userAbsences[dateStr]);
-            }
-        });
-    });
-
-    // Navigazione mesi
-    document.querySelectorAll('.month-nav').forEach(btn => {
-        btn.addEventListener('click', function() {
-            let newM = parseInt(this.getAttribute('data-month'));
-            currentMonth = newM;
-            renderCalendar(currentMonth, currentYear);
-        });
-    });
-}
-
-function showAbsences(dateStr, absencesList) {
-    // Formattazione data in italiano
-    let dateObj = new Date(dateStr.replace(/-/g, '/'));
-    let opzioniFormattazione = { day: 'numeric', month: 'long', year: 'numeric' };
-    let dateStrIta = dateObj.toLocaleDateString('it-IT', opzioniFormattazione);
-
-    // Creo un elenco HTML di studenti e ore assenza
-    let listHTML = '<ul style="text-align:left;">';
-    absencesList.forEach(item => {
-        listHTML += `<li><strong>${item.student_name}</strong>: ${item.absence_hours}h di assenza</li>`;
-    });
-    listHTML += '</ul>';
-
-    Swal.fire({
-        title: `Dettagli assenze: ${dateStrIta}`,
-        html: listHTML,
-        icon: 'info',
-        confirmButtonText: 'OK',
-        backdrop: 'rgba(0, 0, 0, 0.5)'
-    });
-}
-
-function showNoAbsences(dateStr) {
-    let dateObj = new Date(dateStr.replace(/-/g, '/'));
-    let opzioniFormattazione = { day: 'numeric', month: 'long', year: 'numeric' };
-    let dateStrIta = dateObj.toLocaleDateString('it-IT', opzioniFormattazione);
-
-    let msg = `
-        <img src="https://media.giphy.com/media/d8lUKXD00IXSw/giphy.gif?cid=790b7611xn5dg1mlcc0g7hk6hdo94xtx3dqtpotmlk4uez7b&ep=v1_gifs_search&rid=giphy.gif&ct=g"
-               width="250" alt="GIF">
-        <p>Nessuna assenza registrata in questa data</p>
-    `;
-
-    Swal.fire({
-        title: `Dettagli: ${dateStrIta}`,
-        html: msg,
-        icon: 'info',
-        confirmButtonText: 'OK',
-        backdrop: 'rgba(0, 0, 0, 0.5)'
-    });
-}
-
-// Avvio
-let currentYear  = new Date().getFullYear();
-let currentMonth = new Date().getMonth() + 1;
-renderCalendar(currentMonth, currentYear);
-</script>
-</body>
+<div id="calendar-absences-content">
+    <?php echo $html; ?>
+</div>

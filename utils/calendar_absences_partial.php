@@ -8,7 +8,7 @@ ini_set('display_errors', 1);
 $user = checkSession(true, ['studente']);
 $id_user = $user['id_user'] ?? 0;
 
-// Recupero del corso associato all'utente
+
 $stmtCourse = $conn->prepare("
   SELECT id_course FROM user_role_courses
   WHERE id_user = ? LIMIT 1
@@ -106,7 +106,7 @@ $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
 // Costruzione dell'HTML del calendario delle assenze
 $html = '';
 $monthName = strtoupper($monthName);
-// Header con navigazione (utilizziamo button)
+// Header con navigazione
 $html .= '<div class="calendar-header" style="text-align:center; margin-bottom:10px;">';
 $html .= '<button type="button" id="prevAbsencesBtn" class="prev-month o-btn" onclick="loadAbsencesCalendar(' . ($currentMonth == 1 ? 12 : $currentMonth - 1) . ', ' . ($currentMonth == 1 ? $currentYear - 1 : $currentYear) . ')"><strong>&#8810;</strong></button>';
 $html .= '<span class="current-month" style="font-size:1.2em; font-weight:bold; margin: 0 10px;">' . "$monthName $currentYear" . '</span>';

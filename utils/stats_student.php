@@ -139,4 +139,3 @@ echo json_encode([
     'week_absences'   => $weekAbsences
 ]);
 exit;
-?>

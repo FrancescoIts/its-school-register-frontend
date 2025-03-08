@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Funzione per aggiornare il testo dell'intestazione del calendario
     function updateHeader() {
       const mesiItaliani = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-      document.getElementById('currentMonth').textContent = mesiItaliani[currentMonth - 1].toUpperCase() + " " + currentYear;
+      document.getElementById('currentMonth').textContent = mesiItaliani[currentMonth - 1] + " " + currentYear;
     }
   
     function loadCalendar(month, year) {

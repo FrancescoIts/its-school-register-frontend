@@ -51,7 +51,7 @@ ini_set('display_errors', 1);
     <label for="darkmode-toggle" class="toggle">
     <span></span>
     </label>
-    <a class="logout" href="../utils/logout.php">Logout</a>
+    <a class="logout" href="../utils/logout.php"><span>Logout</span></a>
 </div>
 
 
