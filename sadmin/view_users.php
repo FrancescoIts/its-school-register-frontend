@@ -4,7 +4,7 @@ require_once '../utils/check_session.php';
 
 $user = checkSession(true, ['sadmin']);
 
-// Recupero tutti gli utenti con ruolo 'admin' (sadmin)
+// Recupero tutti gli utenti con ruolo 'admin'
 $query = "
     SELECT 
         u.id_user, 
@@ -54,9 +54,6 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
     }
 }
 ?>
-
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.4.8/sweetalert2.all.min.js"></script>
 
 <div class="view-users-table-container">
     <h3>Lista Utenti Admin</h3>

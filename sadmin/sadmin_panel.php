@@ -23,10 +23,12 @@ ini_set('display_errors', 1);
     <link rel="stylesheet" href="../assets/css/view_users.css">
     <link rel="stylesheet" href="../assets/css/create_user.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.4.8/sweetalert2.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
