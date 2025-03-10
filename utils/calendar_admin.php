@@ -233,9 +233,6 @@ function clearUrl() {
   }
 }
 clearUrl();
-
-
-
 </script>
 <script>
     function changeCourse(courseId) {

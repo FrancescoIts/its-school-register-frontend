@@ -30,7 +30,9 @@
     
     const originalFetch = window.fetch;
     window.fetch = function() {
-      showLoader();
+      if (!(arguments[0] && arguments[0].includes('../utils/api_check_session.php'))) {
+        showLoader();
+      }
       return originalFetch.apply(this, arguments)
         .finally(() => {
           // Nasconde l'overlay se esiste

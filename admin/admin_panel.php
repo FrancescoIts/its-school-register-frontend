@@ -1,39 +1,6 @@
 <?php
 require_once '../utils/check_session.php'; 
-require_once '../utils/course_image_map.php';
-
-$user = checkSession();
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$nome_completo = $user['firstname'] . " " . $user['lastname'];
-$corsi = $user['courses'] ?? [];
-
-$corso_html = "";
-$corso_img = "../assets/img/courses/default.jpg"; 
-
-if (count($corsi) > 0) {
-    foreach ($corsi as $corso) {
-        $corso_nome = htmlspecialchars($corso['name']);
-        $file_img = getCourseImage($corso_nome);
-        $img_path = "../assets/img/courses/" . $file_img;
-
-        if (!file_exists($img_path)) {
-            $img_path = "../assets/img/courses/default.jpg";
-        }
-
-        $corso_html .= "<div class='course-card'>";
-        $corso_html .= "<p>{$corso_nome}</p>";
-        $corso_html .= "<img src='{$img_path}' alt='Logo Corso'>";
-        $corso_html .= "</div>";
-    }
-} else {
-    $corso_html = "<div class='course-card'>Nessun corso assegnato</div>";
-}
 ?>
-
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -56,11 +23,14 @@ if (count($corsi) > 0) {
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/checkbox.css">
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
@@ -125,7 +95,9 @@ if (count($corsi) > 0) {
 <div class="dashboard">
     <h3 class="">Corsi</h3>
     <div class="courses">
-        <?php echo $corso_html; ?>
+    <?php
+        require_once '../utils/getCourse.php';
+    ?>
     </div>
 </div>
 

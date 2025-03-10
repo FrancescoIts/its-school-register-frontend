@@ -1,30 +1,6 @@
-<?php 
+<?php
 require_once '../utils/check_session.php'; 
-require_once '../utils/course_image_map.php';
-
-checkSession();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$user = $_SESSION['user'];
-
-$nome_completo = $user['firstname'] . " " . $user['lastname'];
-$corsi = $user['courses'] ?? [];
-
-if (count($corsi) > 0) {
-    $corso = $corsi[0]['name'];
-    $file_img = getCourseImage($corso);
-    $corso_img = "../assets/img/courses/" . $file_img;
-} else {
-    $corso = "Nessun corso assegnato";
-    $corso_img = "../assets/img/courses/default.jpg";
-}
-
-if (!file_exists($corso_img)) {
-    $corso_img = "../assets/img/courses/default.jpg";
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -99,8 +75,9 @@ if (!file_exists($corso_img)) {
 <div class="dashboard">
     <h3>Corso</h3>
     <div class="courses">
-        <div class="course-card"><?php echo htmlspecialchars($corso); ?></div>
-        <img src="<?php echo htmlspecialchars($corso_img); ?>" alt="Logo Corso"> 
+    <?php
+        require_once '../utils/getCourse.php';
+    ?>
     </div>
 </div>
 

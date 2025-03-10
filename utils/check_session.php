@@ -68,4 +68,4 @@ function checkSession($checkRole = true, $allowedRoles = ['studente', 'docente',
 
     return $userData;
 }
-?>
+

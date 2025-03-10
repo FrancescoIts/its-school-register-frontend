@@ -1,4 +1,5 @@
 <?php
+ob_start();
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
@@ -22,10 +23,9 @@ $stmt = $conn->prepare($query);
 $stmt->bind_param("ii", $id_admin, $id_admin);
 $stmt->execute();
 $result = $stmt->get_result();
-
 $users = [];
 while ($row = $result->fetch_assoc()) {
-    $users[] = $row; // Mantiene l'array senza sovrascrivere gli utenti
+    $users[] = $row;
 }
 $stmt->close();
 
@@ -39,11 +39,22 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
     } elseif ($_GET['action'] == 'delete') {
         $conn->query("DELETE FROM users WHERE id_user = $id_user");
     }
-    echo "<script>window.location.href = 'admin_panel.php#viewUsers';</script>";    
-    exit;
+    
+    // Se la richiesta è asincrona, restituisco solo la risposta JSON
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'action' => $_GET['action'], 'id_user' => $id_user]);
+        exit;
+    } else {
+        header("Location: admin_panel.php#viewUsers");
+        exit;
+    }
 }
-?>
 
+// Il resto della pagina (output HTML) verrà inviato solo se non si è gestita una richiesta AJAX
+ob_end_flush();
+?>
     <div class="view-users-table-container">
         <table class="view-users-table">
             <thead>
