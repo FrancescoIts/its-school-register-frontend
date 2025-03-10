@@ -193,7 +193,7 @@ $html .= '<button type="button" class="next-month o-btn" onclick="loadAbsencesCa
 $html .= '</div>';
 
 // Calendario con c-calendar__style
-$html .= '<div class="c-calendar__style"><div class="c-cal__container">';
+$html .= '<div class="c-cal__container c-calendar__style"><div class="c-cal__container">';
 $html .= '<div class="c-cal__row">';
 foreach (['Lun','Mar','Mer','Gio','Ven','Sab','Dom'] as $dName) {
     $html .= "<div class='c-cal__col'>{$dName}</div>";

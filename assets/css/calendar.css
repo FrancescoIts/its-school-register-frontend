@@ -48,10 +48,12 @@
 
 /* Contenitore calendario */
 .c-cal__container {
-  width: 900px;
+  width: 100%;  
+  max-width: 900px;
   height: auto;
   position: relative;
   margin: 0 auto; 
+  padding: 0 10px; /* Aggiunto padding per evitare overflow */
 }
 
 /* Righe dei giorni */
