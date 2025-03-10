@@ -265,7 +265,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
         Corso: <?php echo htmlspecialchars($courseList[$selectedCourse]); ?>
     </h3>
 <?php endif; ?>
-
+<div class="wrapper">
 <div id="calendar-absences-content">
     <?php echo $html; ?>
+</div>
 </div>

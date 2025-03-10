@@ -19,6 +19,10 @@
   
   // Attacca il listener per il submit su tutti i form
   document.addEventListener('DOMContentLoaded', function() {
+    // Se la pagina non è completamente caricata, mostra il loader immediatamente
+if (document.readyState !== 'complete') {
+  showLoader();
+}
     document.querySelectorAll('form').forEach(form => {
       form.addEventListener('submit', showLoader);
     });
@@ -43,4 +47,21 @@
         });
     };
   });
+  
+
+// Funzione per nascondere il loader
+function hideLoader() {
+  const overlay = document.getElementById('globalLoaderOverlay') || document.getElementById('loginLoaderOverlay');
+  if (overlay) {
+    overlay.style.display = 'none';
+  }
+}
+
+// Se la pagina non è completamente caricata, mostra il loader immediatamente
+if (document.readyState !== 'complete') {
+  showLoader();
+}
+
+// Nascondi il loader una volta che la pagina è completamente caricata
+window.addEventListener('load', hideLoader);
   

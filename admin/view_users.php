@@ -1,12 +1,60 @@
 <?php
-ob_start();
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
 $user = checkSession(true, ['admin', 'sadmin']);
 $id_admin = $user['id_user'];
 
-// Recupero utenti dei corsi assegnati all'admin/sadmin evitando duplicati e rimuovendo l'utente loggato
+/* --- Recupero dinamico dei corsi disponibili --- */
+$queryCourses = "
+    SELECT c.id_course, c.name 
+    FROM courses c
+    JOIN user_role_courses urc ON c.id_course = urc.id_course
+    WHERE urc.id_user = ? AND (urc.id_role = 3 OR urc.id_role = 4)
+";
+$stmt = $conn->prepare($queryCourses);
+$stmt->bind_param("i", $id_admin);
+$stmt->execute();
+$result = $stmt->get_result();
+$courses = [];
+while ($row = $result->fetch_assoc()) {
+    $courses[$row['id_course']] = $row['name'];
+}
+$stmt->close();
+
+/* --- Recupero dinamico dei ruoli disponibili (solo ruoli 3 e 4) --- */
+$queryRoles = "SELECT id_role, name FROM roles WHERE id_role IN (3,4)";
+$stmt = $conn->prepare($queryRoles);
+$stmt->execute();
+$result = $stmt->get_result();
+$roles = [];
+while ($row = $result->fetch_assoc()) {
+    $roles[$row['id_role']] = $row['name'];
+}
+$stmt->close();
+
+/* --- Gestione delle modifiche tramite POST --- */
+if (isset($_GET['action']) && isset($_GET['id_user'])) {
+    $id_user = (int)$_GET['id_user'];
+    if ($_GET['action'] == 'deactivate') {
+        $conn->query("UPDATE users SET active = 0 WHERE id_user = $id_user");
+    } elseif ($_GET['action'] == 'activate') {
+        $conn->query("UPDATE users SET active = 1 WHERE id_user = $id_user");
+    } elseif ($_GET['action'] == 'delete') {
+        $conn->query("DELETE FROM users WHERE id_user = $id_user");
+    }  
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'action' => $_GET['action'], 'id_user' => $id_user]);
+        exit;
+    } else {
+        header("Location: admin_panel.php#viewUsers");
+        exit;
+    }
+}
+
+/* --- Recupero utenti dei corsi assegnati all'admin/sadmin --- */
 $query = "
     SELECT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, 
            COALESCE(GROUP_CONCAT(DISTINCT c.name ORDER BY c.name SEPARATOR ', '), 'Nessun corso') AS courses
@@ -28,81 +76,50 @@ while ($row = $result->fetch_assoc()) {
     $users[] = $row;
 }
 $stmt->close();
-
-// Gestione attivazione/disattivazione ed eliminazione
-if (isset($_GET['action']) && isset($_GET['id_user'])) {
-    $id_user = (int)$_GET['id_user'];
-    if ($_GET['action'] == 'deactivate') {
-        $conn->query("UPDATE users SET active = 0 WHERE id_user = $id_user");
-    } elseif ($_GET['action'] == 'activate') {
-        $conn->query("UPDATE users SET active = 1 WHERE id_user = $id_user");
-    } elseif ($_GET['action'] == 'delete') {
-        $conn->query("DELETE FROM users WHERE id_user = $id_user");
-    }
-    
-    // Se la richiesta è asincrona, restituisco solo la risposta JSON
-    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 'success', 'action' => $_GET['action'], 'id_user' => $id_user]);
-        exit;
-    } else {
-        header("Location: admin_panel.php#viewUsers");
-        exit;
-    }
-}
-
-// Il resto della pagina (output HTML) verrà inviato solo se non si è gestita una richiesta AJAX
-ob_end_flush();
 ?>
-    <div class="view-users-table-container">
-        <table class="view-users-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Cognome</th>
-                    <th>Email</th>
-                    <th>Telefono</th>
-                    <th>Corsi</th>
-                    <th>Stato</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?php echo $user['id_user']; ?></td>
-                        <td><?php echo htmlspecialchars($user['firstname']); ?></td>
-                        <td><?php echo htmlspecialchars($user['lastname']); ?></td>
-                        <td><?php echo htmlspecialchars($user['email']); ?></td>
-                        <td><?php echo htmlspecialchars($user['phone']); ?></td>
-                        <td><?php echo htmlspecialchars($user['courses'] ?? 'Nessun corso'); ?></td>
-                        <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
-                        <td>
-                            <div class="view-users-actions">
-                                <?php if ($user['active']): ?>
-                                    <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" 
-                                       class="view-users-button inactive" 
-                                       onclick="return confirmDeactivate(this);">
-                                       Disattiva
-                                    </a>
-                                <?php else: ?>
-                                    <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" 
-                                       class="view-users-button inactive" 
-                                       onclick="return confirmActivate(this);">
-                                       Attiva
-                                    </a>
-                                <?php endif; ?>
-                                <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" 
-                                   class="view-users-button delete"
-                                   onclick="return confirmDelete(this);">
-                                   Elimina
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <script>
+        var courses = <?php echo json_encode($courses); ?>;
+        var roles = <?php echo json_encode($roles); ?>;
+    </script>
+    <!-- Pulsante per aggiornare le schede -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button onclick="refreshUsers()" class="refresh-button">Aggiorna Schede</button>
+    </div>
+    
+    <div class="users-container">
+        <?php foreach ($users as $user): ?>
+            <div class="user-card">
+                <div class="user-card-header <?php echo $user['active'] ? '' : 'inactive'; ?>">
+                    <?php echo htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?>
+                    <span style="float:right; font-size:0.8rem;">
+                        <?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?>
+                    </span>
+                </div>
+                <div class="user-card-body">
+                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+                    <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+                    <p><strong>Corsi:</strong> <?php echo htmlspecialchars($user['courses'] ?? 'Nessun corso'); ?></p>
+                </div>
+                <div class="user-card-actions">
+                    <?php if ($user['active']): ?>
+                        <a href="endpoint_users.php?action=deactivate&id_user=<?php echo $user['id_user']; ?>" 
+                           class="inactive" 
+                           onclick="return confirmDeactivate(this);">
+                           Disattiva
+                        </a>
+                    <?php else: ?>
+                        <a href="endpoint_users.php?action=activate&id_user=<?php echo $user['id_user']; ?>" 
+                           class="inactive" 
+                           onclick="return confirmActivate(this);">
+                           Attiva
+                        </a>
+                    <?php endif; ?>
+                    <a href="endpoint_users.php?action=delete&id_user=<?php echo $user['id_user']; ?>" 
+                       class="delete"
+                       onclick="return confirmDelete(this);">
+                       Elimina
+                    </a>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
