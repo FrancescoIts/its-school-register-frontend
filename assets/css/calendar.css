@@ -35,7 +35,7 @@
 /* Stili per il calendario */
 .c-calendar {
   display: flex;
-  justify-items: center; /* CENTRAGGIO */
+  justify-items: center;
 }
 
 .c-calendar__style {
@@ -154,4 +154,45 @@
   .c-cal__cel {
     font-size: 0.7em;
   }
+}
+
+
+.dark-mode .wrapper {
+  /* Se vuoi un background specifico per il wrapper */
+  background-color: #1e1e1e;
+}
+
+.dark-mode .c-month {
+  /* In dark mode puoi lasciare gli stessi valori oppure modificare il colore del testo */
+  color: #e0e0e0;
+}
+
+.dark-mode .c-paginator__month,
+.dark-mode .c-paginator__year {
+  color: #e0e0e0;
+}
+
+.dark-mode .o-btn {
+  background: #333;
+  color: #ffffff;
+}
+
+.dark-mode .c-calendar__style {
+  background: #333;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+
+.dark-mode .c-cal__col {
+  background: #333;
+  color: #e0e0e0;
+}
+
+.dark-mode .c-cal__cel {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.dark-mode .c-cal__cel:hover {
+  background: #b4b40bd0; /* un colore chiaro per il contrasto in hover */
+  color: #333;
 }
