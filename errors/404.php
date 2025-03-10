@@ -1,9 +1,17 @@
+<?php
+
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' 
+             || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+// Costruisce l'URL di base che punta alla cartella "registro" nella radice del dominio
+$baseUrl = $protocol . $_SERVER['HTTP_HOST'] . '/registro';
+?>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404</title>
+    <title>403</title>
     
     <!-- Percorsi assoluti per i file CSS -->
     <link rel="stylesheet" href="http://localhost/registro/assets/css/student_panel.css"> 
@@ -32,11 +40,11 @@
 <br>
 <!-- Sezione Errore 404 -->
 <div class="dashboard">
-    <h3>404 Dove sei finito?</h3>
+    <h3>403 Non dovresti essere qui!</h3>
     <div class="courses">
         <div class="course-card">
-            Qui non c'è nulla da vedere...<br><br>
-            <a href="http://localhost/registro/index.php" class="back-button">⬅ Torna Indietro</a>
+            Non hai accesso a questo luogo...<br><br>
+            <a href="<?php echo $baseUrl; ?>/index.php" class="back-button">⬅ Torna Indietro</a>
         </div>
     </div>
 </div>
