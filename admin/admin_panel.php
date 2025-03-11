@@ -10,6 +10,7 @@ require_once '../utils/check_session.php';
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
     <link rel="stylesheet" href="../assets/css/loader.css">
+    <link rel="stylesheet" href="../assets/css/absences_admin.css"> 
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -34,7 +35,7 @@ require_once '../utils/check_session.php';
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
-<script src="../assets/js/calendar_absences_admin.js" defer></script>
+<script src="../assets/js/absences_admin.js" defer></script>
 <script src="../assets/js/view_users.js" defer></script>
 <script src="../assets/js/loader.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
@@ -221,7 +222,7 @@ require_once '../utils/check_session.php';
         <div class="course-card" id="calendar-absences">
         
             <?php
-                require_once '../utils/calendar_absences_admin.php';
+                require_once '../utils/absences_admin.php';
             ?>
         </div>
         </div>
