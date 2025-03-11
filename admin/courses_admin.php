@@ -65,6 +65,7 @@ $stmt->close();
 <?php else: ?>
     <div class="scrollable-table">
         <form method="POST" action="#courseSettings">
+        <h4>Modifica Orari Corso</h4>
             <label for="course_id"></label>
             <select name="course_id" id="course_id" onchange="this.form.submit()" required>
                 <option value="">Seleziona un corso</option>

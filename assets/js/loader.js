@@ -64,4 +64,48 @@ if (document.readyState !== 'complete') {
 
 // Nascondi il loader una volta che la pagina è completamente caricata
 window.addEventListener('load', hideLoader);
+
+document.getElementById("attendanceForm").addEventListener("submit", function(e) {
+  // Ferma la propagazione per evitare che il listener globale (che mostra il loader) si attivi
+  e.stopImmediatePropagation();
+  e.preventDefault(); // impedisce l'invio automatico del form
   
+  // Nascondi il loader, se già attivo, per mostrare correttamente lo Swal
+  hideLoader();
+
+  var form = this;
+  var moduleSelect = document.getElementById("id_module");
+  var moduleVal = parseInt(moduleSelect.value);
+  
+  if(moduleVal > 0) {
+     var moduleText = moduleSelect.options[moduleSelect.selectedIndex].text;
+     Swal.fire({
+       title: 'Conferma modulo',
+       text: 'Sei sicuro di aver scelto il modulo: ' + moduleText + '?',
+       icon: 'question',
+       showCancelButton: true,
+       confirmButtonText: 'Sì, salva',
+       cancelButtonText: 'Annulla'
+     }).then((result) => {
+       if(result.isConfirmed) {
+           // Rimuovi temporaneamente il listener globale (se presente) per evitare doppie chiamate
+           form.removeEventListener("submit", showLoader);
+           form.submit();
+       }
+     });
+  } else {
+     Swal.fire({
+       title: 'Modulo non selezionato',
+       text: 'Non hai selezionato nessun modulo. Vuoi proseguire senza associarlo?',
+       icon: 'warning',
+       showCancelButton: true,
+       confirmButtonText: 'Sì, salva',
+       cancelButtonText: 'Annulla'
+     }).then((result) => {
+       if(result.isConfirmed) {
+           form.removeEventListener("submit", showLoader);
+           form.submit();
+       }
+     });
+  }
+});

@@ -7,10 +7,10 @@ require_once '../utils/check_session.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Coordinatore</title>
+    <link rel="stylesheet" href="../assets/css/absences_admin.css"> 
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
     <link rel="stylesheet" href="../assets/css/loader.css">
-    <link rel="stylesheet" href="../assets/css/absences_admin.css"> 
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -38,6 +38,7 @@ require_once '../utils/check_session.php';
 <script src="../assets/js/absences_admin.js" defer></script>
 <script src="../assets/js/view_users.js" defer></script>
 <script src="../assets/js/loader.js" defer></script>
+<script src="../assets/js/attendance.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -173,6 +174,9 @@ require_once '../utils/check_session.php';
                 require_once './courses_admin.php';
             ?>
         </div>
+        <div class="course-card">
+                <?php require_once './create_module.php'; ?>
+            </div>
         </div>
     </div>
 </div>
