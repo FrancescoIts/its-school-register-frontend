@@ -8,7 +8,6 @@ require_once '../utils/check_session.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Studente</title>
     <link rel="stylesheet" href="../assets/css/navbar.css"> 
-    <link rel="stylesheet" href="../assets/css/loader.css"> 
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/student_panel.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
@@ -25,7 +24,6 @@ require_once '../utils/check_session.php';
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../assets/js/main.js" defer></script>
-<script src="../assets/js/loader.js" defer></script>
 <script src="../assets/js/calendar.js" defer></script>
 <script src="../assets/js/calendar_absences.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>

@@ -61,9 +61,12 @@ $nomeMesePrecedente = $mesiItaliani[intval($prevMonth)];
 $nomeMeseSuccessivo = $mesiItaliani[intval($nextMonth)];
 
 /**
- * Funzione per generare l'HTML del calendario con lo stesso stile
+ * Funzione per generare l'HTML del calendario.
+ * Accetta anche $currentUserId e $isAdmin per abilitare la gestione degli eventi:
+ * - L'admin può modificare ed eliminare tutti gli eventi.
+ * - Il docente può gestire soltanto gli eventi creati da lui.
  */
-function getCalendar($month, $year, $conn, $id_course) {
+function getCalendar($month, $year, $conn, $id_course, $currentUserId, $isAdmin) {
     // Recupera eventi dal DB
     $stmt = $conn->prepare("
         SELECT c.id, c.date, c.event, c.created_by, u.firstname, u.lastname
@@ -83,12 +86,16 @@ function getCalendar($month, $year, $conn, $id_course) {
             $creatorName = (!empty($row['firstname']) && !empty($row['lastname']))
                 ? trim($row['firstname'] . " " . $row['lastname'])
                 : "Sconosciuto";
-            $eventData[$row['date']][] = [
-                "id"           => $row['id'],
-                "event"        => $row['event'],
-                "creator_name" => $creatorName,
-                "created_by"   => $row['created_by']
-            ];
+            // Prepara la stringa base dell'evento
+            $displayEvent = htmlspecialchars($row['event'] . " (creato da: " . $creatorName . ")", ENT_QUOTES, 'UTF-8');
+            // L'admin può gestire tutti gli eventi; il docente solo quelli creati da lui
+            $canManage = ($isAdmin || $row['created_by'] == $currentUserId);
+            if ($canManage) {
+                // I link verranno poi gestiti in JS tramite swal, ma li includiamo nel dato JSON per avere il flag canModify
+                
+            }
+            $row['display_event'] = $displayEvent;
+            $eventData[$row['date']][] = $row;
         }
     }
     $stmt->close();
@@ -121,7 +128,7 @@ function getCalendar($month, $year, $conn, $id_course) {
             $eventAttributes = '';
             if ($hasEvent) {
                 $eventList = array_map(function($e) {
-                    return htmlspecialchars($e['event'] . " (creato da: " . $e['creator_name'] . ")", ENT_QUOTES, 'UTF-8');
+                    return $e['display_event'];
                 }, $eventData[$dateStr]);
                 $allEvents   = implode(" | ", $eventList);
                 $eventAttributes = " data-event='{$allEvents}'";
@@ -145,7 +152,7 @@ function getCalendar($month, $year, $conn, $id_course) {
                 $eventAttributes = '';
                 if ($hasEvent) {
                     $eventList = array_map(function($e) {
-                        return htmlspecialchars($e['event'] . " (creato da: " . $e['creator_name'] . ")", ENT_QUOTES, 'UTF-8');
+                        return $e['display_event'];
                     }, $eventData[$dateStr]);
                     $allEvents   = implode(" | ", $eventList);
                     $eventAttributes = " data-event='{$allEvents}'";
@@ -162,7 +169,7 @@ function getCalendar($month, $year, $conn, $id_course) {
     return $html;
 }
 
-$calendarHtml = getCalendar($month, $year, $conn, $id_course);
+$calendarHtml = getCalendar($month, $year, $conn, $id_course, $id_user, $isAdmin);
 
 // Prepara i dati per il calendario in formato JSON (solo eventi non vuoti)
 $stmt = $conn->prepare("
@@ -180,6 +187,8 @@ $result = $stmt->get_result();
 $calendarData = [];
 while ($row = $result->fetch_assoc()) {
     if (!empty($row['event'])) {
+        // Imposta il flag canModify: true se l'utente è admin oppure se il docente ha creato l'evento
+        $row['canModify'] = ($isAdmin || $row['created_by'] == $id_user);
         $calendarData[] = $row;
     }
 }

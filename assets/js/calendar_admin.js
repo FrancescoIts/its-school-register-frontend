@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Filtra gli eventi presenti nei dati JSON
     let events = calendarData.filter(e => e.event && e.created_by);
 
     function renderCalendar() {
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let dd   = String(currentDate.getDate()).padStart(2, '0');
             let dateString = `${yyyy}-${mm}-${dd}`;
 
+            // Cerca eventuali eventi in questa data
             let existingEvent = events.find(e => e.date === dateString);
 
             let cell = document.createElement('div');
@@ -89,11 +91,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /* 
-           Se esiste un evento e l'evento NON è gestibile (ossia l'utente NON è admin 
-           oppure, se admin, non è il creatore), mostriamo un pop up in sola lettura 
-           con i dettagli, in stile SweetAlert come nel calendario utente.
+           Se esiste un evento e l'utente NON ha i permessi per gestirlo 
+           (ossia, se NON è admin E l'evento non è stato creato da lui),
+           mostriamo un popup in sola lettura con i dettagli.
         */
-        if (existingEvent && (!isAdmin || (isAdmin && parseInt(createdBy) !== parseInt(userId)))) {
+        if (existingEvent && (!isAdmin && parseInt(createdBy) !== parseInt(userId))) {
             Swal.fire({
                 title: `Dettagli: ${dateItalianFormat}`,
                 html: `<strong>Evento:</strong> ${eventText}<br><strong>Creato da:</strong> ${creatorName}`,
@@ -104,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Se non esiste l'evento oppure l'utente può gestirlo (admin e creatore), permettiamo l'aggiunta/modifica
+        // Se non esiste l'evento oppure l'utente può gestirlo, permettiamo l'aggiunta/modifica
         let title = existingEvent ? 'Gestione Evento' : 'Aggiungi Nuovo Evento';
         let inputValue = existingEvent ? existingEvent.event : '';
 
