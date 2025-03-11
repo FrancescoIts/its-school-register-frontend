@@ -13,4 +13,4 @@
 ## Fixes
 1. Nuova gestione moduli (altre informazioni per la lezione da inserire oltre le presenze)
 2. ~~Fix Docente modifica ed eliminazione evento~~
-3. giorni di assenze degli studenti per gli admin in una tabella
+3. ~~giorni di assenze degli studenti per gli admin in una tabella~~
