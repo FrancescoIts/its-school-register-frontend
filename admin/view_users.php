@@ -57,7 +57,7 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
 /* --- Recupero utenti dei corsi assegnati all'admin/sadmin --- */
 $query = "
     SELECT u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active, 
-           COALESCE(GROUP_CONCAT(DISTINCT c.name ORDER BY c.name SEPARATOR ', '), 'Nessun corso') AS courses,
+           COALESCE(GROUP_CONCAT(DISTINCT CONCAT(c.name, ' (', c.period, ')') ORDER BY c.name SEPARATOR ', '), 'Nessun corso') AS courses,
            COALESCE(GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR ', '), 'Nessun ruolo') AS roles
     FROM users u
     JOIN user_role_courses urc ON u.id_user = urc.id_user

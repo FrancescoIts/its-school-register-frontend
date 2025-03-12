@@ -194,7 +194,6 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
             $stmtIM->execute();
             $stmtIM->close();
         }
-        
         $stmtM->close();
     }
     
@@ -214,8 +213,6 @@ if (isset($_POST['salva_presenze']) && $idCorsoSelezionato > 0) {
 }
 
 // Recupera gli studenti del corso e le presenze già salvate...
-// (Il resto del codice rimane invariato fino al form per le presenze)
-
 if ($idCorsoSelezionato > 0) {
     $sqlStud = "
         SELECT u.id_user, u.firstname, u.lastname
@@ -276,13 +273,18 @@ if ($idCorsoSelezionato > 0) {
             ?>
             <p><strong><?php echo htmlspecialchars($nomeCorsoSelezionato); ?></strong></p>
             <br>
+            
+            <!-- Inserisco due hidden per trasmettere gli orari standard -->
+            <input type="hidden" id="defaultStartTime" value="<?php echo $giornoStart; ?>">
+            <input type="hidden" id="defaultEndTime" value="<?php echo $giornoEnd; ?>">
+            
             <!-- Form per inserire le presenze e selezionare il modulo -->
             <form method="post" class="styled-form" id="attendanceForm">
                 <input type="hidden" name="id_course" value="<?php echo $idCorsoSelezionato; ?>" />
                 <div>
                     <label for="id_module">Seleziona Modulo (per questa lezione):</label>
                     <select name="id_module" id="id_module">
-                        <option value="0">-- Nessun modulo --</option>
+                        <option value="0">Nessun modulo</option>
                         <?php
                         // Recupera i moduli per il corso selezionato
                         $sqlMod = "SELECT id_module, module_name, module_duration FROM modules WHERE id_course = ? ORDER BY module_name";
@@ -297,7 +299,15 @@ if ($idCorsoSelezionato > 0) {
                         ?>
                     </select>
                 </div>
-                <br>
+                <!-- Pulsanti per facilitare l'uso -->
+                <div class="button-utilities" style="margin-bottom: 15px; text-align: center;">
+                    <button type="button" onclick="checkAllStudents()">Seleziona tutti</button>
+                    <button type="button" onclick="fillTimes()">Riempie orari</button>
+                </div>
+                            <!-- Campo filtro per nome/cognome -->
+            <div style="text-align: center; margin-bottom: 15px;">
+                <input type="text" id="studentFilter" placeholder="Filtra per nome o cognome..." style="padding: 5px; width: 50%;">
+            </div>
                 <div class="table-container">
                     <table class="attendance-table">
                         <tr>
@@ -312,7 +322,7 @@ if ($idCorsoSelezionato > 0) {
                             $exitH  = $mappaPresenze[$stId]['exit_hour']  ?? '';
                             $isPresente = (!empty($entryH) && !empty($exitH));
                         ?>
-                        <tr>
+                        <tr class="student-row">
                             <td><?php echo htmlspecialchars($stud['lastname'] . " " . $stud['firstname']); ?></td>
                             <td>
                                 <label class="checkbox">
@@ -373,3 +383,4 @@ if ($idCorsoSelezionato > 0) {
         echo "<p>Nessun corso disponibile o non selezionato.</p>";
     }
 }
+?>

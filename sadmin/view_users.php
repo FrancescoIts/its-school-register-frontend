@@ -13,10 +13,12 @@ $query = "
         u.email, 
         u.phone, 
         u.active, 
-        GROUP_CONCAT(DISTINCT c.name ORDER BY c.name SEPARATOR ', ') AS courses
+        GROUP_CONCAT(DISTINCT CONCAT(c.name, ' (', c.period, ')') ORDER BY c.name SEPARATOR ', ') AS courses,
+        GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR ', ') AS roles
     FROM users u
     JOIN user_role_courses urc ON u.id_user = urc.id_user
     JOIN courses c ON urc.id_course = c.id_course
+    JOIN roles r ON urc.id_role = r.id_role
     WHERE urc.id_role = 3
     GROUP BY u.id_user, u.firstname, u.lastname, u.email, u.phone, u.active
 ";
@@ -24,9 +26,9 @@ $stmt = $conn->prepare($query);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$users = [];
+$admins = [];
 while ($row = $result->fetch_assoc()) {
-    $users[] = $row;
+    $admins[] = $row;
 }
 $stmt->close();
 
@@ -52,52 +54,45 @@ if (isset($_GET['action']) && isset($_GET['id_user'])) {
         echo "<script>window.location.href = 'sadmin_panel.php#viewUsers';</script>";
         exit;
     }
+    $stmt->close();
 }
 ?>
 
-<div class="view-users-table-container">
-    <h3>Lista Utenti Admin</h3>
-    <table class="view-users-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Cognome</th>
-                <th>Email</th>
-                <th>Telefono</th>
-                <th>Corsi</th>
-                <th>Stato</th>
-                <th>Azioni</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($users as $user): ?>
-                <tr>
-                    <td><?php echo $user['id_user']; ?></td>
-                    <td><?php echo htmlspecialchars($user['firstname']); ?></td>
-                    <td><?php echo htmlspecialchars($user['lastname']); ?></td>
-                    <td><?php echo htmlspecialchars($user['email']); ?></td>
-                    <td><?php echo htmlspecialchars($user['phone']); ?></td>
-                    <td><?php echo htmlspecialchars($user['courses']); ?></td>
-                    <td><?php echo $user['active'] ? 'Attivo' : 'Inattivo'; ?></td>
-                    <td>
-                        <div class="view-users-actions">
-                            <?php if ($user['active']): ?>
-                                <a href="?action=deactivate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button inactive" onclick="return confirmDeactivate(this);">
-                                    Disattiva
-                                </a>
-                            <?php else: ?>
-                                <a href="?action=activate&id_user=<?php echo $user['id_user']; ?>" class="view-users-button active" onclick="return confirmActivate(this);">
-                                    Attiva
-                                </a>
-                            <?php endif; ?>
-                            <a href="?action=delete&id_user=<?php echo $user['id_user']; ?>" class="view-users-button delete" onclick="return confirmDelete(this);">
-                                Elimina
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+<div class="users-container">
+    <?php foreach ($admins as $admin): ?>
+        <div class="user-card">
+            <div class="user-card-header <?php echo $admin['active'] ? '' : 'inactive'; ?>">
+                <?php echo htmlspecialchars($admin['firstname'] . ' ' . $admin['lastname']); ?>
+                <span style="float:right; font-size:0.8rem;">
+                    <?php echo $admin['active'] ? 'Attivo' : 'Inattivo'; ?>
+                </span>
+            </div>
+            <div class="user-card-body">
+                <p><strong>Email:</strong> <?php echo htmlspecialchars($admin['email']); ?></p>
+                <p><strong>Telefono:</strong> <?php echo htmlspecialchars($admin['phone']); ?></p>
+                <p><strong>Corsi:</strong> <?php echo htmlspecialchars($admin['courses']); ?></p>
+                <p><strong>Ruolo:</strong> <?php echo htmlspecialchars($admin['roles']); ?></p>
+            </div>
+            <div class="user-card-actions">
+                <?php if ($admin['active']): ?>
+                    <a href="?action=deactivate&id_user=<?php echo $admin['id_user']; ?>" 
+                       class="inactive" 
+                       onclick="return confirmDeactivate(this);">
+                       Disattiva
+                    </a>
+                <?php else: ?>
+                    <a href="?action=activate&id_user=<?php echo $admin['id_user']; ?>" 
+                       class="inactive" 
+                       onclick="return confirmActivate(this);">
+                       Attiva
+                    </a>
+                <?php endif; ?>
+                <a href="?action=delete&id_user=<?php echo $admin['id_user']; ?>" 
+                   class="delete"
+                   onclick="return confirmDelete(this);">
+                   Elimina
+                </a>
+            </div>
+        </div>
+    <?php endforeach; ?>
 </div>

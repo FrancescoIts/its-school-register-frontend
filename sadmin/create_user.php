@@ -2,11 +2,11 @@
 require_once '../utils/config.php';
 require_once '../utils/check_session.php';
 
-// Verifica se l'utente ha i permessi di accesso (solo sadmin può accedere)
 $user = checkSession(true, ['sadmin']);
 
 // Recupera tutti i corsi esistenti (il sadmin può assegnare admin a qualsiasi corso)
-$query = "SELECT id_course, name FROM courses";
+// Ora includiamo anche il periodo concatenato al nome del corso.
+$query = "SELECT id_course, CONCAT(name, ' (', period, ')') AS name FROM courses";
 $stmt = $conn->prepare($query);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = '<div class="create-user-message error">Email non valida o dominio errato.</div>';
     } 
     // Controllo validità password
-    elseif (!preg_match('/^(?=.*[0-9].*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};\':\"\\|,.<>\/?]).{8,}$/', $password)) {
+    elseif (!preg_match('/^(?=.*[0-9].*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]).{8,}$/', $password)) {
         $message = '<div class="create-user-message error">La password deve contenere almeno 8 caratteri, 2 numeri e 1 carattere speciale.</div>';
     } 
     else {

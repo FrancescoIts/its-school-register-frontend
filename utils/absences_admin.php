@@ -203,6 +203,11 @@ $selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
 
     <h3 style="text-align:center;">Assenze anno <?php echo $currentYear; ?></h3>
 
+    <!-- Campo filtro per cercare per studente -->
+    <div id="filter-container" style="text-align:center; margin-bottom:20px;">
+        <input type="text" id="studentFilter" placeholder="Filtra per studente..." style="padding:5px; width:50%;">
+    </div>
+
     <?php
     // Se nessuno studente ha assenze, stampiamo un messaggio
     if (empty($studentAbsences)) {
@@ -224,8 +229,9 @@ $selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
                 $totalAbsences += $rec['hours'];
             }
 
-            // Stampa un titolo per lo studente
-            echo '<h4 style="margin-top: 20px;">'.$studentName.'</h4>';
+            // Avvolgo ogni blocco studente in un div con classe "student-block" per facilitare il filtro
+            echo '<div class="student-block">';
+            echo '<h4 style="margin-top: 20px;">' . htmlspecialchars($studentName) . '</h4>';
 
             // Costruiamo la tabella
             echo '<div class="responsive-table">';
@@ -263,8 +269,25 @@ $selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
                  . '\'' . number_format($totalAbsences, 2, '.', '') . '\')">
                  Calcola % assenze e copia
                 </button>';
+
+            echo '</div>'; // Fine .student-block
         }
     }
     ?>
-
 </div>
+
+<script>
+// Filtro per i blocchi studenti
+document.getElementById('studentFilter').addEventListener('keyup', function() {
+    var filterValue = this.value.toLowerCase();
+    var studentBlocks = document.querySelectorAll('.student-block');
+    studentBlocks.forEach(function(block) {
+        var studentName = block.querySelector('h4').textContent.toLowerCase();
+        if (studentName.includes(filterValue)) {
+            block.style.display = '';
+        } else {
+            block.style.display = 'none';
+        }
+    });
+});
+</script>

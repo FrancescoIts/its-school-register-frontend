@@ -1,10 +1,5 @@
 <?php
 require_once '../utils/check_session.php'; 
-
-$user = checkSession();
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 ?>
 
 
@@ -18,6 +13,7 @@ ini_set('display_errors', 1);
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
     <link rel="stylesheet" href="../assets/css/loader.css">
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
+    <link rel="stylesheet" href="../assets/css/view_courses.css">
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/overflow.css">
     <link rel="stylesheet" href="../assets/css/view_users.css">
@@ -35,6 +31,7 @@ ini_set('display_errors', 1);
 <script src="../assets/js/view_users.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
 <script src="../assets/js/loader.js" defer></script>
+<script src="../assets/js/create_course.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -103,6 +100,41 @@ ini_set('display_errors', 1);
     </div>
 </div>
 </div>
+
+<!-- Sezione Crezione Utenti -->
+<div class="dashboard" data-section="viewCourse" id="viewCourse">
+<div class="dashboard-header">
+    <h3>Visualizza Corsi</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+    <div class="courses">
+        <div class="course-card">
+            <?php
+                require_once './view_courses.php';
+            ?>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Sezione Crezione Utenti -->
+<div class="dashboard" data-section="createCourse" id="createCourse">
+<div class="dashboard-header">
+    <h3>Crezione Corso</h3>
+    <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+    <div class="courses">
+        <div class="course-card">
+            <?php
+                require_once './create_course.php';
+            ?>
+        </div>
+    </div>
+</div>
+</div>
+
 <?php require('../utils/loader.php'); ?>
 </body>
 </html>

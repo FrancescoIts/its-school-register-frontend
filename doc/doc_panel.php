@@ -29,6 +29,7 @@ require_once '../utils/check_session.php';
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar_admin.js" defer></script>
 <script src="../assets/js/loader.js" defer></script>
+<script src="../assets/js/attendance.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
