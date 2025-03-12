@@ -93,88 +93,104 @@ require_once '../utils/check_session.php';
     </div>
 </div>
 <div class="navbar-placeholder"></div>
+
 <!-- Sezione Corsi -->
 <div class="dashboard">
-    <h3 class="">Corsi</h3>
-    <div class="courses">
-    <?php
-        require_once '../utils/getCourse.php';
-    ?>
+    <div class="dashboard-header">
+        <h3>Corsi</h3>
+        <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+        <div class="courses">
+        <?php
+            require_once '../utils/getCourse.php';
+        ?>
+        </div>
     </div>
 </div>
 
 <!-- Sezione Calendario con Eventi -->
 <div class="dashboard" id="calendarAdmin" data-section="events">
-<div class="dashboard-header">
-    <h3 class="">Calendario Eventi</h3>
-    <span class="toggle-icon">&#9660;</span>
+    <div class="dashboard-header">
+        <h3>Calendario Eventi</h3>
+        <span class="toggle-icon">&#9660;</span>
     </div>
     <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">
-            <?php
-                require_once '../utils/calendar_admin.php';
-            ?>
-        </div>
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once '../utils/calendar_admin.php';
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Sezione Presenze -->
 <div class="dashboard" id="attendanceAdmin">
-    <h3>Lezione di oggi</h3>
-    <div class="courses">
-        <div class="course-card">
-        <?php
-            require_once '../utils/manage_attendance.php';
-         ?>
+    <div class="dashboard-header">
+        <h3>Lezione di oggi</h3>
+        <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once '../utils/manage_attendance.php';
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Sezione Presenze -->
+<!-- Sezione Panoramica Presenze/Assenze -->
 <div class="dashboard" id="Panoramica">
-    <h3>Panoramica Presenze/Assenze</h3>
-    <div class="courses">
-        <div class="course-card">
-        <?php
-            require_once '../utils/modify_attendance.php';
-         ?>
+    <div class="dashboard-header">
+        <h3>Panoramica Presenze/Assenze</h3>
+        <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once '../utils/modify_attendance.php';
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Sezione Statistiche -->
 <div class="dashboard" data-section="events" id="statistiche">
-<div class="dashboard-header">
-    <h3>Statistiche Studenti</h3>
-    <span class="toggle-icon">&#9660;</span>
+    <div class="dashboard-header">
+        <h3>Statistiche Studenti</h3>
+        <span class="toggle-icon">&#9660;</span>
     </div>
     <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">
-            <?php
-            require_once '../utils/stats_total.php'; 
-            ?>
-        </div>
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once '../utils/stats_total.php'; 
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Sezione Impostazioni Corsi -->
 <div class="dashboard" id="courseSettings" data-section="coursesSettings">
-<div class="dashboard-header">
-    <h3>Impostazioni Corsi</h3>
-    <span class="toggle-icon">&#9660;</span>
+    <div class="dashboard-header">
+        <h3>Impostazioni Corsi</h3>
+        <span class="toggle-icon">&#9660;</span>
     </div>
     <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">
-            <?php
-                require_once './courses_admin.php';
-            ?>
-        </div>
-        <div class="course-card">
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once './courses_admin.php';
+                ?>
+            </div>
+            <div class="course-card">
                 <?php require_once './create_module.php'; ?>
             </div>
         </div>
@@ -183,68 +199,73 @@ require_once '../utils/check_session.php';
 
 <!-- Sezione Mostra Utenti -->
 <div class="dashboard" id="viewUsers" data-section="showUsers">
-<div class="dashboard-header">
-    <h3>Mostra Utenti</h3>
-    <span class="toggle-icon">&#9660;</span>
+    <div class="dashboard-header">
+        <h3>Mostra Utenti</h3>
+        <span class="toggle-icon">&#9660;</span>
     </div>
     <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">
-            <?php
-                require_once './view_users.php';
-            ?>
-        </div>
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once './view_users.php';
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Sezione Crezione Utenti -->
 <div class="dashboard" data-section="createUser" id="createUser">
-<div class="dashboard-header">
-    <h3>Crezione Utenti</h3>
-    <span class="toggle-icon">&#9660;</span>
+    <div class="dashboard-header">
+        <h3>Crezione Utenti</h3>
+        <span class="toggle-icon">&#9660;</span>
     </div>
     <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card">
-            <?php
-                require_once './create_user.php';
-            ?>
+        <div class="courses">
+            <div class="course-card">
+                <?php
+                    require_once './create_user.php';
+                ?>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <!-- Sezione Calendario Assenze Studenti -->
 <div class="dashboard" id="abencesAdmin" data-section="studentsAbesences">
-<div class="dashboard-header">
-    <h3>Calendario Assenze Studenti</h3>
-    <span class="toggle-icon">&#9660;</span>
+    <div class="dashboard-header">
+        <h3>Calendario Assenze Studenti</h3>
+        <span class="toggle-icon">&#9660;</span>
     </div>
     <div class="dashboard-content">
-    <div class="courses">
-        <div class="course-card" id="calendar-absences">
-        
-            <?php
-                require_once '../utils/absences_admin.php';
-            ?>
-        </div>
+        <div class="courses">
+            <div class="course-card" id="calendar-absences">
+                <?php
+                    require_once '../utils/absences_admin.php';
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Sezione Informazioni personali -->
 <div class="dashboard" id="personal">
-    <h3 class="">Le tue informazioni</h3>
-    <div class="courses">
-        <div class="course-card info">
-            <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
-            <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
-            <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-            <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+    <div class="dashboard-header">
+        <h3>Le tue informazioni</h3>
+        <span class="toggle-icon">&#9660;</span>
+    </div>
+    <div class="dashboard-content">
+        <div class="courses">
+            <div class="course-card info">
+                <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
+                <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
+                <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+                <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+            </div>
         </div>
     </div>
 </div>  
+
 <?php require('../utils/loader.php'); ?>
 </body>
 </html>

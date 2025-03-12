@@ -99,7 +99,7 @@ $stmt->close();
 <form method="post">
     <label>Seleziona una data e un corso:</label><br><br>
     <select name="sel_date" required>
-        <option value="">-- Seleziona --</option>
+        <option value="">Seleziona</option>
         <?php foreach ($opzioni as $opt): 
             $valCombo = htmlspecialchars($opt['date'] . '|' . $opt['id_course']);
             $labelCombo = htmlspecialchars($opt['date'] . ' - ' . $opt['course_name']);

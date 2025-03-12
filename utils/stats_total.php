@@ -95,7 +95,6 @@ $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
-
 $students = [];
 while ($row = $result->fetch_assoc()) {
     $students[] = [
@@ -111,50 +110,69 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 ?>
 
-
-
-<div class="scrollable-table">
-<div class="student-list">
-  <?php if (!empty($students)): ?>
-    <?php foreach ($students as $student): ?>
-      <div class="student-item" data-userid="<?= $student['id_user'] ?>">
-          <div class="student-title">
-              <?= htmlspecialchars($student['full_name']) ?> (Corso: <?= htmlspecialchars($student['course']) ?>)
-          </div>
-
-          <div class="student-details" id="details-<?= $student['id_user'] ?>">
-            <h4>Dettagli assenze per <?= htmlspecialchars($student['full_name']) ?> 
-            (Corso: <?= htmlspecialchars($student['course']) ?>, Anno: <?= htmlspecialchars(date('Y')) ?>)</h4>
-            <br>
-            <div class="charts-container">
-                <!-- Grafico a torta -->
-                <div class="chart-container">
-                    <h3>Percentuale di Assenza</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="absenceChart-<?= $student['id_user'] ?>"></canvas>
-                    </div>
-                    <div class="absence-percentage" id="percent-<?= $student['id_user'] ?>">
-                        <strong>Assenze: <?= $student['absence_percentage'] ?> (<?= $student['total_absences'] ?> ore su 900)</strong>
-                    </div>
-                </div>
-
-                <!-- Grafico a barre -->
-                <div class="chart-container">
-                    <h3>Assenze per Giorno</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="absenceDaysChart-<?= $student['id_user'] ?>"></canvas>
-                    </div>
-                </div>
+<!-- Dashboard Wrapper -->
+    <div class="dashboard-content" style="margin: 0 auto;">
+        <!-- Filtro per ricerca nome o corso -->
+        <div class="filter-container" style="margin-bottom: 15px; text-align: center;">
+            <input type="text" id="filterInput" placeholder="Filtra per nome o corso..." style="padding: 5px; width: 50%;">
+        </div>
+        <div class="scrollable-table">
+            <div class="student-list">
+              <?php if (!empty($students)): ?>
+                <?php foreach ($students as $student): ?>
+                  <div class="student-item" data-userid="<?= $student['id_user'] ?>">
+                      <div class="student-title">
+                          <?= htmlspecialchars($student['full_name']) ?> (Corso: <?= htmlspecialchars($student['course']) ?>)
+                      </div>
+                      <div class="student-details" id="details-<?= $student['id_user'] ?>">
+                        <h4>Dettagli assenze per <?= htmlspecialchars($student['full_name']) ?> 
+                        (Corso: <?= htmlspecialchars($student['course']) ?>, Anno: <?= htmlspecialchars(date('Y')) ?>)</h4>
+                        <br>
+                        <div class="charts-container">
+                            <!-- Grafico a torta -->
+                            <div class="chart-container">
+                                <h3>Percentuale di Assenza</h3>
+                                <div class="chart-wrapper">
+                                    <canvas id="absenceChart-<?= $student['id_user'] ?>"></canvas>
+                                </div>
+                                <div class="absence-percentage" id="percent-<?= $student['id_user'] ?>">
+                                    <strong>Assenze: <?= $student['absence_percentage'] ?> (<?= $student['total_absences'] ?> ore su 900)</strong>
+                                </div>
+                            </div>
+                            <!-- Grafico a barre -->
+                            <div class="chart-container">
+                                <h3>Assenze per Giorno</h3>
+                                <div class="chart-wrapper">
+                                    <canvas id="absenceDaysChart-<?= $student['id_user'] ?>"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                  <p>Nessuno studente trovato.</p>
+              <?php endif; ?>
             </div>
-          </div>
-      </div>
-    <?php endforeach; ?>
-  <?php else: ?>
-      <p>Nessuno studente trovato.</p>
-  <?php endif; ?>
-</div>
-</div>
+        </div>
+    </div>
+
+
 <script>
+// Filtro per cercare per nome o corso
+document.getElementById('filterInput').addEventListener('keyup', function() {
+    var filterValue = this.value.toLowerCase();
+    var items = document.querySelectorAll('.student-item');
+    items.forEach(function(item) {
+        var title = item.querySelector('.student-title').textContent.toLowerCase();
+        if (title.includes(filterValue)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const items = document.querySelectorAll('.student-item');
     let openStudentId = null;
@@ -235,7 +253,6 @@ function loadStudentStats(userId) {
                 return;
             }
             
-            // Mappatura dei giorni: dall'inglese all'italiano
             const invertedMapping = {
                 'Lunedì': 'Monday',
                 'Martedì': 'Tuesday',
@@ -243,7 +260,6 @@ function loadStudentStats(userId) {
                 'Giovedì': 'Thursday',
                 'Venerdì': 'Friday'
             };
-            // Etichette in italiano in ordine
             const labels = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'];
             const weekAbsences = data.week_absences || {};
             const daysData = labels.map(italianDay => {
@@ -279,6 +295,3 @@ function loadStudentStats(userId) {
         .catch(error => console.error('Errore nel caricamento delle statistiche per i giorni:', error));
 }
 </script>
-
-</body>
-</html>
