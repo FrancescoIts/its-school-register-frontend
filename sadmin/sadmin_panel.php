@@ -54,6 +54,12 @@ require_once '../utils/check_session.php';
             <a href="#createUser" class="nav-item" data-label="Crea Utente">
                 <i class="fas fa-user-plus"></i>
             </a>
+            <a href="#viewCourses" class="nav-item" data-label="Visualizza Corsi">
+                <i class="fa fa-list"></i>
+            </a>
+            <a href="#createCourse" class="nav-item" data-label="Crea Corso">
+                <i class="fas fa-cogs"></i>
+            </a>
         </div>
 
     <div class="navbar-actions">
@@ -102,7 +108,7 @@ require_once '../utils/check_session.php';
 </div>
 
 <!-- Sezione Crezione Utenti -->
-<div class="dashboard" data-section="viewCourse" id="viewCourse">
+<div class="dashboard" data-section="viewCourses" id="viewCourses">
 <div class="dashboard-header">
     <h3>Visualizza Corsi</h3>
     <span class="toggle-icon">&#9660;</span>
