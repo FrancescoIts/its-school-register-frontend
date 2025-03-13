@@ -65,6 +65,8 @@ if (document.readyState !== 'complete') {
 // Nascondi il loader una volta che la pagina è completamente caricata
 window.addEventListener('load', hideLoader);
 
+const elemento = document.getElementById('attendanceForm');
+if (elemento) {
 document.getElementById("attendanceForm").addEventListener("submit", function(e) {
   // Ferma la propagazione per evitare che il listener globale (che mostra il loader) si attivi
   e.stopImmediatePropagation();
@@ -109,3 +111,4 @@ document.getElementById("attendanceForm").addEventListener("submit", function(e)
      });
   }
 });
+}

@@ -50,7 +50,7 @@ $stmt->close();
             </div>
             <div class="responsive-table__body">
                 <?php foreach ($courses as $course): 
-                    // Prepara la stringa per i dettagli (per il popup)
+                    // Prepara la stringa per i dettagli
                     $details = "";
                     if (!empty($course['admin_names'])) {
                         $details .= "<strong>Admin:</strong> " . htmlspecialchars($course['admin_names']) . "<br>";
@@ -82,42 +82,4 @@ $stmt->close();
     <?php endif; ?>
 </div>
 
-<script>
-function showDetails(courseData) {
-    // courseData contiene i dati del corso, inclusi i nomi aggregati
-    var htmlContent = "<p><strong>Corso:</strong> " + courseData.name + " (" + courseData.period + ")</p>" +
-                      "<p><strong>Anno:</strong> " + courseData.year + "</p>" +
-                      "<p><strong>Admin (" + courseData.admin_count + "):</strong><br>" + (courseData.admin_names || "Nessuno") + "</p>" +
-                      "<p><strong>Docenti (" + courseData.teacher_count + "):</strong><br>" + (courseData.teacher_names || "Nessuno") + "</p>" +
-                      "<p><strong>Studenti (" + courseData.student_count + "):</strong><br>" + (courseData.student_names || "Nessuno") + "</p>";
-    
-    Swal.fire({
-        title: 'Dettagli Utenti',
-        html: htmlContent,
-        icon: 'info',
-        allowOutsideClick: false,
-        showCloseButton: true,
-        confirmButtonText: 'Chiudi'
-    });
-}
 
-function deleteCourse(courseData) {
-    // courseData contiene id, name e period
-    var courseName = courseData.name;
-    var coursePeriod = courseData.period;
-    Swal.fire({
-        title: 'Conferma Eliminazione',
-        text: 'Sei sicuro di voler eliminare il corso "' + courseName + ' (' + coursePeriod + ')"?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sì, elimina!',
-        cancelButtonText: 'Annulla',
-        allowOutsideClick: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Reindirizza all'endpoint per eliminare il corso, passando l'id del corso
-            window.location.href = "delete_course.php?course_id=" + courseData.id_course;
-        }
-    });
-}
-</script>
