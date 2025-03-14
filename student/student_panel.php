@@ -131,20 +131,6 @@ require_once '../utils/check_session.php';
     </div>
     </div>  
 </div>
-
-<!-- Sezione Informazioni personali -->
-<div class="dashboard" id="personal">
-  <h3>Le tue informazioni</h3>
-  <div class="courses">
-      <div class="course-card info">
-          <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
-          <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
-          <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-          <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
-      </div>
-  </div>
-</div>
-
 <!-- Sezione Calendario con Assenze -->
 <div class="dashboard" data-section="absences" id="abences">
   <div class="dashboard-header">
@@ -159,6 +145,21 @@ require_once '../utils/check_session.php';
       </div>
   </div>
 </div>
+
+<!-- Sezione Informazioni personali -->
+<div class="dashboard" id="personal">
+  <h3>Le tue informazioni</h3>
+  <div class="courses">
+      <div class="course-card info">
+          <p><strong>Nome:</strong> <?php echo htmlspecialchars($user['firstname']); ?></p>
+          <p><strong>Cognome:</strong> <?php echo htmlspecialchars($user['lastname']); ?></p>
+          <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+          <p><strong>Telefono:</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+      </div>
+  </div>
+</div>
+
+
 
 </body>
 </html>

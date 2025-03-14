@@ -150,4 +150,3 @@ for ($r = 0; $r < $totalRows; $r++) {
 $html .= '</div></div>';
 
 echo $html;
-exit;
