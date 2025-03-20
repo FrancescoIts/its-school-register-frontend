@@ -6,12 +6,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 
-$user = checkSession(true, ['docente', 'admin', 'sadmin']);
+
+$user = checkSession(true, ['docente', 'admin']);
 
 
-$isAdmin = (in_array('admin', array_map('strtolower', $user['roles'])) || in_array('sadmin', array_map('strtolower', $user['roles'])));
+$isAdmin = (in_array('admin', array_map('strtolower', $user['roles'])));
 
-// -----------------------------------------------------------------------------------
 // Funzione per verificare se l'utente possiede almeno uno dei ruoli indicati.
 function hasAnyRole($userRoles, $allowedRoles) {
     foreach ($userRoles as $r) {
@@ -22,7 +22,6 @@ function hasAnyRole($userRoles, $allowedRoles) {
     return false;
 }
 
-// -----------------------------------------------------------------------------------
 // Funzione per recuperare gli orari di inizio/fine giornata dal DB in base al giorno
 // della settimana e al corso selezionato.
 function dailyCourseTimes($conn, $idCourse, $date) {
@@ -46,7 +45,8 @@ function dailyCourseTimes($conn, $idCourse, $date) {
     return [$start, $end];
 }
 
-if (!hasAnyRole($user['roles'], ['docente', 'admin', 'sadmin'])) {
+// Verifica dei ruoli per l'accesso.
+if (!hasAnyRole($user['roles'], ['docente', 'admin'])) {
     echo "<script>Swal.fire('Accesso Negato', 'Non hai i permessi per modificare le presenze.', 'error');</script>";
     exit;
 }
@@ -58,6 +58,7 @@ $idCorsoSelezionato = (int) ($_POST['id_course'] ?? 0);
 // -----------------------------------------------------------------------------------
 // 1) Recupera date e corsi disponibili per le assenze passate
 if ($isAdmin) {
+    // Se l'utente è admin o sadmin: visualizza solo i corsi a lui assegnati.
     $sql = "
         SELECT DISTINCT a.date, a.id_course, c.name AS course_name
         FROM attendance a
@@ -74,6 +75,7 @@ if ($isAdmin) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('si', $oggi, $user['id_user']);
 } else {
+    // Se l'utente è docente: visualizza solo le presenze create da lui.
     $sql = "
         SELECT DISTINCT a.date, a.id_course, c.name AS course_name
         FROM attendance a
@@ -118,7 +120,7 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
     list($dataSelezionata, $idCorsoSelezionato) = explode('|', $_POST['sel_date']);
 
     if ($isAdmin) {
-        // Per l'admin mostriamo solo le presenze dei corsi a lui assegnati
+        // Per l'admin mostriamo solo le presenze dei corsi a lui assegnati.
         $sql = "
             SELECT a.id, a.id_user, a.entry_hour, a.exit_hour,
                    u.firstname, u.lastname
@@ -137,6 +139,7 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('isi', $idCorsoSelezionato, $dataSelezionata, $user['id_user']);
     } else {
+        // Se docente, mostra solo le presenze create da lui.
         $sql = "
             SELECT a.id, a.id_user, a.entry_hour, a.exit_hour,
                    u.firstname, u.lastname
@@ -164,10 +167,9 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
         exit;
     }
 
-    // Recupera gli orari "min" e "max" dal DB per il giorno selezionato
+    // Recupera gli orari "min" e "max" dal DB per il giorno selezionato.
     list($giornoStart, $giornoEnd) = dailyCourseTimes($conn, $idCorsoSelezionato, $dataSelezionata);
     ?>
-    <div class="scrollable-table">
     <h3>Modifica Presenze del <?= htmlspecialchars($dataSelezionata) ?></h3>
     <form method="post">
         <!-- Ripassiamo data e corso -->
@@ -190,13 +192,20 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
             ?>
             <tr>
                 <td><?= htmlspecialchars($cognomeNome) ?></td>
+                <label class="checkbox">
                 <td>
                     <input type="checkbox"
+                           class="checkbox__input"
                            name="presenze[<?= $idAtt ?>][presente]"
                            value="1"
                            <?= $isPresente ? 'checked' : '' ?>
                     />
+                    <svg class="checkbox__icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect width="24" height="24" fill="#e0e0e0" rx="4"></rect>
+                    <path class="tick" fill="none" stroke="#007bff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M6 12l4 4 8-8"></path>
+                  </svg>
                 </td>
+                </label>
                 <td>
                     <input type="time"
                            name="presenze[<?= $idAtt ?>][entry]"
@@ -219,23 +228,21 @@ if (isset($_POST['mostra_presenze']) && !empty($_POST['sel_date'])) {
             <?php endforeach; ?>
         </table>
         <br>
-        <button type="submit" name="salva_modifiche">Salva Modifiche</button>
+    <div class="button-container">
+        <button type="submit" class="save" name="salva_modifiche">Salva Modifiche</button>
     </form>
-    <!-- Bottone Indietro spostato fuori dal form -->
-    <div style="margin-top: 10px;">
         <?php
             if (in_array('docente', $user['roles'])) {
-                echo '<button class="back attendance" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
+                echo '<button class="back" type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
             } else {
-                echo '<button class="back attendance" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
+                echo '<button class="back" type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
             }
         ?>
-    </div>
     </div>
     <?php
 }
 
-// -----------------------------------------------------------------------------------
+
 // 3) Salvataggio modifiche
 if (isset($_POST['salva_modifiche'])) {
     $dataSelezionata = $_POST['sel_date'] ?? '';
@@ -246,7 +253,7 @@ if (isset($_POST['salva_modifiche'])) {
         exit;
     }
     
-    // Verifica che, in caso di admin, il corso sia assegnato a lui
+    // Verifica che, in caso di admin, il corso sia assegnato a lui.
     if ($isAdmin) {
         $sqlCheck = "
             SELECT id_course 
@@ -291,7 +298,7 @@ if (isset($_POST['salva_modifiche'])) {
             $sqlUpdate = "
                 UPDATE attendance
                 SET entry_hour = ?, exit_hour = ?
-                WHERE id = ?
+                WHERE id = ? 
                   AND id_course IN (
                       SELECT id_course 
                       FROM user_role_courses 
@@ -302,10 +309,11 @@ if (isset($_POST['salva_modifiche'])) {
             $stmtU = $conn->prepare($sqlUpdate);
             $stmtU->bind_param('ssii', $entryHour, $exitHour, $idAttendance, $user['id_user']);
         } else {
+            // Per il docente, aggiornamento solo delle presenze create da lui.
             $sqlUpdate = "
                 UPDATE attendance
                 SET entry_hour = ?, exit_hour = ?
-                WHERE id = ?
+                WHERE id = ? 
                   AND created_by = ?
             ";
             $stmtU = $conn->prepare($sqlUpdate);
@@ -318,7 +326,7 @@ if (isset($_POST['salva_modifiche'])) {
     echo "<script>
         Swal.fire({
             title: 'Successo!',
-            text: 'Modifiche salvate con successo.',
+            text: 'Registro salvato con successo.',
             icon: 'success',
             confirmButtonText: 'OK'
         }).then(() => {

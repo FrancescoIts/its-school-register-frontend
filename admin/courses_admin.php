@@ -63,7 +63,6 @@ $stmt->close();
 <?php if (empty($courses)): ?>
     <p>Non hai corsi associati.</p>
 <?php else: ?>
-    <div class="scrollable-table">
         <form method="POST" action="#courseSettings">
         <h4>Modifica Orari Corso</h4>
             <label for="course_id"></label>
@@ -75,7 +74,6 @@ $stmt->close();
                     </option>
                 <?php endforeach; ?>
             </select>
-            </div>
             <?php
             // Precompila gli orari se è stato selezionato un corso
             $selectedCourse = null;
@@ -91,7 +89,6 @@ $stmt->close();
             }
             ?>
             <?php if ($selectedCourse): ?>
-                <div class="scrollable-table">
                     <div class="justifycontent">
                         <table class="attendance-table">
                             <tr>
@@ -122,7 +119,6 @@ $stmt->close();
                         <br>
                         <button type="submit">Salva Orari</button>
                     </div>
-                </div>
             <?php endif; ?>
         </form>
 <?php endif; ?>

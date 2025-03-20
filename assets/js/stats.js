@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("../utils/stats.php")
         .then(res => res.json())
         .then(data => {
-            console.log("DEBUG data:", data); // <--- Controlla i dati ricevuti
             if (data.error) return console.error(data.error);
 
             // Dati generali
@@ -15,16 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? ((totalAbsences / totalMaxHours) * 100).toFixed(1)
                 : 0;
 
+            // Aggiorna il contenuto per mostrare percentuale e ore
             document.querySelector('.absence-percentage').innerHTML =
-                `<p><strong>Assenze: ${absencePercentage}%</strong></p>`;
-                const dayTranslation = {
-                    "monday": "Lunedì",
-                    "tuesday": "Martedì",
-                    "wednesday": "Mercoledì",
-                    "thursday": "Giovedì",
-                    "friday": "Venerdì"
-                };
+                `<p><strong>Assenze: ${absencePercentage}% (${totalAbsences} ore su ${totalMaxHours} ore)</strong></p>`;
 
+            const dayTranslation = {
+                "monday": "Lunedì",
+                "tuesday": "Martedì",
+                "wednesday": "Mercoledì",
+                "thursday": "Giovedì",
+                "friday": "Venerdì"
+            };
 
             // Chart 1 (doughnut) - Percentuale di Assenza
             const ctx1 = document.getElementById('absenceChart');
@@ -47,11 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ctx2) {
                 const giorniFeriali = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
 
-            //Array dei dati per il grafico, gestendo eventuali errori di giorni
-            const weekData = giorniFeriali.map(giorno => {
-                const englishDay = Object.keys(dayTranslation).find(key => dayTranslation[key] === giorno);
-                return weekAbsences[englishDay] || 0;
-            });
+                // Array dei dati per il grafico, gestendo eventuali errori di giorni
+                const weekData = giorniFeriali.map(giorno => {
+                    const englishDay = Object.keys(dayTranslation).find(key => dayTranslation[key] === giorno);
+                    return weekAbsences[englishDay] || 0;
+                });
 
                 new Chart(ctx2, {
                     type: 'bar',
@@ -72,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
             }
-
         })
         .catch(err => console.error("Errore nel caricamento delle statistiche:", err));
 });

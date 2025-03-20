@@ -13,14 +13,15 @@ if (!isset($_GET['id_user'])) {
 
 $id_user = intval($_GET['id_user']);
 
-// Recupera tutti i corsi dell'utente con i rispettivi orari
+// Recupera tutti i corsi dell'utente con i rispettivi orari e il campo total_hour
 $queryCourses = "
     SELECT c.id_course, 
            c.start_time_monday, c.end_time_monday,
            c.start_time_tuesday, c.end_time_tuesday,
            c.start_time_wednesday, c.end_time_wednesday,
            c.start_time_thursday, c.end_time_thursday,
-           c.start_time_friday, c.end_time_friday
+           c.start_time_friday, c.end_time_friday,
+           c.total_hour
     FROM courses c
     JOIN user_role_courses urc ON c.id_course = urc.id_course
     WHERE urc.id_user = ?
@@ -42,6 +43,12 @@ if (empty($courses)) {
     exit;
 }
 
+// Imposta il totale massimo delle ore come somma dei campi total_hour di tutti i corsi associati
+$total_max_hours = 0;
+foreach ($courses as $course) {
+    $total_max_hours += (int)$course['total_hour'];
+}
+
 // Ottengo l'anno corrente
 $currentYear = date('Y');
 
@@ -53,14 +60,9 @@ $queryAttendance = "
 ";
 
 $stmt = $conn->prepare($queryAttendance);
-
-// Associazione dei parametri (id_user e anno corrente)
 $stmt->bind_param('ii', $id_user, $currentYear);
-
-// Esecuzione della query
 $stmt->execute();
 $result = $stmt->get_result();
-
 
 $total_absences = 0;
 $weekAbsences = [];
@@ -130,8 +132,6 @@ while ($row = $result->fetch_assoc()) {
 }
 
 $stmt->close();
-
-$total_max_hours = 900;
 
 echo json_encode([
     'total_absences'  => $total_absences,

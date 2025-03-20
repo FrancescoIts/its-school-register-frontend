@@ -238,7 +238,7 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
         <script>
           Swal.fire({
               title: 'Successo!',
-              text: 'Modifiche salvate con successo.',
+              text: 'Registro salvato con successo.',
               icon: 'success',
               confirmButtonText: 'OK'
           }).then(() => {
@@ -325,12 +325,12 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
     
         <br>
         <div class="button-container">
-          <button type="submit" name="salva_presenze">Salva Presenze</button>
+          <button type="submit" class="save" name="salva_presenze">Salva Presenze</button>
           <?php
           if (in_array('docente', $user['roles'])) {
-              echo '<button type="button" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
+              echo '<button type="button" class="back" onclick="window.location.href=\'doc_panel.php\'">Indietro</button>';
           } else {
-              echo '<button type="button" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
+              echo '<button type="button" class="back" onclick="window.location.href=\'admin_panel.php\'">Indietro</button>';
           }
           ?>
         </div>

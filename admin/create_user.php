@@ -67,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user'])) {
 }
 ?>
 
-<div class="scrollable-table">
 <div class="create-user-container">
     <?php echo $message; ?>
     <form method="POST" action="#createUser" class="create-user-form">
@@ -123,5 +122,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user'])) {
         <button type="submit" name="create_user" class="btn btn-info create-user-button">Crea Utente</button>
     </form>
 </div>
-</div>
-

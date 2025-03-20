@@ -1,12 +1,13 @@
 function showDetails(courseData) {
     var htmlContent = "<p><strong>Corso:</strong> " + courseData.name + " (" + courseData.period + ")</p>" +
                       "<p><strong>Anno:</strong> " + courseData.year + "</p>" +
+                      "<p><strong>Durata:</strong> " + (courseData.total_hour || "Non definita") + " ore</p>" +
                       "<p><strong>Admin (" + courseData.admin_count + "):</strong><br>" + (courseData.admin_names || "Nessuno") + "</p>" +
                       "<p><strong>Docenti (" + courseData.teacher_count + "):</strong><br>" + (courseData.teacher_names || "Nessuno") + "</p>" +
                       "<p><strong>Studenti (" + courseData.student_count + "):</strong><br>" + (courseData.student_names || "Nessuno") + "</p>";
     
     Swal.fire({
-        title: 'Dettagli Utenti',
+        title: 'Dettagli',
         html: htmlContent,
         icon: 'info',
         allowOutsideClick: false,

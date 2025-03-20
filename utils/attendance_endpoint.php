@@ -160,7 +160,7 @@ if ($operationPerformed && $moduleSelected > 0) {
 if ($operationPerformed) {
     echo json_encode([
         'success' => true,
-        'message' => 'Modifiche salvate con successo.',
+        'message' => 'Registro salvato con successo.',
         'redirect' => $_SERVER['PHP_SELF'] . "?sel_date=" . urlencode($oggi) . "&id_course=" . $idCorsoSelezionato
     ]);
     exit;

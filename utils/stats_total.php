@@ -22,7 +22,7 @@ SELECT
     u.id_user, 
     CONCAT(u.firstname, ' ', u.lastname) AS full_name,
     c.name AS course_name,
-    900 AS total_max_hours,
+    c.total_hour AS total_max_hours,
     COALESCE(SUM(
         CASE 
             WHEN (a.entry_hour IS NULL OR a.exit_hour IS NULL) THEN 
@@ -77,7 +77,7 @@ INNER JOIN courses c ON urc.id_course = c.id_course
 LEFT JOIN attendance a ON u.id_user = a.id_user AND a.id_course = urc.id_course AND YEAR(a.date) = ?
 WHERE urc.id_role = 1 -- Solo studenti
 AND urc.id_course IN (" . implode(',', array_fill(0, count($docCourseIds), '?')) . ")
-GROUP BY u.id_user, full_name, c.name;
+GROUP BY u.id_user, full_name, c.name, c.total_hour;
 ";
 
 // Prepariamo la query
@@ -111,20 +111,19 @@ $stmt->close();
 ?>
 
 <!-- Dashboard Wrapper -->
-    <div class="dashboard-content" style="margin: 0 auto;">
-        <!-- Filtro per ricerca nome o corso -->
-        <div class="filter-container" style="margin-bottom: 15px; text-align: center;">
-            <input type="text" id="filterInput" placeholder="Filtra per nome o corso..." style="padding: 5px; width: 50%;">
-        </div>
-        <div class="scrollable-table">
-            <div class="student-list">
-              <?php if (!empty($students)): ?>
-                <?php foreach ($students as $student): ?>
-                  <div class="student-item" data-userid="<?= $student['id_user'] ?>">
-                      <div class="student-title">
-                          <?= htmlspecialchars($student['full_name']) ?> (Corso: <?= htmlspecialchars($student['course']) ?>)
-                      </div>
-                      <div class="student-details" id="details-<?= $student['id_user'] ?>">
+<div class="dashboard-content" style="margin: 0 auto;">
+    <!-- Filtro per ricerca nome o corso -->
+    <div class="filter-container" style="margin-bottom: 15px; text-align: center;">
+        <input type="text" id="filterInput" placeholder="Filtra per nome o corso..." style="padding: 5px; width: 50%;">
+    </div>
+    <div class="student-list">
+        <?php if (!empty($students)): ?>
+            <?php foreach ($students as $student): ?>
+                <div class="student-item" data-userid="<?= $student['id_user'] ?>">
+                    <div class="student-title">
+                        <?= htmlspecialchars($student['full_name']) ?> (Corso: <?= htmlspecialchars($student['course']) ?>)
+                    </div>
+                    <div class="student-details" id="details-<?= $student['id_user'] ?>">
                         <h4>Dettagli assenze per <?= htmlspecialchars($student['full_name']) ?> 
                         (Corso: <?= htmlspecialchars($student['course']) ?>, Anno: <?= htmlspecialchars(date('Y')) ?>)</h4>
                         <br>
@@ -136,7 +135,7 @@ $stmt->close();
                                     <canvas id="absenceChart-<?= $student['id_user'] ?>"></canvas>
                                 </div>
                                 <div class="absence-percentage" id="percent-<?= $student['id_user'] ?>">
-                                    <strong>Assenze: <?= $student['absence_percentage'] ?> (<?= $student['total_absences'] ?> ore su 900)</strong>
+                                    <strong>Assenze: <?= $student['absence_percentage'] ?> (<?= $student['total_absences'] ?> ore su <?= $student['total_max_hours'] ?>)</strong>
                                 </div>
                             </div>
                             <!-- Grafico a barre -->
@@ -147,16 +146,14 @@ $stmt->close();
                                 </div>
                             </div>
                         </div>
-                      </div>
-                  </div>
-                <?php endforeach; ?>
-              <?php else: ?>
-                  <p>Nessuno studente trovato.</p>
-              <?php endif; ?>
-            </div>
-        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>Nessuno studente trovato.</p>
+        <?php endif; ?>
     </div>
-
+</div>
 
 <script>
 // Filtro per cercare per nome o corso
@@ -207,7 +204,6 @@ function closeAllDetails() {
 }
 
 function loadStudentStats(userId) {
-    // Prima richiesta per il grafico a torta (percentuale di assenza)
     fetch('../utils/stats_student.php?id_user=' + userId)
         .then(response => response.json())
         .then(data => {
@@ -217,11 +213,11 @@ function loadStudentStats(userId) {
             }
 
             const totalAbsences = data.total_absences;
-            const totalMaxHours = 900;
+            const totalMaxHours = data.total_max_hours;
             const absencePercentage = ((totalAbsences / totalMaxHours) * 100).toFixed(1);
 
             document.getElementById('percent-' + userId).innerHTML =
-                `<p><strong>Assenze: ${absencePercentage}% (${totalAbsences} ore su 900)</strong></p>`;
+                `<p><strong>Assenze: ${absencePercentage}% (${totalAbsences} ore su ${totalMaxHours})</strong></p>`;
 
             const ctxDoughnut = document.getElementById('absenceChart-' + userId).getContext('2d');
             if (document.getElementById('absenceChart-' + userId).chart) {

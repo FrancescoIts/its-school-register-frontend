@@ -38,10 +38,32 @@
 
 .button-container .back {
     
-    background-color: crimson;
+    background-color: crimson!important;
 }
 .button-container .back:hover {
-    background-color: rgb(182, 58, 83);
+    background-color: rgb(182, 58, 83)!important;
+}
+.button-container .save {
+    
+    background-color: rgb(8, 104, 5)!important;
+}
+.button-container .save:hover {
+    background-color: rgb(25, 165, 20)!important;
+}
+
+.dark-mode .button-container .back {
+    
+    background-color: rgb(182, 58, 83)!important;
+}
+.dark-mode .button-container .back:hover {
+    background-color: #666!important;
+}
+.dark-mode .button-container .save {
+    
+    background-color: #429C57!important;
+}
+.dark-mode .button-container .save:hover {
+    background-color: #666666!important;
 }
 
 .attendance-table th, .attendance-table td {

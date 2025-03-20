@@ -7,9 +7,10 @@ $swalScript = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Raccolta dei dati dal form
-    $name    = trim($_POST['name'] ?? '');
-    $year    = trim($_POST['year'] ?? '');
-    $period  = trim($_POST['period'] ?? '');
+    $name       = trim($_POST['name'] ?? '');
+    $year       = trim($_POST['year'] ?? '');
+    $period     = trim($_POST['period'] ?? '');
+    $total_hour = trim($_POST['total_hour'] ?? '');
     
     // Orari per ogni giorno feriale (sono required)
     $start_time_monday    = $_POST['start_time_monday'] ?? null;
@@ -24,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $end_time_friday      = $_POST['end_time_friday'] ?? null;
     
     // Validazione dei campi obbligatori
-    if (empty($name) || empty($year) || empty($period)) {
-        $swalScript = "<script>Swal.fire({title:'Errore!', text:'Compilare tutti i campi obbligatori (Nome, Anno e Periodo).', icon:'error'});</script>";
+    if (empty($name) || empty($year) || empty($period) || empty($total_hour)) {
+        $swalScript = "<script>Swal.fire({title:'Errore!', text:'Compilare tutti i campi obbligatori (Nome, Anno, Periodo e Ore Totali).', icon:'error'});</script>";
     } 
     // Controllo sul nome del corso (max 40 caratteri)
     elseif (strlen($name) > 40) {
@@ -38,6 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Controllo sul campo periodo: massimo 9 caratteri
     elseif (strlen($period) > 9) {
         $swalScript = "<script>Swal.fire({title:'Errore!', text:'Il periodo deve avere al massimo 9 caratteri (Es. 2024-2026).', icon:'error'});</script>";
+    }
+    // Validazione del campo total_hour: deve essere numerico e composto da 3 o 4 cifre (min 100, max 9999)
+    elseif (!ctype_digit($total_hour) || strlen($total_hour) < 3 || strlen($total_hour) > 4) {
+        $swalScript = "<script>Swal.fire({title:'Errore!', text:'Le ore totali devono essere un numero di 3 o 4 cifre (Es. 100 - 9999).', icon:'error'});</script>";
     }
     // Controllo degli orari per ogni giorno: uscita > ingresso
     elseif (
@@ -62,20 +67,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($rowDup['count'] > 0) {
             $swalScript = "<script>Swal.fire({title:'Errore!', text:'Esiste già un corso con lo stesso nome, anno e periodo.', icon:'error'});</script>";
         } else {
-            // Preparazione query di inserimento
+            // Preparazione query di inserimento, con il nuovo campo total_hour
             $insertQuery = "INSERT INTO courses 
-                (name, year, period, start_time_monday, end_time_monday, start_time_tuesday, end_time_tuesday, start_time_wednesday, end_time_wednesday, start_time_thursday, end_time_thursday, start_time_friday, end_time_friday)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                (name, year, period, total_hour, start_time_monday, end_time_monday, start_time_tuesday, end_time_tuesday, start_time_wednesday, end_time_wednesday, start_time_thursday, end_time_thursday, start_time_friday, end_time_friday)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 
             $stmt = $conn->prepare($insertQuery);
             if (!$stmt) {
                 $swalScript = "<script>Swal.fire({title:'Errore!', text:'Errore nella preparazione della query: " . addslashes($conn->error) . "', icon:'error'});</script>";
             } else {
                 $stmt->bind_param(
-                    "sisssssssssss", 
+                    "sisi" . "ssssssssss", 
                     $name, 
                     $year, 
                     $period, 
+                    $total_hour, 
                     $start_time_monday, 
                     $end_time_monday, 
                     $start_time_tuesday, 
@@ -98,11 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-    <?php
-    if (!empty($swalScript)) {
-        echo $swalScript;
-    }
-    ?>
+<?php
+if (!empty($swalScript)) {
+    echo $swalScript;
+}
+?>
 <div class="create-user-container">
     <h2 class="create-user-title">Crea Nuovo Corso</h2>
     <form method="POST" action="" class="create-user-form">
@@ -119,6 +125,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label class="create-user-label" for="period">Periodo:</label>
             <input type="text" class="create-user-input" id="period" name="period" placeholder="Es. 2024-2026" required maxlength="9">
         </div>
+        <div class="form-group">
+            <label class="create-user-label" for="total_hour">Ore Totali del Corso:</label>
+            <input type="number" class="create-user-input" id="total_hour" name="total_hour" placeholder="Inserisci ore totali (100-9999)" required min="100" max="9999">
+        </div>
         <h4 style="text-align:center; color:#FFF; margin-bottom:20px;">Orari delle Lezioni (24h)</h4>
         <!-- Sezione per impostare orari predefiniti -->
         <div class="preset-container">
@@ -127,8 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <button type="button" class="preset-button" onclick="applyPresetTimes()">Applica Orari a tutti</button>
         </div>
         <br>
-
-        
         <!-- Lunedì -->
         <div class="form-group">
             <label class="create-user-label" for="start_time_monday">Lunedì - Inizio:</label>
