@@ -13,7 +13,7 @@ if (!isset($_GET['id_user'])) {
 
 $id_user = intval($_GET['id_user']);
 
-// Recupera tutti i corsi dell'utente con i rispettivi orari e il campo total_hour
+// Recupera tutti i corsi dell'utente con i rispettivi orari
 $queryCourses = "
     SELECT c.id_course, 
            c.start_time_monday, c.end_time_monday,
@@ -43,24 +43,32 @@ if (empty($courses)) {
     exit;
 }
 
-// Imposta il totale massimo delle ore come somma dei campi total_hour di tutti i corsi associati
+// Calcola il totale delle ore massime effettive sommando il campo total_hour di ciascun corso
 $total_max_hours = 0;
 foreach ($courses as $course) {
     $total_max_hours += (int)$course['total_hour'];
 }
 
-// Ottengo l'anno corrente
-$currentYear = date('Y');
+/*
+ Calcolo dell'anno accademico corrente:
+ Se il mese corrente è >= 10 (ottobre), l'anno accademico parte da quest'anno (YYYY-10-01),
+ altrimenti parte dall'anno precedente.
+*/
+$currentMonth  = date('n');
+$academicYear  = ($currentMonth >= 10) ? date('Y') : (date('Y') - 1);
+$startAcademic = $academicYear . '-10-01';
+$endAcademic   = ($academicYear + 1) . '-09-30';
 
-// Preparazione della query con l'anno corrente come parametro
+// Preparazione della query per recuperare le presenze in base all'intervallo dell'anno accademico
 $queryAttendance = "
     SELECT a.id_course, a.date, a.entry_hour, a.exit_hour
     FROM attendance a
-    WHERE a.id_user = ? AND YEAR(a.date) = ?
+    WHERE a.id_user = ? 
+      AND a.date BETWEEN ? AND ?
 ";
 
 $stmt = $conn->prepare($queryAttendance);
-$stmt->bind_param('ii', $id_user, $currentYear);
+$stmt->bind_param('iss', $id_user, $startAcademic, $endAcademic);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -107,7 +115,6 @@ while ($row = $result->fetch_assoc()) {
 
         // Calcolo delle ore di assenza
         $absence_hours = 0;
-
         if (!$entry_seconds || !$exit_seconds) {
             $absence_hours = ($standard_exit_seconds - $standard_entry_seconds) / 3600; // Assenza totale
         } else {
@@ -118,8 +125,7 @@ while ($row = $result->fetch_assoc()) {
                 $absence_hours += ($standard_exit_seconds - $exit_seconds) / 3600;
             }
         }
-
-        $absence_hours = round($absence_hours, 2); // Arrotonda a due decimali
+        $absence_hours = round($absence_hours, 2);
 
         $total_absences += $absence_hours;
 

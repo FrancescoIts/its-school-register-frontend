@@ -2,8 +2,7 @@
 require_once 'config.php';
 require_once 'check_session.php';
 
-// Controllo sessione e ruolo admin
-$user = checkSession(true, ['admin']);
+checkSession(true, ['admin']);
 $id_admin = $user['id_user'] ?? 0;
 
 $idRoleAdmin    = 3;
@@ -28,7 +27,7 @@ function getCourseTimes($conn, $id_course, $day_of_week) {
 
 // 1) Recupera TUTTI i corsi di competenza di questo admin
 $sqlCourses = "
-    SELECT c.id_course, c.name
+    SELECT c.id_course, c.name, c.year, c.total_hour
     FROM courses c
     JOIN user_role_courses urc ON urc.id_course = c.id_course
     WHERE urc.id_user = ?
@@ -40,12 +39,13 @@ $stmtC->execute();
 $resC = $stmtC->get_result();
 
 $courseList = [];
+$courseData = []; // Per conservare anche il campo year e total_hour
 while ($r = $resC->fetch_assoc()) {
     $courseList[$r['id_course']] = $r['name'];
+    $courseData[$r['id_course']] = $r;
 }
 $stmtC->close();
 
-// Se l'admin non ha corsi associati, usciamo
 if (empty($courseList)) {
     die("<h3>Nessun corso associato a questo admin</h3>");
 }
@@ -54,9 +54,29 @@ if (empty($courseList)) {
 if (isset($_GET['course_id']) && array_key_exists($_GET['course_id'], $courseList)) {
     $selectedCourse = (int)$_GET['course_id'];
 } else {
-    // Se non specificato, prendi il primo corso disponibile
     $selectedCourse = array_key_first($courseList);
 }
+$selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
+
+// Recupero i dati del corso
+$courseInfo = $courseData[$selectedCourse] ?? null;
+if (!$courseInfo) {
+    die("<h3>Errore: corso non trovato.</h3>");
+}
+
+/*
+ Calcola l'anno accademico corrente.
+ Supponiamo che il corso inizi il 1° ottobre dell'anno indicato in c.year.
+ Se il mese corrente è >= ottobre, l'anno accademico corrente è l'anno in corso,
+ altrimenti è l'anno corrente - 1.
+*/
+$currentMonth  = date('n');
+$academicYear  = ($currentMonth >= 10) ? date('Y') : (date('Y') - 1);
+$startAcademic = $academicYear . "-10-01";
+$endAcademic   = ($academicYear + 1) . "-09-30";
+$resetStats = ($academicYear > $courseInfo['year']);  // Se l'anno accademico corrente è maggiore dell'anno di inizio
+
+$totalMaxHours = (int)$courseInfo['total_hour'];
 
 // 3) Recupero tutti gli studenti del corso selezionato
 $sqlStudents = "
@@ -72,112 +92,79 @@ $stmtS->execute();
 $resS = $stmtS->get_result();
 
 $studentIds   = [];
-$studentsMap  = [];  // Per collegare id_user a "Nome Cognome"
+$studentsMap  = [];
 while ($rowS = $resS->fetch_assoc()) {
     $idU = (int)$rowS['id_user'];
-    $studentIds[]      = $idU;
+    $studentIds[] = $idU;
     $studentsMap[$idU] = trim($rowS['firstname'].' '.$rowS['lastname']);
 }
 $stmtS->close();
 
-// Se non ci sono studenti, usciamo
 if (empty($studentIds)) {
     die("<h3>Non ci sono studenti iscritti a questo corso</h3>");
 }
 
-// 4) Recupero i parametri del calendario (in questo caso usiamo solo l'anno)
-$currentYear  = isset($_GET['year2']) ? (int)$_GET['year2'] : date('Y');
-
-// 5) Recupero le assenze di TUTTI gli studenti di quel corso per l'anno corrente
+// 4) Recupero le assenze degli studenti per l'anno accademico corrente
 $inClauseStd = implode(',', array_fill(0, count($studentIds), '?'));
-
 $sqlA = "
     SELECT id_user, date, entry_hour, exit_hour
     FROM attendance
     WHERE id_user IN ($inClauseStd)
       AND id_course = ?
-      AND YEAR(date) = ?
+      AND date BETWEEN ? AND ?
 ";
 $stmtA = $conn->prepare($sqlA);
-
-// Costruiamo i parametri
-$types = str_repeat('i', count($studentIds)) . 'ii'; 
-$params = array_merge($studentIds, [$selectedCourse, $currentYear]);
+$types = str_repeat('i', count($studentIds)) . 'iss';
+$params = array_merge($studentIds, [$selectedCourse, $startAcademic, $endAcademic]);
 $stmtA->bind_param($types, ...$params);
-
 $stmtA->execute();
 $resA = $stmtA->get_result();
 
-/*
-   Raggruppiamo le assenze per studente:
-   $studentAbsences[id_user] = array di record
-       [
-         'date'       => data dell'assenza,
-         'entry_hour' => ora di entrata,
-         'exit_hour'  => ora di uscita,
-         'hours'      => ore di assenza calcolate
-       ]
-*/
 $studentAbsences = [];
-
 while ($row = $resA->fetch_assoc()) {
-    $date     = $row['date'];
-    $id_user  = (int)$row['id_user'];
-    $entry    = $row['entry_hour'] ?? null;
-    $exit     = $row['exit_hour']  ?? null;
+    $date = $row['date'];
+    $id_user = (int)$row['id_user'];
+    $entry = $row['entry_hour'] ?? null;
+    $exit  = $row['exit_hour'] ?? null;
 
-    // Otteniamo il giorno della settimana
     $dayOfWeek = strtolower(date('l', strtotime($date)));
     list($courseStart, $courseEnd) = getCourseTimes($conn, $selectedCourse, $dayOfWeek);
-
-    // Se non ci sono orari impostati per quel giorno, saltiamo
     if (!$courseStart || !$courseEnd) {
         continue;
     }
-
     $courseStartSec = strtotime($courseStart);
     $courseEndSec   = strtotime($courseEnd);
     $courseDurationHours = ($courseEndSec - $courseStartSec) / 3600;
 
-    // Calcoliamo le ore di assenza
     $absenceHours = 0;
     if (!$entry || !$exit) {
-        // Assenza totale
         $absenceHours = $courseDurationHours;
     } else {
-        $entrySec  = strtotime($entry);
-        $exitSec   = strtotime($exit);
-
-        // Limitiamo la presenza agli orari del corso
+        $entrySec = strtotime($entry);
+        $exitSec  = strtotime($exit);
         $presenceStartSec = max($entrySec, $courseStartSec);
-        $presenceEndSec   = min($exitSec, $courseEndSec);
-
+        $presenceEndSec = min($exitSec, $courseEndSec);
         $presenceHours = 0;
         if ($presenceEndSec > $presenceStartSec) {
             $presenceHours = ($presenceEndSec - $presenceStartSec) / 3600;
         }
         $absenceHours = $courseDurationHours - $presenceHours;
     }
-
     if ($absenceHours > 0) {
         if (!isset($studentAbsences[$id_user])) {
             $studentAbsences[$id_user] = [];
         }
         $studentAbsences[$id_user][] = [
-            'date'       => $date,
+            'date' => $date,
             'entry_hour' => $entry,
-            'exit_hour'  => $exit,
-            'hours'      => $absenceHours
+            'exit_hour' => $exit,
+            'hours' => $absenceHours
         ];
     }
 }
 $stmtA->close();
-
-// Otteniamo il nome del corso selezionato
-$selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
 ?>
 <div class="container">
-    <!-- Form per la scelta del corso -->
     <?php if (count($courseList) > 1): ?>
         <div id="course-select-form">
             <form method="GET" action="">
@@ -190,50 +177,41 @@ $selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
                     }
                     ?>
                 </select>
-                <input type="hidden" name="year2" value="<?php echo $currentYear; ?>">
+                <input type="hidden" name="year2" value="<?php echo $academicYear; ?>">
             </form>
         </div>
         <br>
     <?php else: ?>
-        <!-- Se c’è un solo corso -->
         <h3 style="text-align:center;">
             Corso: <?php echo htmlspecialchars($selectedCourseName); ?>
         </h3>
     <?php endif; ?>
 
-    <h3 style="text-align:center;">Assenze anno <?php echo $currentYear; ?></h3>
+    <h3 style="text-align:center;">Assenze anno accademico <?php echo $academicYear . " - " . ($academicYear + 1); ?>
+        <?php if ($resetStats): ?>
+            <span style="font-size:0.8em; color:#007bff;">(Statistiche resettate per il nuovo anno accademico)</span>
+        <?php endif; ?>
+    </h3>
 
-    <!-- Campo filtro per cercare per studente -->
     <div id="filter-container" style="text-align:center; margin-bottom:20px;">
         <input type="text" id="studentFilter" placeholder="Filtra per studente..." style="padding:5px; width:50%;">
     </div>
 
     <?php
-    // Se nessuno studente ha assenze, stampiamo un messaggio
     if (empty($studentAbsences)) {
         echo '<div style="text-align: center; margin-top:20px;">Nessuna assenza registrata</div>';
     } else {
-        // Per ogni studente che ha assenze
         foreach ($studentAbsences as $id_user => $records) {
-            // Nome dello studente
             $studentName = $studentsMap[$id_user] ?? "Studente #$id_user";
-
-            // Ordiniamo i record di assenza per data (facoltativo)
             usort($records, function($a, $b) {
                 return strtotime($a['date']) <=> strtotime($b['date']);
             });
-
-            // Calcoliamo il totale ore di assenza
             $totalAbsences = 0;
             foreach ($records as $rec) {
                 $totalAbsences += $rec['hours'];
             }
-
-            // Avvolgo ogni blocco studente in un div con classe "student-block" per facilitare il filtro
             echo '<div class="student-block">';
             echo '<h4 style="margin-top: 20px;">' . htmlspecialchars($studentName) . '</h4>';
-
-            // Costruiamo la tabella
             echo '<div class="responsive-table">';
             echo '  <div class="responsive-table__head responsive-table__row">';
             echo '      <div class="responsive-table__head__title">Data</div>';
@@ -241,8 +219,6 @@ $selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
             echo '      <div class="responsive-table__head__title">Uscita</div>';
             echo '      <div class="responsive-table__head__title">Ore di Assenza</div>';
             echo '  </div>';
-            
-            // Riga di dati
             foreach ($records as $rec) {
                 $entry = $rec['entry_hour'] ? htmlspecialchars($rec['entry_hour']) : '/';
                 $exit  = $rec['exit_hour']  ? htmlspecialchars($rec['exit_hour'])  : '/';
@@ -253,41 +229,30 @@ $selectedCourseName = $courseList[$selectedCourse] ?? "Corso #$selectedCourse";
                 echo '  <div class="responsive-table__body__text" data-title="Ore di Assenza">'.number_format($rec['hours'], 2, ',', '').'</div>';
                 echo '</div>';
             }
-
-            // Ultima riga per il totale ore di assenza (in grassetto)
             echo '<div class="responsive-table__row last-row" style="font-weight: bold;">';
             echo '  <div class="responsive-table__body__text" data-title="Totale" style="grid-column: 1 / 4;">Totale ore di assenza</div>';
             echo '  <div class="responsive-table__body__text" data-title="Ore di Assenza">'.number_format($totalAbsences, 2, ',', '').'</div>';
             echo '</div>';
-
-            echo '</div>'; // Fine .responsive-table
-
-            // Pulsante per il calcolo della percentuale e copia in clipboard
+            echo '</div>'; // Fine responsive-table
             echo '<button onclick="calcolaPercentuale('
                  . '\'' . addslashes($studentName) . '\', '
                  . '\'' . addslashes($selectedCourseName) . '\', '
                  . '\'' . number_format($totalAbsences, 2, '.', '') . '\')">
                  Calcola % assenze e copia
                 </button>';
-
-            echo '</div>'; // Fine .student-block
+            echo '</div>';
         }
     }
     ?>
 </div>
 
 <script>
-// Filtro per i blocchi studenti
 document.getElementById('studentFilter').addEventListener('keyup', function() {
     var filterValue = this.value.toLowerCase();
     var studentBlocks = document.querySelectorAll('.student-block');
     studentBlocks.forEach(function(block) {
         var studentName = block.querySelector('h4').textContent.toLowerCase();
-        if (studentName.includes(filterValue)) {
-            block.style.display = '';
-        } else {
-            block.style.display = 'none';
-        }
+        block.style.display = studentName.includes(filterValue) ? '' : 'none';
     });
 });
 </script>
