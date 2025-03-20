@@ -159,6 +159,9 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
         }
     }
 
+    // Flag per segnalare modifiche non permesse
+    $notAllowedModification = false;
+
     // Salvataggio in POST
     if (isset($_POST['salva_presenze'])) {
         $moduleSelected = isset($_POST['id_module']) ? (int)$_POST['id_module'] : 0;
@@ -175,23 +178,29 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
                     $entryHour = null;
                     $exitHour  = null;
                 }
+                // Per i docenti (non admin) controlla eventuali presenze già inserite da chiunque
                 if ($isAdmin) {
                     $sqlCheck = "SELECT id, created_by FROM attendance WHERE id_user = ? AND id_course = ? AND date = ? LIMIT 1";
                     $stmtCheck = $conn->prepare($sqlCheck);
                     $stmtCheck->bind_param('iis', $idStudente, $idCorsoSelezionato, $oggi);
                 } else {
-                    $sqlCheck = "SELECT id, created_by FROM attendance WHERE id_user = ? AND id_course = ? AND date = ? AND created_by = ? LIMIT 1";
+                    // Controlla se esiste già una riga per lo studente, a prescindere dal created_by
+                    $sqlCheck = "SELECT id, created_by FROM attendance WHERE id_user = ? AND id_course = ? AND date = ? LIMIT 1";
                     $stmtCheck = $conn->prepare($sqlCheck);
-                    $stmtCheck->bind_param('iisi', $idStudente, $idCorsoSelezionato, $oggi, $user['id_user']);
+                    $stmtCheck->bind_param('iis', $idStudente, $idCorsoSelezionato, $oggi);
                 }
                 $stmtCheck->execute();
                 $resCheck = $stmtCheck->get_result();
                 $rowAtt = $resCheck->fetch_assoc();
                 $stmtCheck->close();
+                
                 if ($rowAtt) {
+                    // Se l'utente è docente e la riga esiste già ma non è stata inserita da lui, segnala errore e non aggiorna/inserisce
                     if (!$isAdmin && $rowAtt['created_by'] != $user['id_user']) {
+                        $notAllowedModification = true;
                         continue;
                     }
+                    // Altrimenti, esegue l'update
                     if ($isAdmin) {
                         $sqlUpdate = "UPDATE attendance SET entry_hour = ?, exit_hour = ? WHERE id = ?";
                         $stmtU = $conn->prepare($sqlUpdate);
@@ -204,6 +213,22 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
                     $stmtU->execute();
                     $stmtU->close();
                 } else {
+                    // Se non esiste alcuna riga, verifica se esiste già una riga inserita da un altro docente
+                    if (!$isAdmin) {
+                        // Eseguiamo una SELECT per vedere se esiste già una riga (da chiunque)
+                        $sqlDupCheck = "SELECT id, created_by FROM attendance WHERE id_user = ? AND id_course = ? AND date = ? LIMIT 1";
+                        $stmtDup = $conn->prepare($sqlDupCheck);
+                        $stmtDup->bind_param('iis', $idStudente, $idCorsoSelezionato, $oggi);
+                        $stmtDup->execute();
+                        $resDup = $stmtDup->get_result();
+                        if ($resDup->num_rows > 0) {
+                            // Se esiste già una riga inserita da un altro docente, non fare nulla e segnala errore
+                            $notAllowedModification = true;
+                            $stmtDup->close();
+                            continue;
+                        }
+                        $stmtDup->close();
+                    }
                     $sqlInsert = "INSERT INTO attendance (id_user, id_course, date, entry_hour, exit_hour, created_by) VALUES (?, ?, ?, ?, ?, ?)";
                     $stmtI = $conn->prepare($sqlInsert);
                     $stmtI->bind_param('iisssi', $idStudente, $idCorsoSelezionato, $oggi, $entryHour, $exitHour, $user['id_user']);
@@ -236,18 +261,31 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
         }
         ?>
         <script>
-          Swal.fire({
-              title: 'Successo!',
-              text: 'Registro salvato con successo.',
-              icon: 'success',
-              confirmButtonText: 'OK'
-          }).then(() => {
-              window.location.href = '<?php echo $_SERVER['PHP_SELF']."?id_course=$idCorsoSelezionato"; ?>';
-          });
+          <?php if ($notAllowedModification): ?>
+            Swal.fire({
+                title: 'Attenzione',
+                text: 'Non hai il permesso di modificare le presenze inserite da altri docenti.',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '<?php echo $_SERVER['PHP_SELF']."?id_course=$idCorsoSelezionato"; ?>';
+            });
+          <?php else: ?>
+            Swal.fire({
+                title: 'Successo!',
+                text: 'Registro salvato con successo.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '<?php echo $_SERVER['PHP_SELF']."?id_course=$idCorsoSelezionato"; ?>';
+            });
+          <?php endif; ?>
         </script>
         <?php
     }
     ?>
+
+
       <h3>Presenze di oggi (<?php echo htmlspecialchars($oggiIta, ENT_QUOTES, 'UTF-8'); ?>)</h3>
       <p><strong><?php echo htmlspecialchars($nomeCorsoSelezionato, ENT_QUOTES, 'UTF-8'); ?></strong></p>
       
@@ -280,6 +318,10 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
         <div class="button-utilities">
           <button type="button" onclick="checkAllStudents()">Seleziona tutti</button>
           <button type="button" onclick="fillTimes()">Riempie orari</button>
+                  <!-- Aggiungo un button info con tooltip "Apri tutorial" -->
+        <button type="button" id="tutorialBtn" title="Apri tutorial">
+        <i class="fas fa-info-circle" style="font-size: 1.5em; color:rgb(255, 255, 255);"></i>
+      </button>
         </div>
         <br>
         <div style="text-align: center; margin-bottom: 15px;">
@@ -340,7 +382,7 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
           var selectElement = this;
           var selected = selectElement.value;
           if(selected === "0") {
-            // Nessuna azione per "Nessun modulo"
+            // Nessuna azione 
           } else {
             // Popup di conferma per la scelta del modulo
             Swal.fire({
