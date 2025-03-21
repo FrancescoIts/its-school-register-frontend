@@ -136,7 +136,7 @@ $stmt->close();
                   </div>
                   <div class="student-details" id="details-<?= $student['id_user'] ?>">
                     <h4>Dettagli assenze per <?= htmlspecialchars($student['full_name']) ?> 
-                    (Corso: <?= htmlspecialchars($student['course']) ?>, Anno Accademico: <?= $academicYear ?>-<?= ($academicYear+1) ?>)</h4>
+                    (Corso: <?= htmlspecialchars($student['course']) ?>, Anno: <?= $academicYear ?>-<?= ($academicYear+1) ?>)</h4>
                     <br>
                     <div class="charts-container">
                         <!-- Grafico a torta -->

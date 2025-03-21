@@ -13,7 +13,3 @@
 ### 100% PANNELLO SADMIN
 
 ## Fixes
-1. ~~Elimina corso fix~~
-2. ~~Aggiornamento NavBar~~
-3. ~~Completamento pannello Sadmin~~
-4. ~~Fix conteggio studenti pannello Sadmin~~

@@ -1,3 +1,15 @@
+
+   body {
+    margin: 0;
+    padding: 0;
+    background-attachment: fixed; /* <<--- Mantiene fisso lo sfondo */
+    background-size: cover;
+    font-family: Arial, sans-serif;
+}
+
+#absenceDaysChart-16{
+    margin-left: -20px;
+}
 /* Dashboard */
 .dashboard {
     width: 80%;
@@ -9,7 +21,11 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
     color: white;
     overflow: hidden;
-    transition: all 0.3s ease;
+
+    /* Prima era transition: all 0.3s ease;
+       Ora limitiamo la transizione solo all'opacità, per evitare 
+       che il collasso dell'altezza “risalti” lo sfondo */
+    transition: opacity 0.3s ease;
 }
 
 /* Header della dashboard */
@@ -75,7 +91,7 @@
     font-weight: bold;
     color: white;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    transition: 650ms
+    transition: 650ms;
 }
 
 .course-card:hover {
@@ -91,7 +107,6 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-
 /* Stili per la sezione info personali */
 .course-card.info {
     background: rgba(255, 255, 255, 0.3);
@@ -121,119 +136,118 @@
     user-select: none;  /* Evita la selezione accidentale */
 }
 
-.course-card.info strong{
+.course-card.info strong {
     color: #cd88ec;
 }
+
 .course-card.info p.visible {
     filter: blur(0);  /* Rimuove il blur al click */
 }
 
-  
 /* Responsività */
 @media (max-width: 400px) {
 
-/* Stili per ogni dashboard nella pagina */
-.dashboard {
-    width: 20px;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-}
+    /* Stili per ogni dashboard nella pagina */
+    .dashboard {
+        width: 20px;
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+    }
 
+    /* Contenuto della dashboard */
+    .dashboard-content {
+        display: block;
+        transition: all 0.3s ease;
+        padding: 15px;
+        width: 80%;
+    }
 
-/* Contenuto della dashboard */
-.dashboard-content {
-    display: block;
-    transition: all 0.3s ease;
-    padding: 15px;
-    width: 80%;
-}
+    /* Nascondi il contenuto se la dashboard è chiusa */
+    .dashboard.closed .dashboard-content {
+        display: none;
+    }
 
-/* Nascondi il contenuto se la dashboard è chiusa */
-.dashboard.closed .dashboard-content {
-    display: none;
-}
+    /* Ruota l'icona quando la dashboard è chiusa */
+    .dashboard.closed .toggle-icon {
+        transform: rotate(180deg);
+    }
 
-/* Ruota l'icona quando la dashboard è chiusa */
-.dashboard.closed .toggle-icon {
-    transform: rotate(180deg);
-}
-.dashboard h3 {
-    font-size: 22px;
-    color: #FFF;
-    text-align: center;
-    margin-bottom: 15px;
-}
+    .dashboard h3 {
+        font-size: 22px;
+        color: #FFF;
+        text-align: center;
+        margin-bottom: 15px;
+    }
 
-.courses {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    overflow-x: auto;
-    overflow-y: auto;
-}
+    .courses {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        overflow-x: auto;
+        overflow-y: auto;
+    }
 
-.course-card {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    font-weight: bold;
-    color: white;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out;
-}
+    .course-card {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        color: white;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease-in-out;
+    }
 
-.course-card:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
+    .course-card:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
 
-.courses img {
-    width: 50%;
-    max-width: 300px;
-    border-radius: 10px;
-    margin-top: 10px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
+    .courses img {
+        width: 50%;
+        max-width: 300px;
+        border-radius: 10px;
+        margin-top: 10px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    }
 
+    /* Stili per la sezione info personali */
+    .course-card.info {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: left;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #fff;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        width: 80%;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-/* Stili per la sezione info personali */
-.course-card.info {
-    background: rgba(255, 255, 255, 0.3);
-    padding: 20px;
-    border-radius: 15px;
-    text-align: left;
-    font-size: 16px;
-    line-height: 1.6;
-    color: #fff;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    width: 80%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    .course-card.info p {
+        margin: 8px 0;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        width: 100%;
+        cursor: pointer;
+        filter: blur(5px);  /* Effetto blur iniziale */
+        transition: filter 0.3s ease-in-out;
+        user-select: none;  /* Evita la selezione accidentale */
+    }
 
-}
+    .course-card.info strong {
+        color: #cd88ec;
+    }
 
-.course-card.info p {
-    margin: 8px 0;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    width: 100%;
-    cursor: pointer;
-    filter: blur(5px);  /* Effetto blur iniziale */
-    transition: filter 0.3s ease-in-out;
-    user-select: none;  /* Evita la selezione accidentale */
-}
-
-.course-card.info strong{
-    color: #cd88ec;
-}
-.course-card.info p.visible {
-    filter: blur(0);  /* Rimuove il blur al click */
-}
+    .course-card.info p.visible {
+        filter: blur(0);  /* Rimuove il blur al click */
+    }
 }

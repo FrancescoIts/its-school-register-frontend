@@ -51,7 +51,6 @@
 
 /* Singolo contenitore di un grafico */
 .chart-container {
-    flex: 1;
     min-width: 350px;
     max-width: 450px;
     min-height: 320px;
@@ -62,7 +61,6 @@
 .chart-wrapper {
     width: 100%;
     height: 300px;
-    margin-left: 15%;
 }
 
 /* Percentuale di assenza */
