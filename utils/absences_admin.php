@@ -9,9 +9,15 @@ $idRoleAdmin    = 3;
 $idRoleStudente = 1;
 
 /**
- * Funzione per ottenere gli orari di inizio/fine corso in base al giorno
+ * Funzione per ottenere gli orari di inizio/fine corso in base al giorno.
+ * Se il giorno richiesto non è tra quelli contemplati (lun-ven), restituisce [null, null].
  */
 function getCourseTimes($conn, $id_course, $day_of_week) {
+    // Definisci i giorni consentiti
+    $allowedDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    if (!in_array($day_of_week, $allowedDays)) {
+        return [null, null];
+    }
     $query = "
         SELECT start_time_{$day_of_week} AS start_time, end_time_{$day_of_week} AS end_time
         FROM courses
@@ -127,7 +133,14 @@ while ($row = $resA->fetch_assoc()) {
     $entry = $row['entry_hour'] ?? null;
     $exit  = $row['exit_hour'] ?? null;
 
+    // Calcola il giorno della settimana in minuscolo (es. monday, tuesday, ...)
     $dayOfWeek = strtolower(date('l', strtotime($date)));
+    
+    // Se il giorno è sabato o domenica, salta il record
+    if ($dayOfWeek === 'saturday' || $dayOfWeek === 'sunday') {
+        continue;
+    }
+    
     list($courseStart, $courseEnd) = getCourseTimes($conn, $selectedCourse, $dayOfWeek);
     if (!$courseStart || !$courseEnd) {
         continue;
@@ -187,14 +200,14 @@ $stmtA->close();
         </h3>
     <?php endif; ?>
 
-    <h3 style="text-align:center;">Assenze anno accademico <?php echo $academicYear . " - " . ($academicYear + 1); ?>
+    <h3 style="text-align:center;">Assenze anno <?php echo $academicYear . " - " . ($academicYear + 1); ?>
         <?php if ($resetStats): ?>
-            <span style="font-size:0.8em; color:#007bff;">(Statistiche resettate per il nuovo anno accademico)</span>
+            <span style="font-size:0.8em; color:#007bff;">(Statistiche resettate per il nuovo anno)</span>
         <?php endif; ?>
     </h3>
 
     <div id="filter-container" style="text-align:center; margin-bottom:20px;">
-        <input type="text" id="studentFilter" placeholder="Filtra per studente..." style="padding:5px; width:50%;">
+        <input type="text" id="studentFilter" placeholder="Filtra per studente..." style="padding:5px; width:100%;">
     </div>
 
     <?php

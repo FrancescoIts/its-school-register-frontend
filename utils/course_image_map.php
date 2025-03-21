@@ -2,7 +2,7 @@
 // Mappa dei corsi che condividono la stessa immagine
 $course_image_map = [
     "I.C.T. System Developer" => "ict.jpg",
-    "Industrial Software Developer" => "ict_system_developer.jpg",
+    "Industrial Software Developer" => "ict.jpg",
     "Marketing Technologist" => "moda.jpg",
     "Maestri Artigiani" => "moda.jpg",
     "Agroalimentare" => "agri.jpg",

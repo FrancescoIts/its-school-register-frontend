@@ -38,31 +38,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['create_user'])) {
     
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !str_ends_with($email, '@itssmartacademy.it')) {
         $message = '<div class="create-user-message error">Email non valida o dominio errato.</div>';
-    } elseif (!preg_match('/^(?=.*[0-9].*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};\':\"\\|,.<>\/?]).{8,}$/', $password)) {
+    } elseif (!preg_match('/^(?=.*[0-9].*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]).{8,}$/', $password)) {
         $message = '<div class="create-user-message error">La password deve contenere almeno 8 caratteri, 2 numeri e 1 carattere speciale.</div>';
     } else {
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        $insertUser = "
-            INSERT INTO users (psw, lastname, firstname, phone, email, active, time_stamp)
-            VALUES (?, ?, ?, ?, ?, 1, NOW())
-        ";
-        $stmt = $conn->prepare($insertUser);
-        $stmt->bind_param("sssss", $hashed_password, $lastname, $firstname, $phone, $email);
-
-        if ($stmt->execute()) {
-            $new_user_id = $stmt->insert_id;
-            $insertRole = "
-                INSERT INTO user_role_courses (id_user, id_role, id_course)
-                VALUES (?, ?, ?)
-            ";
-            $stmtRole = $conn->prepare($insertRole);
-            $stmtRole->bind_param("iii", $new_user_id, $role, $course_id);
-            $stmtRole->execute();
-            $message = '<div class="create-user-message success">Utente creato con successo!</div>';
+        // Verifica se esiste già un utente con la stessa email
+        $checkQuery = "SELECT id_user FROM users WHERE email = ?";
+        $stmtCheck = $conn->prepare($checkQuery);
+        $stmtCheck->bind_param("s", $email);
+        $stmtCheck->execute();
+        $stmtCheck->store_result();
+        if ($stmtCheck->num_rows > 0) {
+            $message = '<div class="create-user-message error">Errore: esiste già un utente con questa email.</div>';
         } else {
-            $message = '<div class="create-user-message error">Errore durante la creazione dell\'utente.</div>';
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+            $insertUser = "
+                INSERT INTO users (psw, lastname, firstname, phone, email, active, time_stamp)
+                VALUES (?, ?, ?, ?, ?, 1, NOW())
+            ";
+            $stmtInsert = $conn->prepare($insertUser);
+            $stmtInsert->bind_param("sssss", $hashed_password, $lastname, $firstname, $phone, $email);
+    
+            if ($stmtInsert->execute()) {
+                $new_user_id = $stmtInsert->insert_id;
+                $insertRole = "
+                    INSERT INTO user_role_courses (id_user, id_role, id_course)
+                    VALUES (?, ?, ?)
+                ";
+                $stmtRole = $conn->prepare($insertRole);
+                $stmtRole->bind_param("iii", $new_user_id, $role, $course_id);
+                $stmtRole->execute();
+                $message = '<div class="create-user-message success">Utente creato con successo!</div>';
+                $stmtRole->close();
+            } else {
+                $message = '<div class="create-user-message error">Errore durante la creazione dell\'utente.</div>';
+            }
+            $stmtInsert->close();
         }
-        $stmt->close();
+        $stmtCheck->close();
     }
 }
 ?>

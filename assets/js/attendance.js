@@ -45,12 +45,14 @@ function fillTimes() {
   });
 }
 
-// Filtro per nome/cognome
-document.getElementById('Filter').addEventListener('keyup', function() {
-  const filterValue = this.value.toLowerCase();
-  const rows = document.querySelectorAll('.attendance-table tr.student-row');
-  rows.forEach(row => {
-    const studentName = row.querySelector('td').textContent.toLowerCase();
-    row.style.display = studentName.indexOf(filterValue) > -1 ? "" : "none";
+const filterInput = document.getElementById('Filter');
+if (filterInput) {
+  filterInput.addEventListener('keyup', function() {
+    const filterValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.attendance-table tr.student-row');
+    rows.forEach(row => {
+      const studentName = row.querySelector('td').textContent.toLowerCase();
+      row.style.display = studentName.indexOf(filterValue) > -1 ? "" : "none";
+    });
   });
-});
+}

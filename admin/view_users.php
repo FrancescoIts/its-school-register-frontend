@@ -88,6 +88,11 @@ $stmt->close();
     <button onclick="refreshUsers()" class="refresh-button">Aggiorna Schede</button>
 </div>
 
+<!-- Campo filtro per cercare utenti -->
+<div style="text-align: center; margin-bottom: 20px;">
+    <input type="text" id="userFilter" placeholder="Cerca utente per nome o cognome..." style="padding:5px; width: 50%;">
+</div>
+
 <div class="users-container">
     <?php foreach ($users as $user): ?>
         <div class="user-card">
@@ -126,3 +131,19 @@ $stmt->close();
         </div>
     <?php endforeach; ?>
 </div>
+
+<script>
+    // Filtro per cercare utenti in base al nome/cognome contenuto nell'intestazione della scheda
+    const userFilter = document.getElementById('userFilter');
+    if (userFilter) {
+        userFilter.addEventListener('keyup', function() {
+            const filterValue = this.value.toLowerCase();
+            const userCards = document.querySelectorAll('.users-container .user-card');
+            userCards.forEach(card => {
+                // Prendiamo il testo dell'intestazione della scheda (nome e cognome)
+                const headerText = card.querySelector('.user-card-header').textContent.toLowerCase();
+                card.style.display = headerText.indexOf(filterValue) > -1 ? '' : 'none';
+            });
+        });
+    }
+</script>

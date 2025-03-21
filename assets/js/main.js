@@ -183,6 +183,10 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.style.color = "#7875b5";
     }
 }
+
+
+const infoButton = document.getElementById('tutorialBtn');
+if (infoButton) {
         // Bottone info per aprire il tutorial
         document.getElementById('tutorialBtn').addEventListener('click', function() {
             Swal.fire({
@@ -194,3 +198,4 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: 'OK'
             });
         });
+    }
