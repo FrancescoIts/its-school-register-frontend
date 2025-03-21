@@ -5,7 +5,21 @@ require_once '../utils/check_session.php';
 $user = checkSession(true, ['admin', 'sadmin']);
 $swalScript = '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+$query = "SELECT id_course, CONCAT(name, ' (', period, ')') AS name FROM courses";
+$stmt = $conn->prepare($query);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$courses = [];
+while ($row = $result->fetch_assoc()) {
+    $courses[$row['id_course']] = $row['name'];
+}
+$stmt->close();
+
+// Gestione inserimento corso
+$message = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_type']) && $_POST['form_type'] === 'create_course') {
     // Raccolta dei dati dal form
     $name       = trim($_POST['name'] ?? '');
     $year       = trim($_POST['year'] ?? '');
@@ -28,23 +42,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($name) || empty($year) || empty($period) || empty($total_hour)) {
         $swalScript = "<script>Swal.fire({title:'Errore!', text:'Compilare tutti i campi obbligatori (Nome, Anno, Periodo e Ore Totali).', icon:'error'});</script>";
     } 
-    // Controllo sul nome del corso (max 40 caratteri)
     elseif (strlen($name) > 40) {
         $swalScript = "<script>Swal.fire({title:'Errore!', text:'Il nome del corso non può superare 40 caratteri.', icon:'error'});</script>";
     } 
-    // Controllo sul campo anno: deve essere numerico e avere al massimo 4 caratteri (es. 2024)
     elseif (!ctype_digit($year) || strlen($year) > 4) {
         $swalScript = "<script>Swal.fire({title:'Errore!', text:'L\'anno deve essere un numero e avere al massimo 4 caratteri (Es. 2024).', icon:'error'});</script>";
     }
-    // Controllo sul campo periodo: massimo 9 caratteri
     elseif (strlen($period) > 9) {
         $swalScript = "<script>Swal.fire({title:'Errore!', text:'Il periodo deve avere al massimo 9 caratteri (Es. 2024-2026).', icon:'error'});</script>";
     }
-    // Validazione del campo total_hour: deve essere numerico e composto da 3 o 4 cifre (min 100, max 9999)
     elseif (!ctype_digit($total_hour) || strlen($total_hour) < 3 || strlen($total_hour) > 4) {
         $swalScript = "<script>Swal.fire({title:'Errore!', text:'Le ore totali devono essere un numero di 3 o 4 cifre (Es. 100 - 9999).', icon:'error'});</script>";
     }
-    // Controllo degli orari per ogni giorno: uscita > ingresso
     elseif (
         (strtotime($end_time_monday) <= strtotime($start_time_monday)) ||
         (strtotime($end_time_tuesday) <= strtotime($start_time_tuesday)) ||
@@ -67,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($rowDup['count'] > 0) {
             $swalScript = "<script>Swal.fire({title:'Errore!', text:'Esiste già un corso con lo stesso nome, anno e periodo.', icon:'error'});</script>";
         } else {
-            // Preparazione query di inserimento, con il nuovo campo total_hour
             $insertQuery = "INSERT INTO courses 
                 (name, year, period, total_hour, start_time_monday, end_time_monday, start_time_tuesday, end_time_tuesday, start_time_wednesday, end_time_wednesday, start_time_thursday, end_time_thursday, start_time_friday, end_time_friday)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -112,13 +120,14 @@ if (!empty($swalScript)) {
 <div class="create-user-container">
     <h2 class="create-user-title">Crea Nuovo Corso</h2>
     <form method="POST" action="" class="create-user-form">
+        <!-- Campo hidden per identificare il form -->
+        <input type="hidden" name="form_type" value="create_course">
         <div class="form-group">
             <label class="create-user-label" for="name">Nome del Corso:</label>
             <input type="text" class="create-user-input" id="name" name="name" placeholder="Inserisci nome corso" required maxlength="40">
         </div>
         <div class="form-group">
             <label class="create-user-label" for="year">Anno:</label>
-            <!-- Precompilato con l'anno corrente -->
             <input type="number" class="create-user-input" id="year" name="year" placeholder="Inserisci anno" required maxlength="4" value="<?php echo date('Y'); ?>">
         </div>
         <div class="form-group">
@@ -130,7 +139,6 @@ if (!empty($swalScript)) {
             <input type="number" class="create-user-input" id="total_hour" name="total_hour" placeholder="Inserisci ore totali (100-9999)" required min="100" max="9999">
         </div>
         <h4 style="text-align:center; color:#FFF; margin-bottom:20px;">Orari delle Lezioni (24h)</h4>
-        <!-- Sezione per impostare orari predefiniti -->
         <div class="preset-container">
             <input type="time" class="preset-input" id="presetEntry" placeholder="Ora Ingresso">
             <input type="time" class="preset-input" id="presetExit" placeholder="Ora Uscita">
@@ -140,47 +148,47 @@ if (!empty($swalScript)) {
         <!-- Lunedì -->
         <div class="form-group">
             <label class="create-user-label" for="start_time_monday">Lunedì - Inizio:</label>
-            <input type="time" class="create-user-input" id="start_time_monday" name="start_time_monday" required>
+            <input type="time" class="create-user-input" id="start_time_monday" name="start_time_monday" value="14:00" required>
         </div>
         <div class="form-group">
             <label class="create-user-label" for="end_time_monday">Lunedì - Fine:</label>
-            <input type="time" class="create-user-input" id="end_time_monday" name="end_time_monday" required>
+            <input type="time" class="create-user-input" id="end_time_monday" name="end_time_monday" value="18:00" required>
         </div>
         <!-- Martedì -->
         <div class="form-group">
             <label class="create-user-label" for="start_time_tuesday">Martedì - Inizio:</label>
-            <input type="time" class="create-user-input" id="start_time_tuesday" name="start_time_tuesday" required>
+            <input type="time" class="create-user-input" id="start_time_tuesday" name="start_time_tuesday" value="14:00" required>
         </div>
         <div class="form-group">
             <label class="create-user-label" for="end_time_tuesday">Martedì - Fine:</label>
-            <input type="time" class="create-user-input" id="end_time_tuesday" name="end_time_tuesday" required>
+            <input type="time" class="create-user-input" id="end_time_tuesday" name="end_time_tuesday" value="18:00" required>
         </div>
         <!-- Mercoledì -->
         <div class="form-group">
             <label class="create-user-label" for="start_time_wednesday">Mercoledì - Inizio:</label>
-            <input type="time" class="create-user-input" id="start_time_wednesday" name="start_time_wednesday" required>
+            <input type="time" class="create-user-input" id="start_time_wednesday" name="start_time_wednesday" value="14:00" required>
         </div>
         <div class="form-group">
             <label class="create-user-label" for="end_time_wednesday">Mercoledì - Fine:</label>
-            <input type="time" class="create-user-input" id="end_time_wednesday" name="end_time_wednesday" required>
+            <input type="time" class="create-user-input" id="end_time_wednesday" name="end_time_wednesday" value="18:00" required>
         </div>
         <!-- Giovedì -->
         <div class="form-group">
             <label class="create-user-label" for="start_time_thursday">Giovedì - Inizio:</label>
-            <input type="time" class="create-user-input" id="start_time_thursday" name="start_time_thursday" required>
+            <input type="time" class="create-user-input" id="start_time_thursday" name="start_time_thursday" value="14:00" required>
         </div>
         <div class="form-group">
             <label class="create-user-label" for="end_time_thursday">Giovedì - Fine:</label>
-            <input type="time" class="create-user-input" id="end_time_thursday" name="end_time_thursday" required>
+            <input type="time" class="create-user-input" id="end_time_thursday" name="end_time_thursday" value="18:00" required>
         </div>
         <!-- Venerdì -->
         <div class="form-group">
             <label class="create-user-label" for="start_time_friday">Venerdì - Inizio:</label>
-            <input type="time" class="create-user-input" id="start_time_friday" name="start_time_friday" required>
+            <input type="time" class="create-user-input" id="start_time_friday" name="start_time_friday" value="14:00" required>
         </div>
         <div class="form-group">
             <label class="create-user-label" for="end_time_friday">Venerdì - Fine:</label>
-            <input type="time" class="create-user-input" id="end_time_friday" name="end_time_friday" required>
+            <input type="time" class="create-user-input" id="end_time_friday" name="end_time_friday" value="18:00" required>
         </div>
         <button type="submit" class="create-user-button" id="createButton">Crea Corso</button>
     </form>

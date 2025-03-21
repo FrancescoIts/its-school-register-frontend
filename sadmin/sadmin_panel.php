@@ -28,7 +28,6 @@ require_once '../utils/check_session.php';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/admin.js" defer></script>
-<script src="../assets/js/loader.js" defer></script>
 <script src="../assets/js/create_course.js" defer></script>
 <script src="../assets/js/view_courses.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
