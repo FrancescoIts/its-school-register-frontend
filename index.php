@@ -37,7 +37,9 @@ if (isset($_SESSION['user'])) {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="shortcut icon" href="./assets/img/favicon.ico">  
     </head>
+
     <body>
+    <script src="crazy_button.js" defer></script>
         <style>
             .toggle {
                 left: 1600px;
@@ -60,24 +62,23 @@ if (isset($_SESSION['user'])) {
             <div class="screen">
                 <div class="screen__content">
                     <h1 class="login-title">Registro Elettronico</h1>
-
                     <form class="login" action="./login/process_login.php" method="POST" id="login">
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
-                            <input type="text" name="email" class="login__input" placeholder="Email Scolastica" required>
+                            <input type="text" name="email" class="login__input" placeholder="Email Scolastica" required autocomplete="username">
                             <p class="error-message">
                                 <?php echo $_SESSION['error_email'] ?? ''; ?>
                             </p>
                         </div>
                         <div class="login__field">
                             <i class="login__icon fas fa-lock"></i>
-                            <input type="password" id="password" name="password" class="login__input" placeholder="Password" required>
+                            <input type="password" id="password" name="password" class="login__input" placeholder="Password" required autocomplete="current-password">
                             <i class="pss fas fa-eye" id="togglePassword"></i>
                             <p class="error-message">
                                 <?php echo $_SESSION['error_password'] ?? ''; ?>
                             </p>
                         </div>
-                        <button type="submit" class="button login__submit">
+                        <button type="submit" class="button login__submit" id="login_btn">
                             <span>ACCEDI</span>
                             <i class="button__icon fas fa-chevron-right"></i>
                         </button>

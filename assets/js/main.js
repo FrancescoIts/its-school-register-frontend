@@ -103,9 +103,9 @@ function scrollFunction() {
     mybutton.style.pointerEvents = "none"; // Disabilita i click
   }
 }
-
-// Scroll lento e fluido
+if(mybutton){
 mybutton.addEventListener("click", smoothScrollToTop);
+}
 
 function smoothScrollToTop() {
   const scrollDuration = 800; // Durata dello scroll in ms
@@ -119,39 +119,40 @@ function smoothScrollToTop() {
   }, 15);
 }
 
+if (!window.location.pathname.endsWith("index.php")) {
+    document.addEventListener("DOMContentLoaded", function () {
+        function checkSession() {
+            fetch('../utils/api_check_session.php')
+                .then(response => {
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        return response.json();
+                    } else {
+                        throw new Error("Risposta non JSON");
+                    }
+                })
+                .then(data => {
+                    if (!data.session_active) {
+                        Swal.fire({
+                            title: "Sessione Scaduta",
+                            text: data.error || "La tua sessione è scaduta. Verrai disconnesso.",
+                            icon: "warning",
+                            confirmButtonText: "OK",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        }).then(() => {
+                            window.location.href = "../utils/logout.php";
+                        });
+                    }
+                })
+                .catch(error => console.error("Errore nel controllo della sessione:", error));
+        }
 
-document.addEventListener("DOMContentLoaded", function () {
-    function checkSession() {
-        fetch('../utils/api_check_session.php')
-            .then(response => {
-                // Verifica che il Content-Type sia application/json
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                    return response.json();
-                } else {
-                    throw new Error("Risposta non JSON");
-                }
-            })
-            .then(data => {
-                if (!data.session_active) {
-                    Swal.fire({
-                        title: "Sessione Scaduta",
-                        text: data.error || "La tua sessione è scaduta. Verrai disconnesso.",
-                        icon: "warning",
-                        confirmButtonText: "OK",
-                        allowOutsideClick: false,
-                        allowEscapeKey: false
-                    }).then(() => {
-                        window.location.href = "../utils/logout.php";
-                    });
-                }
-            })
-            .catch(error => console.error("Errore nel controllo della sessione:", error));
-    }
+        checkSession();
+        setInterval(checkSession, 60000);
+    });
+}
 
-    checkSession();
-    setInterval(checkSession, 60000);
-});
 
 
 document.addEventListener('DOMContentLoaded', function() {
