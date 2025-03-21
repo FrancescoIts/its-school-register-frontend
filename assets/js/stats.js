@@ -47,11 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ctx2) {
                 const giorniFeriali = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
 
-                // Array dei dati per il grafico, gestendo eventuali errori di giorni
                 const weekData = giorniFeriali.map(giorno => {
-                    const englishDay = Object.keys(dayTranslation).find(key => dayTranslation[key] === giorno);
-                    return weekAbsences[englishDay] || 0;
+                    // Trova la chiave in minuscolo corrispondente al giorno italiano
+                    const key = Object.keys(dayTranslation).find(key => dayTranslation[key] === giorno);
+                    // Trasforma la chiave in modo che la prima lettera sia maiuscola
+                    const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+                    return weekAbsences[formattedKey] || 0;
                 });
+                
 
                 new Chart(ctx2, {
                     type: 'bar',
