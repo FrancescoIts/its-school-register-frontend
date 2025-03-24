@@ -39,7 +39,6 @@ if (isset($_SESSION['user'])) {
     </head>
 
     <body>
-    <script src="crazy_button.js" defer></script>
         <style>
             .toggle {
                 left: 1600px;

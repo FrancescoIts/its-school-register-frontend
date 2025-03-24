@@ -13,6 +13,9 @@ require_once '../utils/check_session.php';
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
+    <link rel="stylesheet" href="../assets/css/mini_loader.css">  
+    <link rel="stylesheet" href="../assets/css/loader.css">  
+    <link rel="stylesheet" href="../assets/css/absences_admin.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/manage_attendance.css">
@@ -26,6 +29,7 @@ require_once '../utils/check_session.php';
 <script src="../assets/js/main.js" defer></script>
 <script src="../assets/js/calendar.js" defer></script>
 <script src="../assets/js/calendar_absences.js" defer></script>
+<script src="../assets/js/student_panel.js" defer></script>
 <script src="../assets/js/stats.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
@@ -139,8 +143,11 @@ require_once '../utils/check_session.php';
   </div>
   <div class="dashboard-content">
       <div class="courses">
-          <div class="course-card" id="calendar-absences-content">
-              <?php require_once '../utils/calendar_absences_partial.php'; ?>
+          <div class="course-card" id="absences-container"> 
+            <div class="loader loader-1">
+            <div class="loader-outter"></div>
+            <div class="loader-inner"></div>
+            </div>
           </div>
       </div>
   </div>
@@ -158,8 +165,6 @@ require_once '../utils/check_session.php';
       </div>
   </div>
 </div>
-
-
 
 </body>
 </html>

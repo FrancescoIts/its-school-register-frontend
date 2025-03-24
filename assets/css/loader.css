@@ -18,6 +18,7 @@
     display: none; /* nascosto di default */
     justify-content: center;
     align-items: center;
+    border-radius: 0px !important;
 }
 .loader {
     --background: linear-gradient(20deg,

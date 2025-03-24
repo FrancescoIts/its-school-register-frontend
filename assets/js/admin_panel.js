@@ -1,0 +1,10 @@
+$(document).ready(function(){
+    $("#loadAttendance").load("../utils/manage_attendance.php");
+    $("#modifyAttendance").load("../utils/modify_attendance.php");
+    $("#loadStats").load("../utils/stats_total.php");
+    $("#loadCourseAdmin").load("./courses_admin.php");
+    $("#loadModule").load("./create_module.php");
+    $("#loadUsers").load("./view_users.php");
+    $("#loadCreateUser").load("./create_user.php");
+    $("#calendar-absences").load("../utils/absences_admin.php");
+  });

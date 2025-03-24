@@ -7,10 +7,10 @@ require_once '../utils/check_session.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Coordinatore</title>
+    <link rel="stylesheet" href="../assets/css/mini_loader.css"> 
     <link rel="stylesheet" href="../assets/css/absences_admin.css"> 
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/admin_panel.css"> 
-    <link rel="stylesheet" href="../assets/css/loader.css">
     <link rel="stylesheet" href="../assets/css/dark_mode.css"> 
     <link rel="stylesheet" href="../assets/css/dashboard_style.css"> 
     <link rel="stylesheet" href="../assets/css/calendar.css">
@@ -37,8 +37,8 @@ require_once '../utils/check_session.php';
 <script src="../assets/js/calendar_admin.js" defer></script>
 <script src="../assets/js/absences_admin.js" defer></script>
 <script src="../assets/js/view_users.js" defer></script>
-<script src="../assets/js/loader.js" defer></script>
 <script src="../assets/js/attendance.js" defer></script>
+<script src="../assets/js/admin_panel.js" defer></script>
 <div class="scroll-progress" id="scrollProgress"></div>
 <button
         type="button"
@@ -134,10 +134,12 @@ require_once '../utils/check_session.php';
     </div>
     <div class="dashboard-content">
         <div class="courses">
-            <div class="course-card">
-                <?php
-                    require_once '../utils/manage_attendance.php';
-                ?>
+            <div class="course-card" id="loadAttendance">
+          <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -151,10 +153,12 @@ require_once '../utils/check_session.php';
     </div>
     <div class="dashboard-content">
         <div class="courses">
-            <div class="course-card">
-                <?php
-                    require_once '../utils/modify_attendance.php';
-                ?>
+            <div class="course-card" id="modifyAttendance">
+          <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -168,10 +172,12 @@ require_once '../utils/check_session.php';
     </div>
     <div class="dashboard-content">
         <div class="courses">
-            <div class="course-card">
-                <?php
-                    require_once '../utils/stats_total.php'; 
-                ?>
+            <div class="course-card" id="loadStats">
+          <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -185,13 +191,19 @@ require_once '../utils/check_session.php';
     </div>
     <div class="dashboard-content">
         <div class="courses">
-            <div class="course-card">
-                <?php
-                    require_once './courses_admin.php';
-                ?>
+            <div class="course-card" id="loadCourseAdmin">
+          <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
-            <div class="course-card">
-                <?php require_once './create_module.php'; ?>
+            <div class="course-card" id="loadModule">
+            <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -205,10 +217,12 @@ require_once '../utils/check_session.php';
     </div>
     <div class="dashboard-content">
         <div class="courses">
-            <div class="course-card">
-                <?php
-                    require_once './view_users.php';
-                ?>
+            <div class="course-card" id="loadUsers">
+            <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -222,10 +236,12 @@ require_once '../utils/check_session.php';
     </div>
     <div class="dashboard-content">
         <div class="courses">
-            <div class="course-card">
-                <?php
-                    require_once './create_user.php';
-                ?>
+            <div class="course-card" id="loadCreateUser">
+          <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -240,9 +256,11 @@ require_once '../utils/check_session.php';
     <div class="dashboard-content">
         <div class="courses">
             <div class="course-card" id="calendar-absences">
-                <?php
-                    require_once '../utils/absences_admin.php';
-                ?>
+          <!-- Loader -->
+          <div class="loader loader-1">
+                <div class="loader-outter"></div>
+                <div class="loader-inner"></div>
+              </div>
             </div>
         </div>
     </div>
@@ -265,7 +283,5 @@ require_once '../utils/check_session.php';
         </div>
     </div>
 </div>  
-
-<?php require('../utils/loader.php'); ?>
 </body>
 </html>
