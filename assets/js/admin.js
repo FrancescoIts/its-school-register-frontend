@@ -1,4 +1,4 @@
-// Importa SweetAlert2
+
 document.addEventListener('DOMContentLoaded', function () {
     // Mostra/Nascondi password
     const togglePasswordBtn = document.getElementById('togglePassword');

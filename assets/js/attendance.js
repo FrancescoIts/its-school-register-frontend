@@ -106,4 +106,14 @@
         });
       }
     });
-  
+
+    function tutorial(){
+      Swal.fire({
+        title: 'Tutorial Presenze',
+        html: '<p>Se l\'alunno è <strong>presente</strong> bisogna segnare la checkbox corrispondente.</p>' +
+              '<p>Se l\'alunno è <strong>assente</strong>, lasciare la checkbox deselezionata.</p>' +
+              '<p>Se l\'alunno è presente ma ha effettuato l\'ingresso o l\'uscita fuori orario, segna la presenza tramite la checkbox e poi modifica gli orari usando gli appositi campi.</p>',
+        icon: 'info',
+        confirmButtonText: 'OK'
+    });
+    }

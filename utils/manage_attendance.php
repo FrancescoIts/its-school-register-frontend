@@ -192,7 +192,7 @@ if ($idCorsoSelezionato == 0 && count($corsiDisponibili) > 1) {
     <div class="button-utilities">
       <button type="button" onclick="checkAllStudents()">Seleziona tutti</button>
       <button type="button" onclick="fillTimes()">Riempie orari</button>
-      <button type="button" id="tutorialBtn" title="Apri tutorial">
+      <button type="button" id="tutorialBtn" onclick="tutorial()" title="Apri tutorial">
         <i class="fas fa-info-circle" style="font-size: 1.5em; color:rgb(255, 255, 255);"></i>
       </button>
     </div>

@@ -187,5 +187,5 @@ if ($isAjax) {
                 window.location.href = '" . $_SERVER['PHP_SELF'] . "?id_course=$idCorsoSelezionato';
             });
           </script>";
-    exit;
+
 }
