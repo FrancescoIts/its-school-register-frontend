@@ -13,5 +13,3 @@
 ### 100% PANNELLO SADMIN
 
 ## Fixes
-1. Calendario assenze studenti;
-2. 
