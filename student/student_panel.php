@@ -14,7 +14,6 @@ require_once '../utils/check_session.php';
     <link rel="stylesheet" href="../assets/css/calendar.css">
     <link rel="stylesheet" href="../assets/css/overflow.css">  
     <link rel="stylesheet" href="../assets/css/mini_loader.css">  
-    <link rel="stylesheet" href="../assets/css/loader.css">  
     <link rel="stylesheet" href="../assets/css/absences_admin.css">  
     <link rel="shortcut icon" href="../assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

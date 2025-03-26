@@ -5,5 +5,4 @@ $(document).ready(function(){
     $("#loadModule").load("./create_module.php");
     $("#loadUsers").load("./view_users.php");
     $("#loadCreateUser").load("./create_user.php");
-    $("#calendar-absences").load("../utils/absences_admin.php");
   });

@@ -254,11 +254,7 @@ require_once '../utils/check_session.php';
     <div class="dashboard-content">
         <div class="courses">
             <div class="course-card" id="calendar-absences">
-          <!-- Loader -->
-          <div class="loader loader-1">
-                <div class="loader-outter"></div>
-                <div class="loader-inner"></div>
-              </div>
+                <?php require_once '../utils/absences_admin.php'?>
             </div>
         </div>
     </div>
